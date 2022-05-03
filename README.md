@@ -1,9 +1,5 @@
 # On-the-clock
 Computer graphics project
+Made by:
 @paulwrg
 @Khokho199
-hi
-Je t'aime Joel
-wesh gros
-bye
-toto
