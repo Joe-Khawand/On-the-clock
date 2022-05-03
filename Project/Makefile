@@ -1,7 +1,7 @@
 # This Makefile will generate an executable file named pgm
 
 # Adapt this path to point to the CGP library depending on the current directory
-PATH_TO_CGP = ../../../library/
+PATH_TO_CGP = ../library/
 
 TARGET ?= pgm #name of the executable
 SRC_DIRS ?= . $(PATH_TO_CGP)
