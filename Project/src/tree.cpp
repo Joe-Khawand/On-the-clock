@@ -18,23 +18,25 @@ mesh create_cylinder_mesh(float radius, float height)
     // Similar with the triangle connectivity:
     //  m.connectivity.push_back(uint3{index_1, index_2, index_3});
     int N = 18;
-    m.position.resize(N + 2);
-    m.uv.resize(N+2);
-
-    for(int i=0; i<N + 2; i++)
+    m.position.resize(N);
+    
+    m.position[0]=vec3{0,0,0};
+    m.position[1]=vec3{5.0,0,0};
+    m.position[2]=vec3{4.0,-1.0,0};
+    m.position[3]=vec3{4.0+(std::sqrt(2))/2.0,-1.0-(std::sqrt(2.0))/2.0,0};
+    m.position[4]=vec3{7.0,0.5,0};
+    m.position[5]=vec3{4.0-(std::sqrt(2))/2.0,2.0+(std::sqrt(2.0))/2.0,0};
+    m.position[6]=vec3{4.0,2.0,0};
+    m.position[7]=vec3{5.0,1.0,0};
+    m.position[8]=vec3{0,1.0,0};
+    for(int i=9; i<N; i++)
     {
-        float x = radius * std::cos((i/2) * 2.0f * M_PI / (N/2));
-        float y = radius * std::sin((i/2) * 2.0f * M_PI / (N/2));
-        float z;
-        if(i%2 == 1) z = height;
-        else z = 0.f;
-        m.position[i] = vec3{x, y, z};
-        m.uv[i]= {1.f * i / N, z};
+        m.position[i] = m.position[i-9]+vec3{0,0,1};
     }
 
     for(int i=0; i<N; i+=2)
     {
-        m.connectivity.push_back((uint3{i+1, i, (i+2)}));
+        m.connectivity.push_back((uint3{i, i+1, (i+2)}));
         m.connectivity.push_back((uint3{(i+3), i+1, (i+2)}));
     }
     // Need to call fill_empty_field() before returning the mesh 
