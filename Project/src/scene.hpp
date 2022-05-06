@@ -25,12 +25,19 @@ struct scene_structure {
 
 	gui_parameters gui;                       // Standard GUI element storage
 	
+	cgp::mesh_drawable arrow;
+	cgp::mesh_drawable ring;
+	cgp::mesh_drawable world;
+
+	// Timer used for the animation
+	cgp::timer_basic timer;
+
+
     cgp::mesh terrain_mesh;
 	cgp::mesh_drawable terrain;
     perlin_noise_parameters parameters;
 
     cgp::mesh_drawable tree;
-    cgp::mesh_drawable tree_trunk;
     cgp::mesh_drawable tree_foliage;
     std::vector<cgp::vec3> tree_position;
     cgp::mesh_drawable shroom;

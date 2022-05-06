@@ -1,7 +1,7 @@
 #include "scene.hpp"
 
 //#include "terrain.hpp"
-//#include "tree.hpp"
+#include "tree.hpp"
 
 using namespace cgp;
 //float terrain_length = 20;
@@ -33,8 +33,12 @@ void scene_structure::initialize()
 //    mesh tree_mesh = create_tree();
 //    tree.initialize(tree_mesh, "tree");
 
-//    mesh tree_trunk_mesh = create_tree_trunk();
-//    tree_trunk.initialize(tree_trunk_mesh, "tree_trunk");
+    mesh arrow_mesh = create_arrow_mesh(1.0);
+    arrow.initialize(arrow_mesh, "arrow_mesh");
+	//arrow.transform.translation = {0,-0.5,0};
+	mesh ring_mesh = create_ring(9.0);
+	ring.initialize(ring_mesh,"ring_mesh");
+	//world.initialize(cgp::mesh_primitive_torus(60,59.5,vec3{0,0,0},vec3{0,0,1}));
 //    GLuint const trunk_texture_image_id = opengl_load_texture_image("assets/bark.jpg",
 //        GL_REPEAT,
 //        GL_REPEAT);
@@ -115,66 +119,32 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
+	// Update the current time
+	timer.update();
 
 	// Basic elements of the scene
 	environment.light = environment.camera.position();
 	if (gui.display_frame)
 		draw(global_frame, environment);
+	//draw(world,environment);
+	arrow.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+	draw(arrow, environment);
+	arrow.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t/12.0);
+	draw(arrow, environment);
+	draw(ring,environment);	
 
-//    draw(terrain, environment);
-//    if (gui.display_wireframe)
-//        draw_wireframe(terrain, environment);
-
-//    for(vec3 p : tree_position){
-//        float x = p.x;
-//        float y = p.y;
-//        int ku = (x / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int kv = (y / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int const idx = ku * N_terrain_samples + kv;
-//        float z = terrain_mesh.position[idx].z;
-//        tree_trunk.transform.translation = vec3{x, y, z - 0.1f};
-//        tree_foliage.transform.translation = vec3{x, y, z - 0.1f};
-//        draw(tree_trunk, environment);
-//        draw(tree_foliage, environment);
-//        if (gui.display_wireframe){
-//            draw_wireframe(tree_trunk, environment);
-//            draw_wireframe(tree_foliage, environment);
-//        }
-//    }
-
-//    for(vec3 s : shroom_position){
-//        float x = s.x;
-//        float y = s.y;
-//        int ku = (x / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int kv = (y / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int const idx = ku * N_terrain_samples + kv;
-//        float z = terrain_mesh.position[idx].z;
-//        shroom_cap.transform.translation = vec3{x, y, z};
-//        shroom_stump.transform.translation = vec3{x, y, z};
-//        draw(shroom_cap, environment);
-//        draw(shroom_stump, environment);
-//        if (gui.display_wireframe){
-//            draw_wireframe(shroom_cap, environment);
-//            draw_wireframe(shroom_stump, environment);
-//        }
-//    }
+	if (gui.display_wireframe){
+		draw_wireframe(arrow, environment);
+		draw_wireframe(ring, environment);
+	}
+        
 }
-
-
-
 void scene_structure::display_gui()
 {
 	ImGui::Checkbox("Frame", &gui.display_frame);
 	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
+	ImGui::SliderFloat("Time scale", &timer.scale, 0.0f, 10.0f);
 
-//    bool update = false;
-//    update |= ImGui::SliderFloat("Persistance", &parameters.persistency, 0.1f, 0.6f);
-//    update |= ImGui::SliderFloat("Frequency gain", &parameters.frequency_gain, 1.5f, 2.5f);
-//    update |= ImGui::SliderInt("Octave", &parameters.octave, 1, 10);
-//    update |= ImGui::SliderFloat("Height", &parameters.terrain_height, 0.f, 1.5f);
-
-//    if (update)// if any slider has been changed - then update the terrain
-//        update_terrain(terrain_mesh, terrain, parameters, terrain_length);
 }
 
 
