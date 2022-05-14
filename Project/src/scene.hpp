@@ -2,7 +2,6 @@
 
 #include "cgp/cgp.hpp"
 
-#include "terrain.hpp"
 
 // The element of the GUI that are not already stored in other structures
 struct gui_parameters {
@@ -28,22 +27,30 @@ struct scene_structure {
 	cgp::mesh_drawable arrow;
 	cgp::mesh_drawable ring;
 	cgp::mesh_drawable world;
+	cgp::mesh_drawable tower;
+	cgp::mesh_drawable ghetto;
+	cgp::mesh_drawable nuclear;
+
+	cgp::mesh_drawable building;
+	cgp::mesh_drawable building_2;
+	cgp::mesh_drawable building_3;
+	cgp::mesh_drawable building_4;
+	cgp::mesh_drawable building_5;
+	cgp::mesh_drawable building_6;
+	cgp::mesh_drawable building_7;
+	cgp::mesh_drawable building_8;
+	cgp::mesh_drawable building_9;
+	cgp::mesh_drawable building_10;
+	cgp::mesh_drawable building_11;
+
+
+	cgp::skybox_drawable skybox;
 
 	// Timer used for the animation
 	cgp::timer_basic timer;
 
 
-    cgp::mesh terrain_mesh;
-	cgp::mesh_drawable terrain;
-    perlin_noise_parameters parameters;
-
-    cgp::mesh_drawable tree;
-    cgp::mesh_drawable tree_foliage;
-    std::vector<cgp::vec3> tree_position;
-    cgp::mesh_drawable shroom;
-    cgp::mesh_drawable shroom_cap;
-    cgp::mesh_drawable shroom_stump;
-    std::vector<cgp::vec3> shroom_position;
+	cgp::hierarchy_mesh_drawable city;
 
 
 	// ****************************** //

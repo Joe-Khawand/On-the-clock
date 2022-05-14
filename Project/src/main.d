@@ -132,7 +132,7 @@ src/main.o: src/main.cpp ../library/cgp/cgp.hpp \
   ../library/cgp/helper_common_scene/helper_common_scene.hpp \
   ../library/cgp/helper_common_scene/helper/helper.hpp \
   ../library/cgp/helper_common_scene/scene_environment_basic/scene_environment_basic.hpp \
-  src/scene.hpp src/terrain.hpp
+  src/scene.hpp
 
 ../library/cgp/cgp.hpp:
 
@@ -409,5 +409,3 @@ src/main.o: src/main.cpp ../library/cgp/cgp.hpp \
 ../library/cgp/helper_common_scene/scene_environment_basic/scene_environment_basic.hpp:
 
 src/scene.hpp:
-
-src/terrain.hpp:
