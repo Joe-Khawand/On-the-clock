@@ -91,8 +91,7 @@ void scene_structure::initialize()
 	mesh nuclear_mesh = mesh_load_file_obj("assets/Objects/Nuclear_Cooling_Tower.obj");
 	nuclear.initialize(nuclear_mesh,"nuclear_obj");
 	nuclear.transform.scaling=0.0023;
-	nuclear.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-
+	
     mesh arrow_mesh = create_arrow_mesh(0.2);
     arrow.initialize(arrow_mesh, "Arrow");
 	arrow.transform.scaling=10.0;
