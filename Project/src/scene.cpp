@@ -169,6 +169,7 @@ void scene_structure::display()
 
 	//draw(nuclear,environment);
 	draw(city,environment);
+	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
 	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
 	draw(ring,environment);	
 
