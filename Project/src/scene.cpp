@@ -1,11 +1,8 @@
 #include "scene.hpp"
 
-//#include "terrain.hpp"
-//#include "tree.hpp"
+#include "nexus.hpp"
 
 using namespace cgp;
-//float terrain_length = 20;
-//int N_terrain_samples = 300;
 
 void scene_structure::initialize()
 {
@@ -13,168 +10,146 @@ void scene_structure::initialize()
 	// ***************************************** //
 
 	global_frame.initialize(mesh_primitive_frame(), "Frame");
-	environment.camera.axis = camera_spherical_coordinates_axis::z;
-    environment.camera.look_at({ 1.f,100.0f,1.0f }, { 0,0,0 });
+	// environment.camera.axis = camera_spherical_coordinates_axis::z;
+    // environment.camera.look_at({ 1.f,10.0f,1.0f }, { 0,0,0 });
 
-//    terrain_mesh = create_terrain_mesh(N_terrain_samples, terrain_length);
-//	terrain.initialize(terrain_mesh, "terrain");
-//    update_terrain(terrain_mesh, terrain, parameters, terrain_length);
-//    terrain.shading.color = { 0.6f,0.85f,0.5f };
-//    //terrain.shading.color = {0.f, 1.f, 0.f};
-//    GLuint const grass_texture_image_id = opengl_load_texture_image("assets/texture_grass.jpg",
-//        GL_REPEAT,
-//        GL_REPEAT);
-//    terrain.texture = grass_texture_image_id;
-//	terrain.shading.phong.specular = 0.0f; // non-specular terrain material
-
-//    tree_position = generate_positions_on_terrain(200, terrain_length);
-//    shroom_position = generate_positions_mushrooms(500, terrain_length, tree_position);
-
-//    mesh tree_mesh = create_tree();
-//    tree.initialize(tree_mesh, "tree");
-
-//    mesh tree_trunk_mesh = create_tree_trunk();
-//    tree_trunk.initialize(tree_trunk_mesh, "tree_trunk");
-//    GLuint const trunk_texture_image_id = opengl_load_texture_image("assets/bark.jpg",
-//        GL_REPEAT,
-//        GL_REPEAT);
-//    tree_trunk.texture = trunk_texture_image_id;
-
-//    mesh tree_foliage_mesh = create_tree_foliage();
-//    tree_foliage.initialize(tree_mesh, "tree_foliage");
-//    GLuint const foliage_texture_image_id = opengl_load_texture_image("assets/needles.jpg",
-//        GL_REPEAT,
-//        GL_REPEAT);
-//    tree_foliage.texture = foliage_texture_image_id;
-
-//    mesh shroom_mesh = create_shroom();
-//    shroom.initialize(shroom_mesh, "shroom");
-
-//    mesh shroom_stump_mesh = create_shroom_stump();
-//    shroom_stump.initialize(shroom_stump_mesh, "shroom_stump");
-
-//    mesh shroom_cap_mesh = create_shroom_cap();
-//    shroom_cap.initialize(shroom_cap_mesh, "shroom_cap");
-//    GLuint const cap_texture_image_id = opengl_load_texture_image("assets/shroom.jpg",
-//        GL_REPEAT,
-//        GL_REPEAT);
-//    shroom_cap.texture = cap_texture_image_id;
+	// Initialize the camera
+	environment.projection = camera_projection::perspective(50.0f * Pi/180, 1.0f, 0.1f, 500.0f);
+	environment.camera.distance_to_center = 30.0f;
+	environment.camera.look_at({ 30,1,2 }, { 0,0,0 }, { 0,0,1 });
 
 
-    // Init
+	// Multiple lights
+	// ***************************************** //
 
-//    //Initialize the temporary mesh_drawable that will be inserted in the hierarchy
-//    mesh_drawable body;
-//    mesh_drawable head;
-//    mesh_drawable right_eye;
-//    mesh_drawable left_eye;
-//    mesh_drawable beak;
-//    mesh_drawable right_wing_base;
-//    mesh_drawable right_wing_tip;
-//    mesh_drawable left_wing_base;
-//    mesh_drawable left_wing_tip;
+	// Specific Shader (*)
+	// Load a new custom shader that take into account spotlights (note the new shader file in shader/ directory)
+	// Make sure you load an set this shader for the shapes that need to be illuminated
+	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");                 
+	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
 
+	// The ground
+	ground.initialize(mesh_primitive_quadrangle({ -30,-30,-20 }, { -30,30,-20 }, { 30,30,-20 }, { 30,-30,-20 }), "Quad");
 
-//    // Create the geometry of the meshes
-//    //   Note: this geometry must be set in their local coordinates with respect to their position in the hierarchy (and with respect to their animation)
-//    body.initialize(mesh_primitive_ellipsoid(vec3{0.4f, 0.26f, 0.18f}), "Body");
-//    head.initialize(mesh_primitive_sphere(0.15f), "Head");
-//    right_eye.initialize(mesh_primitive_sphere(0.03f), "Right eye");
-//    left_eye.initialize(mesh_primitive_sphere(0.03f), "Left eye");
-//    beak.initialize(mesh_primitive_cone(0.06f, 0.12f), "Beak");
-//    right_wing_base.initialize(mesh_primitive_quadrangle({-0.2f,0,0}, {0.3f,0,0}, {0.3f,0.3f,0}, {-0.2f,0.3f,0}), "Right base");
-//    right_wing_tip.initialize(mesh_primitive_quadrangle({-0.2f,0,0}, {0.3f,0,0}, {0.2f,0.3f,0}, {-0.1f,0.3f,0}), "Right tip");
-//    left_wing_base.initialize(mesh_primitive_quadrangle({-0.2f,0,0}, {0.3f,0,0}, {0.3f,-0.3f,0}, {-0.2f,-0.3f,0}), "Left base");
-//    left_wing_tip.initialize(mesh_primitive_quadrangle({-0.2f,0,0}, {0.3f,0,0}, {0.2f,-0.3f,0}, {-0.1f,-0.3f,0}), "Left tip");
+	// The lights displayed as spheres using this helper initializer (*)-optionnal
+	light_drawable.initialize(shader_lights);
 
 
-//    // Set the color of some elements
-//    vec3 black = { 0, 0, 0 };
-//    right_eye.shading.color = black;
-//    left_eye.shading.color = black;
-//    vec3 orange = { 0.8f, 0.6f, 0.1f };
-//    beak.shading.color = orange;
+	// Implicit surface and nexuses
+	// ***************************************** //
 
-//     Add the elements in the hierarchy
-//       The syntax is hierarchy.add(mesh_drawable, "name of the parent element", [optional: local translation in the hierarchy])
-//       Notes:
-//         - An element must necessarily be added after its parent
-//         - The first element (without explicit name of its parent) is assumed to be the root.
-//    bird.add(body);
-//    bird.add(head, "Body");
-//    bird.add(right_eye, "Head", { 0.12f,0.05f,0.06f }); // the translation is used to place the sphere at the extremity of the cylinder
-//    bird.add(left_eye, "Head", { 0.12f,-0.05f,0.06f });
-//    bird.add(beak, "Head", { 0.13f,0,0 }); // the translation is used to place the cube at the extremity of the cylinder
-//    bird.add(right_wing_base, "Body", {0, 0.12f, 0});
-//    bird.add(right_wing_tip, "Right base", {0, 0.3f, 0});
-//    bird.add(left_wing_base, "Body", {0, -0.12f, 0});
-//    bird.add(left_wing_tip, "Left base", {0, -0.3f, 0});
+	// Helper to visualize the box of the domain
+	segments_drawable::default_shader = curve_drawable::default_shader;
+
+	// Load the shader used to display the implicit surface (only a polygon soup)
+	// GLuint shader_triangle_soup = opengl_load_shader("shaders/mesh_geometry/vert.glsl", "shaders/mesh_geometry/frag.glsl");
+	GLuint shader_triangle_soup = opengl_load_shader("shaders/implicit_lights/vert.glsl", "shaders/implicit_lights/frag.glsl");
+	triangle_soup_drawable::default_shader = shader_triangle_soup; //shader_lights; //
+
+	// Initialize the field and the implicit surface
+	implicit_surface.set_domain(gui.domain.samples, gui.domain.length);
+	implicit_surface.update_field(field_function, gui.isovalue);
+
+    //initialize_nexus();
+	nexus_core = initialize_nexus(true);
+	nexus = initialize_nexus(false);
 }
-
 
 
 void scene_structure::display()
 {
-
 	// Basic elements of the scene
-	environment.light = environment.camera.position();
-	if (gui.display_frame)
-		draw(global_frame, environment);
-
-//    draw(terrain, environment);
-//    if (gui.display_wireframe)
-//        draw_wireframe(terrain, environment);
-
-//    for(vec3 p : tree_position){
-//        float x = p.x;
-//        float y = p.y;
-//        int ku = (x / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int kv = (y / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int const idx = ku * N_terrain_samples + kv;
-//        float z = terrain_mesh.position[idx].z;
-//        tree_trunk.transform.translation = vec3{x, y, z - 0.1f};
-//        tree_foliage.transform.translation = vec3{x, y, z - 0.1f};
-//        draw(tree_trunk, environment);
-//        draw(tree_foliage, environment);
-//        if (gui.display_wireframe){
-//            draw_wireframe(tree_trunk, environment);
-//            draw_wireframe(tree_foliage, environment);
-//        }
-//    }
-
-//    for(vec3 s : shroom_position){
-//        float x = s.x;
-//        float y = s.y;
-//        int ku = (x / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int kv = (y / terrain_length + 0.5f) * (N_terrain_samples - 1.0f);
-//        int const idx = ku * N_terrain_samples + kv;
-//        float z = terrain_mesh.position[idx].z;
-//        shroom_cap.transform.translation = vec3{x, y, z};
-//        shroom_stump.transform.translation = vec3{x, y, z};
-//        draw(shroom_cap, environment);
-//        draw(shroom_stump, environment);
-//        if (gui.display_wireframe){
-//            draw_wireframe(shroom_cap, environment);
-//            draw_wireframe(shroom_stump, environment);
-//        }
-//    }
+	//environment.light = vec3{0, 0, 0}; // environment.camera.position();
+	timer.update();
+	display_lights();
+	display_core();
+	display_nexus();
 }
-
 
 
 void scene_structure::display_gui()
 {
-	ImGui::Checkbox("Frame", &gui.display_frame);
-	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
-
-//    bool update = false;
-//    update |= ImGui::SliderFloat("Persistance", &parameters.persistency, 0.1f, 0.6f);
-//    update |= ImGui::SliderFloat("Frequency gain", &parameters.frequency_gain, 1.5f, 2.5f);
-//    update |= ImGui::SliderInt("Octave", &parameters.octave, 1, 10);
-//    update |= ImGui::SliderFloat("Height", &parameters.terrain_height, 0.f, 1.5f);
-
-//    if (update)// if any slider has been changed - then update the terrain
-//        update_terrain(terrain_mesh, terrain, parameters, terrain_length);
+	// ImGui::Checkbox("Frame", &gui.display.frame);
+	// ImGui::Checkbox("Wireframe", &gui.display.wireframe);
+	ImGui::SliderFloat("Nexus speed", &speed, 0.f, 4.0f);
+	ImGui::SliderFloat("Speed of time", &speed_time, 0.f, 4.0f);
+	display_gui_falloff(environment);
 }
 
 
+void scene_structure::display_lights()
+{
+	// Update the position and color of the lights
+	compute_light_position(timer.t, environment);
+
+	// Display the elements of the scene
+	draw(ground, environment);
+	draw(light_drawable, environment); // this is a helper function from multiple_lights (display all the spotlights as spheres) (*)-optionnal
+	int const N_spotlight = environment.spotlight_color.size();
+	for(u_int k_light = 1; k_light<N_spotlight; k_light++){
+		nexus["Core"].transform.translation = environment.spotlight_position[k_light];
+		nexus.update_local_to_global_coordinates();
+		draw(nexus, environment);
+	}
+}
+
+
+void scene_structure::display_core()
+{
+	if (gui.display.surface)    // Display the implicit surface (*)
+	field_function.pa = {  2 * cos(3 * timer.t),
+						sin(3 * timer.t),
+						0.0f};
+	field_function.pb = { 3 * cos(3 * timer.t) * cos(3 * timer.t + 17.f),
+						1.7 * cos(3 * timer.t)* sin(3 * timer.t + 17.f),
+						2.3 * sin(3 * timer.t) };
+	field_function.pc = { 2.3 * cos(- 4 * timer.t),
+						0.4 * sin(- 4 * timer.t) * sin(- 1.17 * timer.t),
+						1.9 * sin(- 4 * timer.t) * cos(- 1.17 * timer.t) };
+	field_function.noise_offset = 1000 * timer.t;
+	implicit_surface.gui_update(gui, field_function);
+	
+	draw(implicit_surface.drawable_param.shape, environment);
+
+	if (gui.display.wireframe)  // Display the wireframe of the implicit surface (*)
+		draw_wireframe(implicit_surface.drawable_param.shape, environment, { 0,0,0 });
+}
+
+void scene_structure::display_nexus()
+{
+	nexus_core["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * speed * timer.t);
+	nexus_core["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * speed * timer.t);
+	nexus_core["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * speed * timer.t);
+	nexus_core["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - speed * timer.t);
+
+	nexus_core.update_local_to_global_coordinates();
+
+	nexus["Core"].transform.scaling = (2.5 + 0.5 * pow(cos(2 * timer.t), 10)) / 3.0f;
+	nexus["Outer ring"].transform.scaling = 1 / ((2.5 + 0.5 * pow(cos(2 * timer.t), 10)) / 3.0f);
+	nexus["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * speed * timer.t);
+	nexus["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * speed * timer.t);
+	nexus["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * speed * timer.t);
+	nexus["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - speed * timer.t);
+
+	nexus["Core"].transform.translation = vec3{20, 0, 0};
+	nexus.update_local_to_global_coordinates();
+	//draw(nexus, environment);
+	if (gui.display.wireframe)
+		draw_wireframe(nexus, environment, { 0,0,0 });
+	
+	nexus["Core"].transform.translation = vec3{-20, 0, 0};
+	nexus.update_local_to_global_coordinates();
+	//draw(nexus, environment);
+	if (gui.display.wireframe)
+		draw_wireframe(nexus, environment, { 0,0,0 });
+
+	nexus["Core"].transform.translation = vec3{15, 10, 0};
+	nexus.update_local_to_global_coordinates();
+	//draw(nexus, environment);
+	if (gui.display.wireframe)
+		draw_wireframe(nexus, environment, { 0,0,0 });
+
+	draw(nexus_core, environment);
+	if (gui.display.wireframe)
+	    draw_wireframe(nexus_core, environment);
+}

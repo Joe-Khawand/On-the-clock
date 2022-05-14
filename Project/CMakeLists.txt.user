@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2022-04-17T23:15:08. -->
+<!-- Written by QtCreator 6.0.2, 2022-05-06T21:57:22. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -298,15 +298,15 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">00_Project</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.00_Project</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">00_Project</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Project</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.Project</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">Project</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory">/Users/PaulW/Polytechnique/INF443/scenes/00_Project</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory">/Users/PaulW/Polytechnique/INF443/On-the-clock/Project</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Users/PaulW/Polytechnique/INF443/scenes/inf443/build-03_modeling-Desktop_x86_darwin_generic_mach_o_64bit-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>

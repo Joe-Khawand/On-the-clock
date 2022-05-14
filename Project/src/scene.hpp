@@ -1,14 +1,11 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
+#include "implicit_surface/implicit_surface.hpp"
+#include "implicit_surface/field_function.hpp"
+#include "gui_helper.hpp"
+#include "multiple_lights/multiple_lights.hpp" 
 
-#include "terrain.hpp"
-
-// The element of the GUI that are not already stored in other structures
-struct gui_parameters {
-	bool display_frame      = true;
-	bool display_wireframe  = false;
-};
 
 
 
@@ -20,23 +17,27 @@ struct scene_structure {
 	// ****************************** //
 
 	cgp::mesh_drawable global_frame;          // The standard global frame
-	cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
+	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
+	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
-
 	gui_parameters gui;                       // Standard GUI element storage
-	
-    cgp::mesh terrain_mesh;
-	cgp::mesh_drawable terrain;
-    perlin_noise_parameters parameters;
 
-    cgp::mesh_drawable tree;
-    cgp::mesh_drawable tree_trunk;
-    cgp::mesh_drawable tree_foliage;
-    std::vector<cgp::vec3> tree_position;
-    cgp::mesh_drawable shroom;
-    cgp::mesh_drawable shroom_cap;
-    cgp::mesh_drawable shroom_stump;
-    std::vector<cgp::vec3> shroom_position;
+	// Multiple lights
+	cgp::mesh_drawable ground;          // A flat ground
+	light_shape_drawable light_drawable; // Helper structure used to display the lights as spheres (*)
+
+	// Implicit surfaces
+	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
+	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
+
+	// Timer used for the animation
+	cgp::timer_basic timer;
+	float speed = 1.0f;
+	float speed_time = 1.0f;
+
+	//cgp::mesh_drawable nexus;
+	cgp::hierarchy_mesh_drawable nexus_core;
+	cgp::hierarchy_mesh_drawable nexus;
 
 
 	// ****************************** //
@@ -44,10 +45,13 @@ struct scene_structure {
 	// ****************************** //
 
 	void initialize();  // Standard initialization to be called before the animation loop
+	//void initialize_nexus();
+
 	void display();     // The frame display to be called within the animation loop
+	void display_lights();
 	void display_gui(); // The display of the GUI, also called within the animation loop
-
-
+	void display_core();
+	void display_nexus();
 };
 
 
