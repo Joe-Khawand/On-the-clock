@@ -33,7 +33,7 @@ void scene_structure::initialize()
 
 	// Initialize the skybox (*)
 	// ***************************************** //
-	skybox.initialize("assets/dark_skybox/");
+	skybox.initialize("assets/dark_skybox_hd/");
 	//skybox.transform.rotation=rotation_transform::from_axis_angle({ 0,1,0 }, M_PI_2);
 	//skybox.transform.rotation=rotation_transform::from_axis_angle({ -1,0,0 }, -M_PI_2);
 
