@@ -50,6 +50,9 @@ struct scene_structure {
 	cgp::mesh_drawable building_10;
 	cgp::mesh_drawable building_11;
 
+	cgp::mesh_drawable halo;
+	cgp::mesh_drawable blue_beam;
+
 
 	cgp::skybox_drawable skybox;
 
@@ -90,6 +93,8 @@ struct scene_structure {
 	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
 	void display_nexus();
+	// Display function for semi-transparent shapes
+	void display_semiTransparent();
 };
 
 
