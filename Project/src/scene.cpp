@@ -203,7 +203,7 @@ void scene_structure::display_gui()
 	ImGui::Checkbox("Frame", &gui.display.frame);
 	ImGui::Checkbox("Wireframe", &gui.display.wireframe);
 	ImGui::SliderFloat("Time scale", &timer.scale, 0.0f, 10.0f);
-  ImGui::SliderFloat("Nexus speed", &speed, 0.f, 4.0f);
+  	ImGui::SliderFloat("Nexus speed", &speed, 0.f, 4.0f);
 	ImGui::SliderFloat("Speed of time", &speed_time, 0.f, 4.0f);
 	display_gui_falloff(environment);
 }
