@@ -295,8 +295,8 @@ void scene_structure::display_semiTransparent()
 
 
 	// Re-orient the textures to always face the camera direction
-	vec3 const front = normalize(environment.camera.front() * vec3 { 1, 1, 0 }); // front-vector of the camera without z-component
-	vec3 const right = environment.camera.right();
+	//vec3 const front = normalize(environment.camera.front() * vec3 { 1, 1, 0 }); // front-vector of the camera without z-component
+	//vec3 const right = environment.camera.right();
 	// Rotation such that R*{1,0,0} = right-direction, R*{0,1,0} = front-direction
 	//rotation_transform R = rotation_transform::between_vector({ 1,0,0 }, { 0,1,0 }, right, front);
 	//halo.transform.rotation = R;
