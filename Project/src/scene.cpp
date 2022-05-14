@@ -76,20 +76,20 @@ void scene_structure::initialize()
 	building_10.transform.scaling=0.2;
 	building_10.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 
-	mesh tower_mesh = mesh_load_file_obj("assets/Objects/TOWER.obj");
-	tower.initialize(tower_mesh,"tower_obj");
-	tower.transform.scaling=10.0;
-	tower.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	// mesh tower_mesh = mesh_load_file_obj("assets/Objects/TOWER.obj");
+	// tower.initialize(tower_mesh,"tower_obj");
+	// tower.transform.scaling=10.0;
+	// tower.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 
-	mesh ghetto_mesh = mesh_load_file_obj("assets/Objects/ghetto_building.obj");
-	ghetto.initialize(ghetto_mesh,"ghetto_obj");
-	ghetto.transform.scaling=0.4;
-	ghetto.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	// mesh ghetto_mesh = mesh_load_file_obj("assets/Objects/ghetto_building.obj");
+	// ghetto.initialize(ghetto_mesh,"ghetto_obj");
+	// ghetto.transform.scaling=0.4;
+	// ghetto.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 
 	mesh nuclear_mesh = mesh_load_file_obj("assets/Objects/Nuclear_Cooling_Tower.obj");
 	nuclear.initialize(nuclear_mesh,"nuclear_obj");
 	nuclear.transform.scaling=0.0023;
-	//nuclear.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	nuclear.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 
     mesh arrow_mesh = create_arrow_mesh(0.2);
     arrow.initialize(arrow_mesh, "Arrow");
@@ -101,7 +101,7 @@ void scene_structure::initialize()
 	ring.transform.scaling=10.0;
 
 	city.add(arrow);
-	city.add(tower,"Arrow",{7,1,2});
+	// city.add(tower,"Arrow",{7,1,2});
 	city.add(building,"Arrow",{1.2,3.5,2});
 	city.add(building_2,"Arrow",{1.2,1.5,2});
 	city.add(building_3,"Arrow",{1.2,-0.5,2});
@@ -113,7 +113,7 @@ void scene_structure::initialize()
 	city.add(building_9,"Arrow",{24,-2.5,2});
 	city.add(building_10,"Arrow",{29,2.5,2});
 
-	city.add(ghetto,"Arrow",{15,2,2});
+	// city.add(ghetto,"Arrow",{15,2,2});
 	city.add(nuclear,"Arrow",{60,0,2});
 
 	//city["Arrow"].global_transform.translation = vec3(17, 0, 0);
