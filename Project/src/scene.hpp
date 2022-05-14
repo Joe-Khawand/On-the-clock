@@ -61,7 +61,6 @@ struct scene_structure {
 
 
 	// Multiple lights
-	cgp::mesh_drawable ground;          // A flat ground
 	light_shape_drawable light_drawable; // Helper structure used to display the lights as spheres (*)
 
 	// Implicit surfaces

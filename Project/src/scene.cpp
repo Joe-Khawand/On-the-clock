@@ -12,7 +12,24 @@
 using namespace cgp;
 
 void scene_structure::initialize()
-{	// Initialize the skybox (*)
+{
+	// Initialize the camera
+	environment.projection = camera_projection::perspective(50.0f * Pi/180, 1.0f, 0.1f, 500.0f);
+	environment.camera.distance_to_center = 30.0f;
+	environment.camera.look_at({ 30,1,2 }, { 0,0,0 }, { 0,0,1 });
+
+
+	// Multiple lights
+	// ***************************************** //
+
+	// Specific Shader (*)
+	// Load a new custom shader that take into account spotlights (note the new shader file in shader/ directory)
+	// Make sure you load an set this shader for the shapes that need to be illuminated
+	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");                 
+	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
+
+
+	// Initialize the skybox (*)
 	// ***************************************** //
 	skybox.initialize("assets/dark_skybox/");
 	//skybox.transform.rotation=rotation_transform::from_axis_angle({ 0,1,0 }, M_PI_2);
@@ -98,29 +115,10 @@ void scene_structure::initialize()
 
 	city.add(ghetto,"Arrow",{15,2,2});
 	city.add(nuclear,"Arrow",{60,0,2});
+
+	//city["Arrow"].global_transform.translation = vec3(17, 0, 0);
 	//city["ghetto_obj"].transform.rotation=rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);	
 
-
-	// environment.camera.axis = camera_spherical_coordinates_axis::z;
-    // environment.camera.look_at({ 1.f,10.0f,1.0f }, { 0,0,0 });
-
-	// Initialize the camera
-	environment.projection = camera_projection::perspective(50.0f * Pi/180, 1.0f, 0.1f, 500.0f);
-	environment.camera.distance_to_center = 30.0f;
-	environment.camera.look_at({ 30,1,2 }, { 0,0,0 }, { 0,0,1 });
-
-
-	// Multiple lights
-	// ***************************************** //
-
-	// Specific Shader (*)
-	// Load a new custom shader that take into account spotlights (note the new shader file in shader/ directory)
-	// Make sure you load an set this shader for the shapes that need to be illuminated
-	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");                 
-	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
-
-	// The ground
-	ground.initialize(mesh_primitive_quadrangle({ -30,-30,-20 }, { -30,30,-20 }, { 30,30,-20 }, { 30,-30,-20 }), "Quad");
 
 	// The lights displayed as spheres using this helper initializer (*)-optionnal
 	light_drawable.initialize(shader_lights);
@@ -199,7 +197,6 @@ void scene_structure::display_lights()
 	compute_light_position(timer.t, environment);
 
 	// Display the elements of the scene
-	draw(ground, environment);
 	draw(light_drawable, environment); // this is a helper function from multiple_lights (display all the spotlights as spheres) (*)-optionnal
 	int const N_spotlight = environment.spotlight_color.size();
 	for(u_int k_light = 1; k_light<N_spotlight; k_light++){

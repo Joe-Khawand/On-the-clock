@@ -35,14 +35,7 @@ void main()
 	if (gl_FrontFacing == false) {
 		N = -N;
 	}
-	// vec2 uv_image = vec2(fragment.uv.x, 1.0-fragment.uv.y);
-	// if(texture_inverse_y) {
-	// 	uv_image.y = 1.0-uv_image.y;
-	// }
-	// vec4 color_image_texture = texture(image_texture, uv_image);
-	// if(use_texture==false) {
-	// 	color_image_texture=vec4(1.0,1.0,1.0,1.0);
-	// }
+
 
 	vec3 color_object  = color; //fragment.color * color * color_image_texture.rgb;
 	//vec3 color_shading = Ka * color_object;
@@ -55,11 +48,6 @@ void main()
 		vec3 L = normalize(v);
 		float diffuse = max(dot(N,L),0.0);
 		float specular = 0.0;
-		// if(diffuse>0.0){
-		// 	vec3 R = reflect(-L,N);
-		// 	vec3 V = normalize(fragment.eye-fragment.position);
-		// 	specular = pow( max(dot(R,V),0.0), specular_exp );
-		// }
 		
 		// spotlight color
 		color_shading += (Kd * diffuse * color_object) * spotlight_color[k_light] * exp(-spotlight_falloff*dist*dist);
