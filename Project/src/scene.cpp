@@ -25,8 +25,10 @@ void scene_structure::initialize()
 	// Specific Shader (*)
 	// Load a new custom shader that take into account spotlights (note the new shader file in shader/ directory)
 	// Make sure you load an set this shader for the shapes that need to be illuminated
-	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");                 
+	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");
 	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
+
+	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
 
 	// Initialize the skybox (*)
@@ -129,7 +131,10 @@ void scene_structure::initialize()
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
 	blue_beam.texture = opengl_load_texture_image("assets/blue_beam.png");
-	gold_beam.texture = opengl_load_texture_image("assets/beamdugold.png");
+	gold_beam.texture = opengl_load_texture_image("assets/beamduloveforever.png");
+	gold_beam.transform.scaling = 4;
+	gold_beam.transform.translation = vec3(0, 0, -3);
+	gold_beam.shader = shader_halo;
 
 	halo.shading.phong = { 0.4f, 0.6f,0,1 };
 	blue_beam.shading.phong = { 0.4f, 0.6f,0,1 };
