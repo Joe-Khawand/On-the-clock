@@ -9,10 +9,10 @@
 
 
 // The element of the GUI that are not already stored in other structures
-struct gui_parameters {
-	bool display_frame      = true;
-	bool display_wireframe  = false;
-};
+// struct gui_parameters {
+// 	bool display_frame      = true;
+// 	bool display_wireframe  = false;
+// };
 
 
 
@@ -69,7 +69,7 @@ struct scene_structure {
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
 	// Timer used for the animation
-	cgp::timer_basic timer;
+	//cgp::timer_basic timer;
 	float speed = 1.0f;
 	float speed_time = 1.0f;
 

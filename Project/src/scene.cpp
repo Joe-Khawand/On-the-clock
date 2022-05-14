@@ -23,8 +23,8 @@ void scene_structure::initialize()
 
 	global_frame.initialize(mesh_primitive_frame(), "Frame");
 
-	environment.camera.axis = camera_spherical_coordinates_axis::z;
-    environment.camera.look_at({ 1.f,100.0f,1.0f }, { 0,0,0 });
+	//environment.camera.axis = camera_spherical_coordinates_axis::z;
+    //environment.camera.look_at({ 1.f,100.0f,1.0f }, { 0,0,0 });
 
 	mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
 	building.initialize(building_mesh,"building_obj");
@@ -160,7 +160,7 @@ void scene_structure::display()
 
 	// Basic elements of the scene
 	//environment.light = environment.camera.position();
-	if (gui.display_frame)
+	if (gui.display.frame)
 		draw(global_frame, environment);
 	//draw(world,environment);
 	//draw(building,environment);
@@ -177,7 +177,7 @@ void scene_structure::display()
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
 	city.update_local_to_global_coordinates();
 
-	if (gui.display_wireframe){
+	if (gui.display.wireframe){
 		draw_wireframe(arrow, environment);
 		draw_wireframe(ring, environment);
 	}
@@ -185,8 +185,8 @@ void scene_structure::display()
 }
 void scene_structure::display_gui()
 {
-	ImGui::Checkbox("Frame", &gui.display_frame);
-	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
+	ImGui::Checkbox("Frame", &gui.display.frame);
+	ImGui::Checkbox("Wireframe", &gui.display.wireframe);
 	ImGui::SliderFloat("Time scale", &timer.scale, 0.0f, 10.0f);
   ImGui::SliderFloat("Nexus speed", &speed, 0.f, 4.0f);
 	ImGui::SliderFloat("Speed of time", &speed_time, 0.f, 4.0f);

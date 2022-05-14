@@ -28,7 +28,7 @@ void compute_light_position(float t, scene_environment_with_multiple_lights& env
 	environment.spotlight_position[0] = {0, 0, 0};
 	environment.spotlight_color[0] = { 1.0f, 0.9f, 0.5f };
 
-	environment.spotlight_position[1] = vec3{-20, 0, 0};
+	environment.spotlight_position[1] = vec3{-120, 0, 0};
 	environment.spotlight_color[1] = { 0.0f, 1.0f, 1.0f };
 
 	environment.spotlight_position[2] = vec3{  2 * cos(3 * t),
