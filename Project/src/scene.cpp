@@ -43,6 +43,7 @@ void scene_structure::initialize()
 	//environment.camera.axis = camera_spherical_coordinates_axis::z;
     //environment.camera.look_at({ 1.f,100.0f,1.0f }, { 0,0,0 });
 
+	//Initialise city
 	mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
 	building.initialize(building_mesh,"building_obj");
 	building.transform.scaling=0.2;
@@ -90,7 +91,6 @@ void scene_structure::initialize()
 	nuclear.transform.scaling=0.0023;
 	//nuclear.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 
-
     mesh arrow_mesh = create_arrow_mesh(0.2);
     arrow.initialize(arrow_mesh, "Arrow");
 	arrow.transform.scaling=10.0;
@@ -119,6 +119,17 @@ void scene_structure::initialize()
 	//city["Arrow"].global_transform.translation = vec3(17, 0, 0);
 	//city["ghetto_obj"].transform.rotation=rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);	
 
+	//Nexus beam
+	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
+	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5.0,0,-10 }, { 5.0,0,-10 }, { 5.0,0,10 }, { -5.0,0,10 });
+	halo.initialize(quad_mesh_1, "Halo");
+	blue_beam.initialize(quad_mesh_2, "Blue Beam");
+
+	halo.texture = opengl_load_texture_image("assets/halo.png");
+	blue_beam.texture = opengl_load_texture_image("assets/blue_beam.png");
+
+	halo.shading.phong = { 0.4f, 0.6f,0,1 };
+	blue_beam.shading.phong = { 0.4f, 0.6f,0,1 };
 
 	// The lights displayed as spheres using this helper initializer (*)-optionnal
 	light_drawable.initialize(shader_lights);
@@ -179,6 +190,7 @@ void scene_structure::display()
 		draw_wireframe(arrow, environment);
 		draw_wireframe(ring, environment);
 	}
+	display_semiTransparent();
         
 }
 void scene_structure::display_gui()
@@ -266,4 +278,55 @@ void scene_structure::display_nexus()
 	draw(nexus_core, environment);
 	if (gui.display.wireframe)
 	    draw_wireframe(nexus_core, environment);
+}
+
+void scene_structure::display_semiTransparent()
+{
+	// Enable use of alpha component as color blending for transparent elements
+	//  alpha = current_color.alpha
+	//  new color = previous_color * alpha + current_color * (1-alpha)
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Disable depth buffer writing
+	//  - Transparent elements cannot use depth buffer
+	//  - They are supposed to be display from furest to nearest elements
+	glDepthMask(false);
+
+
+	// Re-orient the textures to always face the camera direction
+	vec3 const front = normalize(environment.camera.front() * vec3 { 1, 1, 0 }); // front-vector of the camera without z-component
+	vec3 const right = environment.camera.right();
+	// Rotation such that R*{1,0,0} = right-direction, R*{0,1,0} = front-direction
+	//rotation_transform R = rotation_transform::between_vector({ 1,0,0 }, { 0,1,0 }, right, front);
+	//halo.transform.rotation = R;
+	//blue_beam.transform.rotation = R;
+
+	// Sort transparent shapes by depth to camera
+	//   This step can be skipped, but it will be associated to visual artifacts
+
+	// Transform matrix (the same matrix which is applied in the vertices in the shader: T = Projection x View)
+	mat4 T = environment.projection.matrix() * environment.camera.matrix_view();
+	// Projected vertices (center of quads) in homogeneous coordinates
+	vec4 p1 = T * vec4{ 0, -0.5f, 0, 1 };
+	vec4 p2 = T * vec4{ 0, +0.5f, 0, 1 };
+	// Depth to camera
+	float z1 = p1.z / p1.w;
+	float z2 = p2.z / p2.w;
+
+	// Display the quads relative to their depth
+	if (z1 <= z2) {
+		draw(blue_beam, environment);
+		draw(halo, environment);
+	}
+	else {
+		draw(halo, environment);
+		draw(blue_beam, environment);
+	}
+
+
+
+	// Don't forget to re-activate the depth-buffer write
+	glDepthMask(true);
+	glDisable(GL_BLEND);
 }
