@@ -52,6 +52,7 @@ struct scene_structure {
 
 	cgp::mesh_drawable halo;
 	cgp::mesh_drawable blue_beam;
+	cgp::mesh_drawable gold_beam;
 
 
 	cgp::skybox_drawable skybox;

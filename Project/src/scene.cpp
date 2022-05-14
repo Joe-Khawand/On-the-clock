@@ -122,14 +122,18 @@ void scene_structure::initialize()
 	//Nexus beam
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
 	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5.0,0,-10 }, { 5.0,0,-10 }, { 5.0,0,10 }, { -5.0,0,10 });
+	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5.0,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
 	halo.initialize(quad_mesh_1, "Halo");
 	blue_beam.initialize(quad_mesh_2, "Blue Beam");
+	gold_beam.initialize(quad_mesh_3,"Gold Beam");
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
 	blue_beam.texture = opengl_load_texture_image("assets/blue_beam.png");
+	gold_beam.texture = opengl_load_texture_image("assets/beamdugold.png");
 
 	halo.shading.phong = { 0.4f, 0.6f,0,1 };
 	blue_beam.shading.phong = { 0.4f, 0.6f,0,1 };
+	gold_beam.shading.phong = { 0.4f, 0.6f,0,1 };
 
 	// The lights displayed as spheres using this helper initializer (*)-optionnal
 	light_drawable.initialize(shader_lights);
@@ -302,31 +306,11 @@ void scene_structure::display_semiTransparent()
 	//rotation_transform R = rotation_transform::between_vector({ 1,0,0 }, { 0,1,0 }, right, front);
 	//halo.transform.rotation = R;
 	//blue_beam.transform.rotation = R;
-
-	// Sort transparent shapes by depth to camera
-	//   This step can be skipped, but it will be associated to visual artifacts
-
-	// Transform matrix (the same matrix which is applied in the vertices in the shader: T = Projection x View)
-	mat4 T = environment.projection.matrix() * environment.camera.matrix_view();
-	// Projected vertices (center of quads) in homogeneous coordinates
-	vec4 p1 = T * vec4{ 0, -0.5f, 0, 1 };
-	vec4 p2 = T * vec4{ 0, +0.5f, 0, 1 };
-	// Depth to camera
-	float z1 = p1.z / p1.w;
-	float z2 = p2.z / p2.w;
-
-	// Display the quads relative to their depth
-	if (z1 <= z2) {
+	
+		draw(gold_beam,environment);
 		draw(blue_beam, environment);
 		draw(halo, environment);
-	}
-	else {
-		draw(halo, environment);
-		draw(blue_beam, environment);
-	}
-
-
-
+	
 	// Don't forget to re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);
