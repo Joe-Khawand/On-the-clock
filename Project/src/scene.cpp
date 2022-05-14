@@ -126,18 +126,16 @@ void scene_structure::initialize()
 	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5.0,0,-10 }, { 5.0,0,-10 }, { 5.0,0,10 }, { -5.0,0,10 });
 	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5.0,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
 	halo.initialize(quad_mesh_1, "Halo");
-	blue_beam.initialize(quad_mesh_2, "Blue Beam");
 	gold_beam.initialize(quad_mesh_3,"Gold Beam");
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
-	blue_beam.texture = opengl_load_texture_image("assets/blue_beam.png");
 	gold_beam.texture = opengl_load_texture_image("assets/beamduloveforever.png");
 	gold_beam.transform.scaling = 4;
 	gold_beam.transform.translation = vec3(0, 0, -3);
 	gold_beam.shader = shader_halo;
+	halo.shader = shader_halo;
 
 	halo.shading.phong = { 0.4f, 0.6f,0,1 };
-	blue_beam.shading.phong = { 0.4f, 0.6f,0,1 };
 	gold_beam.shading.phong = { 0.4f, 0.6f,0,1 };
 
 	// The lights displayed as spheres using this helper initializer (*)-optionnal
@@ -310,10 +308,8 @@ void scene_structure::display_semiTransparent()
 	// Rotation such that R*{1,0,0} = right-direction, R*{0,1,0} = front-direction
 	//rotation_transform R = rotation_transform::between_vector({ 1,0,0 }, { 0,1,0 }, right, front);
 	//halo.transform.rotation = R;
-	//blue_beam.transform.rotation = R;
 	
 		draw(gold_beam,environment);
-		draw(blue_beam, environment);
 		draw(halo, environment);
 	
 	// Don't forget to re-activate the depth-buffer write
