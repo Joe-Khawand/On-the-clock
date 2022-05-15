@@ -7,6 +7,7 @@ Made by:
 TODO list
  - camera volante (bien faite stp, orientation absolue toussa)
  - PTN DE CYLINDRE CREUX
+ - PERSONNAGE + vue 3e personne? + hitboxes
  - fenêtres qui s'allument avec double textures (@Paulllle) + lumière qui bouge (@Joeelllllle)
  - ville un peu canon (Paul aide moi stp, je suis une sous-merde sans qualité esthétique, je mérite de mourir)
  - (il me menace avec un boomerang j'ai peur aled)
