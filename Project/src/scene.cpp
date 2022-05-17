@@ -310,8 +310,13 @@ void scene_structure::display_semiTransparent()
 	// Rotation such that R*{1,0,0} = right-direction, R*{0,1,0} = front-direction
 	//rotation_transform R = rotation_transform::between_vector({ 1,0,0 }, { 0,1,0 }, right, front);
 	//halo.transform.rotation = R;
-	
+		gold_beam.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },0);
 		draw(gold_beam,environment);
+		gold_beam.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2);
+		draw(gold_beam,environment);
+		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },0 );
+		draw(halo, environment);
+		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2 );
 		draw(halo, environment);
 	
 	// Don't forget to re-activate the depth-buffer write
