@@ -102,6 +102,9 @@ void scene_structure::initialize()
 	ring.initialize(ring_mesh,"ring_mesh");
 	ring.transform.scaling=10.0;
 
+	mesh cylinder_mesh= create_cylinder(100,90, 5);
+	cylinder.initialize(cylinder_mesh,"Cylindre");
+
 	city.add(arrow);
 	// city.add(tower,"Arrow",{7,1,2});
 	city.add(building,"Arrow",{1.2,3.5,2});
@@ -189,14 +192,15 @@ void scene_structure::display()
 	draw(city,environment);
 	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
 	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	draw(ring,environment);	
+	draw(cylinder,environment);	
 
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
 	city.update_local_to_global_coordinates();
 
 	if (gui.display.wireframe){
 		draw_wireframe(arrow, environment);
-		draw_wireframe(ring, environment);
+		//draw_wireframe(ring, environment);
+		draw_wireframe(cylinder,environment);
 	}
 	display_semiTransparent();
         
