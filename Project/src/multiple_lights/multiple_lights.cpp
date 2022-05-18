@@ -66,6 +66,6 @@ void draw(light_shape_drawable lights, scene_environment_with_multiple_lights co
 
 void display_gui_falloff(scene_environment_with_multiple_lights& environment)
 {
-	ImGui::SliderFloat("Light falloff", &environment.spotlight_falloff, 0, 1.0f, "%0.4f", 2.0f);
-	ImGui::SliderFloat("Fog falloff", &environment.fog_falloff, 0, 0.05f, "%0.5f", 2.0f);
+	ImGui::SliderFloat("Light falloff", &environment.spotlight_falloff, 0, 0.01f, "%0.4f", 2.0f);
+	ImGui::SliderFloat("Fog falloff", &environment.fog_falloff, 0, 0.001f, "%0.5f", 2.0f);
 }

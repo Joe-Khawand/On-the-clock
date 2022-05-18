@@ -45,12 +45,11 @@ void main()
 		color_image_texture=vec4(1.0,1.0,1.0,1.0);
 	}
 
-	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
 	vec3 color_shading = vec3(1,1,1);
 
     //fog effect
 	float depth = length(fragment.eye-fragment.position);
-	float w_depth = exp(-fog_falloff*depth*depth);
+	float w_depth = exp(-fog_falloff*depth*depth + 0.0 * spotlight_falloff);
 	vec3 color_with_fog = w_depth*color_shading+(1-w_depth)*vec3(0,0,0); //w_depth*color_shading+(1-w_depth)*vec3(0.7,0.7,0.7);
 
 	FragColor = vec4( color_with_fog, alpha * color_image_texture.a);
