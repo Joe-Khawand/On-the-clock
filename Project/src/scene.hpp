@@ -5,6 +5,7 @@
 #include "implicit_surface/field_function.hpp"
 #include "gui_helper.hpp"
 #include "multiple_lights/multiple_lights.hpp" 
+#include "clock_city.hpp"
 
 
 
@@ -30,25 +31,6 @@ struct scene_structure {
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                       // Standard GUI element storage
 
-	
-	cgp::mesh_drawable arrow;
-	cgp::mesh_drawable ring;
-	cgp::mesh_drawable world;
-	cgp::mesh_drawable tower;
-	cgp::mesh_drawable ghetto;
-	cgp::mesh_drawable nuclear;
-
-	cgp::mesh_drawable building;
-	cgp::mesh_drawable building_2;
-	cgp::mesh_drawable building_3;
-	cgp::mesh_drawable building_4;
-	cgp::mesh_drawable building_5;
-	cgp::mesh_drawable building_6;
-	cgp::mesh_drawable building_7;
-	cgp::mesh_drawable building_8;
-	cgp::mesh_drawable building_9;
-	cgp::mesh_drawable building_10;
-	cgp::mesh_drawable building_11;
 
 	cgp::mesh_drawable halo;
 	cgp::mesh_drawable blue_beam;
@@ -62,9 +44,6 @@ struct scene_structure {
 	cgp::timer_basic timer;
 	// Timer used for flight
 	cgp::timer_basic flight_timer;
-
-
-	cgp::hierarchy_mesh_drawable city;
 
 
 	// Multiple lights
@@ -86,6 +65,8 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
+	city_test cityy;
+
 
 
 	// ****************************** //
@@ -97,7 +78,6 @@ struct scene_structure {
 	void update_camera(); 
 
 	void initialize();  // Standard initialization to be called before the animation loop
-	//void initialize_nexus();
 
 	void display();     // The frame display to be called within the animation loop
 	void display_lights();
