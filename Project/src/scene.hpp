@@ -7,16 +7,6 @@
 #include "multiple_lights/multiple_lights.hpp" 
 
 
-
-// The element of the GUI that are not already stored in other structures
-// struct gui_parameters {
-// 	bool display_frame      = true;
-// 	bool display_wireframe  = false;
-// };
-
-
-
-
 // The structure of the custom scene
 struct scene_structure {
 	
@@ -25,7 +15,6 @@ struct scene_structure {
 	// ****************************** //
 
 	cgp::mesh_drawable global_frame;          // The standard global frame
-	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                       // Standard GUI element storage
@@ -60,11 +49,12 @@ struct scene_structure {
 
 	// Timer used for the animation
 	cgp::timer_basic timer;
-	// Timer used for flight
-	cgp::timer_basic flight_timer;
-	float flight_speed= 0.0f;
 
+	// Flight
+	cgp::timer_basic flight_timer;//independent timer for flight
+	float flight_speed= 0.0f;//modifiable flight speed
 
+	// City hierarchy
 	cgp::hierarchy_mesh_drawable city;
 
 
@@ -75,8 +65,7 @@ struct scene_structure {
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
-	// Timer used for the animation
-	//cgp::timer_basic timer;
+	// Speed of nexus
 	float speed = 1.0f;
 	float speed_time = 1.0f;
 
@@ -98,13 +87,13 @@ struct scene_structure {
 	void update_camera(); 
 
 	void initialize();  // Standard initialization to be called before the animation loop
-	//void initialize_nexus();
 
 	void display();     // The frame display to be called within the animation loop
 	void display_lights();
 	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
 	void display_nexus();
+
 	// Display function for semi-transparent shapes
 	void display_semiTransparent();
 };

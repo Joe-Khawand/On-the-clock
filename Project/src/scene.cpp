@@ -126,8 +126,7 @@ void scene_structure::initialize()
 	nuclear.initialize(nuclear_mesh,"nuclear_obj");
 	nuclear.transform.scaling=0.0023;
 	
-    //mesh arrow_mesh = create_arrow_mesh(0.2);
-	mesh arrow_mesh = create_arrow_mesh_bis(0.2, 7.0, 1.0);
+	mesh arrow_mesh = create_arrow_mesh(0.2, 7.0, 1.0);
     arrow.initialize(arrow_mesh, "Arrow");
 	arrow.transform.scaling=10.0;
 	
