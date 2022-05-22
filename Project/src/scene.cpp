@@ -79,8 +79,8 @@ void scene_structure::initialize()
     //environment.camera.look_at({ 1.f,100.0f,1.0f }, { 0,0,0 });
 
 	// Initialize city
-	
-	initialize_city(cityy);	
+	city_test cityy;
+	city = initialize_city(cityy);	
 
 	// mesh ring_mesh = create_ring(9.0);
 	// ring.initialize(ring_mesh,"ring_mesh");
@@ -164,13 +164,13 @@ void scene_structure::display()
 	//draw(arrow, environment);
 
 	//draw(nuclear,environment);
-	draw(cityy.city,environment);
-	// cityy.city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
-	// cityy.city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	// draw(cylinder,environment);	
+	draw(city,environment);
+	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
+	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+	draw(cylinder,environment);	
 
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
-	cityy.city.update_local_to_global_coordinates();
+	city.update_local_to_global_coordinates();
 
 
 	// Scene_orthographic has a fixed camera and an orthographic projection (*)

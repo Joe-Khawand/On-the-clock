@@ -168,7 +168,7 @@ mesh create_cylinder(float r1,float r2,float height){
     return m; 
 }
 
-void initialize_city(city_test cityy)
+cgp::hierarchy_mesh_drawable initialize_city(city_test cityy)
 {
     //Initialise city
 	mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
@@ -240,4 +240,5 @@ void initialize_city(city_test cityy)
 
 	//city["Arrow"].global_transform.translation = vec3(17, 0, 0);
 	//city["ghetto_obj"].transform.rotation=rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);	
+    return cityy.city;
 }

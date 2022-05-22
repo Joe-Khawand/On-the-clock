@@ -23,9 +23,9 @@ struct city_test {
     cgp::mesh_drawable building_11;
 
     cgp::hierarchy_mesh_drawable city;
-
 };
-void initialize_city(city_test cityy);
+
+cgp::hierarchy_mesh_drawable initialize_city(city_test cityy);
 
 // ****************************** //
 // Functions

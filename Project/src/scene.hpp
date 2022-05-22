@@ -65,7 +65,7 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
-	city_test cityy;
+	cgp::hierarchy_mesh_drawable city;
 
 
 
