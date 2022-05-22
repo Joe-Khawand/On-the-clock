@@ -193,6 +193,16 @@ void scene_structure::initialize()
     //initialize_nexus();
 	nexus_core = initialize_nexus(true);
 	nexus = initialize_nexus(false);
+
+	// Set the second scene with the orthographic project
+	//*****************************************************
+	environment_ortho.projection = camera_projection::orthographic(-1, 1, -1, 1, -1, 1);
+	environment_ortho.camera.distance_to_center = 2.5f;
+	environment_ortho.light = { 0,0,1 };
+	environment_ortho.camera.look_at({ 0, 0, 0.5f }, {0,0,0}, {0,1,0});
+	cube.initialize(mesh_primitive_cube({ 0,0,0 }, 0.2f), "Cube");
+	cube.transform.translation = { 0.75f,0.8f,0.0f };
+	cube.transform.scaling = 0.2;
 }
 
 
@@ -225,6 +235,15 @@ void scene_structure::display()
 
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
 	city.update_local_to_global_coordinates();
+
+	// Scene_orthographic has a fixed camera and an orthographic projection (*)
+	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2) * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+	cube.transform.translation = { 0.75f,0.8f,0.0f };
+	draw(cube, environment_ortho);
+	cube.transform.translation= { 0.65f,0.8f,0.0f };
+	draw(cube, environment_ortho);
+	cube.transform.translation= { 0.55f,0.8f,0.0f };
+	draw(cube, environment_ortho);
 
 	if (gui.display.wireframe){
 		draw_wireframe(arrow, environment);

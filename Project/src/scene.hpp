@@ -83,6 +83,9 @@ struct scene_structure {
 	cgp::hierarchy_mesh_drawable nexus_core;
 	cgp::hierarchy_mesh_drawable nexus;
 
+	//orthographic projection gui
+	cgp::mesh_drawable cube;
+	cgp::scene_environment_basic environment_ortho;
 
 
 	// ****************************** //
