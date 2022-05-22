@@ -30,7 +30,7 @@ struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 	cgp::camera_projection projection;
 
 	// Change the standard rotating camera to a "head camera" more appropriate to model free-flight (*)
-	cgp::camera_head camera;
+	cgp::camera_spherical_coordinates camera;
 
 	scene_environment_with_multiple_lights();
 };

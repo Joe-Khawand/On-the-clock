@@ -15,42 +15,49 @@ using namespace cgp;
 void scene_structure::update_camera()
 {
 	inputs_keyboard_parameters const& keyboard = inputs.keyboard;
-	camera_head& camera = environment.camera;
 
 	// The camera moves forward all the time
 	// We consider in this example a constant velocity, so the displacement is: velocity * dt * front-camera-vector
 	float const dt = flight_timer.update();
-	vec3 const forward_displacement = speed * 10.0f * dt * camera.front();
-	camera.position_camera += forward_displacement;
+	vec3 const forward_displacement = flight_speed * 3.0f * dt * environment.camera.front();
+	environment.camera.center_of_rotation+= forward_displacement;
+	environment.camera.axis=camera_spherical_coordinates_axis::z;
 
 	// The camera rotates if we press on the arrow keys
 	//  The rotation is only applied to the roll and pitch degrees of freedom.
 	float const pitch = 0.5f; // speed of the pitch
 	float const yaw  = 0.7f; // speed of the yaw
-	if (keyboard.up)
-		camera.manipulator_rotate_roll_pitch_yaw(0, -pitch * dt, 0); 
-	if (keyboard.down)
-		camera.manipulator_rotate_roll_pitch_yaw(0,  pitch * dt, 0); 
-	if (keyboard.right)
-		camera.manipulator_rotate_roll_pitch_yaw(0, 0, yaw * dt);
-	if (keyboard.left)
-		camera.manipulator_rotate_roll_pitch_yaw(0, 0, -yaw * dt);
+	//float const v = 30.f;
+	if (keyboard.up){
+		environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt);
+	}
+	if (keyboard.down){
+		environment.camera.manipulator_rotate_spherical_coordinates(0,-pitch*dt);
+	}
+	if (keyboard.right){
+		environment.camera.manipulator_rotate_spherical_coordinates(yaw*dt,0);
+	}
+	if (keyboard.left){
+		environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt,0);
+	}
 	if (keyboard.shift)
-		camera.position_camera += vec3(0, 0, 10.0f * dt);
+		if (flight_speed<3.0)
+		{
+			flight_speed+=1.0f;
+		}
+		
 	if (keyboard.ctrl)
-		camera.position_camera += vec3(0, 0, - 10.0f * dt);
+		if (flight_speed>-3.0)
+		{
+			flight_speed-=1.0f;
+		}
 }
 
 void scene_structure::initialize()
 {
-	// Initialize the camera
-	// environment.projection = camera_projection::perspective(50.0f * Pi/180, 1.0f, 0.1f, 500.0f);
-	// environment.camera.distance_to_center = 30.0f;
-	// environment.camera.look_at({ 30,1,2 }, { 0,0,0 }, { 0,0,1 });
-
 	// Initial placement of the camera
-	environment.camera.position_camera = { 100.0f, 100.0f, 30.0f };
-	environment.camera.manipulator_rotate_roll_pitch_yaw(-M_PI_4,0 ,-M_PI_4);
+	environment.camera.center_of_rotation= vec3{80,0,20};
+	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_2,0);
 
 	// Multiple lights
 	// ***************************************** //

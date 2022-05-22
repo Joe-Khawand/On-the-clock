@@ -62,6 +62,7 @@ struct scene_structure {
 	cgp::timer_basic timer;
 	// Timer used for flight
 	cgp::timer_basic flight_timer;
+	float flight_speed= 0.0f;
 
 
 	cgp::hierarchy_mesh_drawable city;
