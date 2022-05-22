@@ -57,6 +57,9 @@ int main(int, char* argv[])
 		// Display the ImGUI interface (button, sliders, etc)
 		scene.display_gui();
 
+		// Update the camera position at every frame for a fly-mode
+		scene.update_camera();
+
 		// Call the display of the scene
 		scene.display();
 		
@@ -85,9 +88,11 @@ void mouse_move_callback(GLFWwindow* /*window*/, double xpos, double ypos)
 {
 	scene.inputs.mouse_position_update( { xpos, ypos } );
 
+	// ! Removed the standard trackball behavior in the main function
+	// ! The motion is now computed in the animation loop at each frame
 	// Apply camera rotation only if shift is not pressed
-	if (!scene.inputs.keyboard.shift)
-		camera_standard_behavior_rotation(scene.environment.camera, scene.inputs);
+	//if (!scene.inputs.keyboard.shift)
+	//	camera_standard_behavior_rotation(scene.environment.camera, scene.inputs);
 }
 
 // This function is called everytime a mouse button is clicked/released

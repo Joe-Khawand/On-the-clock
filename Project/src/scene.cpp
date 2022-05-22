@@ -11,13 +11,42 @@
 
 using namespace cgp;
 
+// The main function implementing the Flying Mode
+void scene_structure::update_camera()
+{
+	inputs_keyboard_parameters const& keyboard = inputs.keyboard;
+	camera_head& camera = environment.camera;
+
+	// The camera moves forward all the time
+	// We consider in this example a constant velocity, so the displacement is: velocity * dt * front-camera-vector
+	float const dt = flight_timer.update();
+	vec3 const forward_displacement = speed * 10.0f * dt * camera.front();
+	camera.position_camera += forward_displacement;
+
+	// The camera rotates if we press on the arrow keys
+	//  The rotation is only applied to the roll and pitch degrees of freedom.
+	float const pitch = 0.5f; // speed of the pitch
+	float const yaw  = 0.7f; // speed of the yaw
+	if (keyboard.up)
+		camera.manipulator_rotate_roll_pitch_yaw(0, -pitch * dt, 0); 
+	if (keyboard.down)
+		camera.manipulator_rotate_roll_pitch_yaw(0,  pitch * dt, 0); 
+	if (keyboard.right)
+		camera.manipulator_rotate_roll_pitch_yaw(0, 0, yaw * dt);
+	if (keyboard.left)
+		camera.manipulator_rotate_roll_pitch_yaw(0, 0, -yaw * dt);
+}
+
 void scene_structure::initialize()
 {
 	// Initialize the camera
-	environment.projection = camera_projection::perspective(50.0f * Pi/180, 1.0f, 0.1f, 500.0f);
-	environment.camera.distance_to_center = 30.0f;
-	environment.camera.look_at({ 30,1,2 }, { 0,0,0 }, { 0,0,1 });
+	// environment.projection = camera_projection::perspective(50.0f * Pi/180, 1.0f, 0.1f, 500.0f);
+	// environment.camera.distance_to_center = 30.0f;
+	// environment.camera.look_at({ 30,1,2 }, { 0,0,0 }, { 0,0,1 });
 
+	// Initial placement of the camera
+	environment.camera.position_camera = { 100.0f, 100.0f, 30.0f };
+	environment.camera.manipulator_rotate_roll_pitch_yaw(-M_PI_4,0 ,-M_PI_4);
 
 	// Multiple lights
 	// ***************************************** //
@@ -164,6 +193,16 @@ void scene_structure::initialize()
     //initialize_nexus();
 	nexus_core = initialize_nexus(true);
 	nexus = initialize_nexus(false);
+
+	// Set the second scene with the orthographic project
+	//*****************************************************
+	environment_ortho.projection = camera_projection::orthographic(-1, 1, -1, 1, -1, 1);
+	environment_ortho.camera.distance_to_center = 2.5f;
+	environment_ortho.light = { 0,0,1 };
+	environment_ortho.camera.look_at({ 0, 0, 0.5f }, {0,0,0}, {0,1,0});
+	cube.initialize(mesh_primitive_cube({ 0,0,0 }, 0.2f), "Cube");
+	cube.transform.translation = { 0.75f,0.8f,0.0f };
+	cube.transform.scaling = 0.2;
 }
 
 
@@ -197,6 +236,15 @@ void scene_structure::display()
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
 	city.update_local_to_global_coordinates();
 
+	// Scene_orthographic has a fixed camera and an orthographic projection (*)
+	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2) * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+	cube.transform.translation = { 0.75f,0.8f,0.0f };
+	draw(cube, environment_ortho);
+	cube.transform.translation= { 0.65f,0.8f,0.0f };
+	draw(cube, environment_ortho);
+	cube.transform.translation= { 0.55f,0.8f,0.0f };
+	draw(cube, environment_ortho);
+
 	if (gui.display.wireframe){
 		draw_wireframe(arrow, environment);
 		//draw_wireframe(ring, environment);
@@ -212,6 +260,7 @@ void scene_structure::display_gui()
 	ImGui::Checkbox("Frame", &gui.display.frame);
 	ImGui::Checkbox("Wireframe", &gui.display.wireframe);
 	ImGui::SliderFloat("Time scale", &timer.scale, 0.0f, 10.0f);
+	ImGui::SliderFloat("Flight time scale", &flight_timer.scale, 0.0f, 10.0f);
   	ImGui::SliderFloat("Nexus speed", &speed, 0.f, 4.0f);
 	ImGui::SliderFloat("Speed of time", &speed_time, 0.f, 4.0f);
 	display_gui_falloff(environment);
