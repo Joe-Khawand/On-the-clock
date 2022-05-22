@@ -24,6 +24,15 @@ struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 
 	// The characteristic attenuation due to the fog
 	float fog_falloff = 0.0001f;
+
+	// Standard parameters (same as basic environment)
+	cgp::vec3 background_color;
+	cgp::camera_projection projection;
+
+	// Change the standard rotating camera to a "head camera" more appropriate to model free-flight (*)
+	cgp::camera_head camera;
+
+	scene_environment_with_multiple_lights();
 };
 
 // Send the uniform parameters of the scene with light - Function automatically called when using draw([mesh_drawable], scene_environment_with_multiple_lights);

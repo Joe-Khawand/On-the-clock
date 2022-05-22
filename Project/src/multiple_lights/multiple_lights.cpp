@@ -18,6 +18,8 @@ void opengl_uniform(GLuint shader, scene_environment_with_multiple_lights const&
 	// Send the falloff values as uniforms
 	opengl_uniform(shader, "spotlight_falloff", environment.spotlight_falloff);
 	opengl_uniform(shader, "fog_falloff", environment.fog_falloff);
+	opengl_uniform(shader, "projection", environment.projection.matrix());
+	opengl_uniform(shader, "view", environment.camera.matrix_view());
 }
 
 void compute_light_position(float t, scene_environment_with_multiple_lights& environment)
@@ -69,3 +71,9 @@ void display_gui_falloff(scene_environment_with_multiple_lights& environment)
 	ImGui::SliderFloat("Light falloff", &environment.spotlight_falloff, 0, 0.01f, "%0.4f", 2.0f);
 	ImGui::SliderFloat("Fog falloff", &environment.fog_falloff, 0, 0.001f, "%0.5f", 2.0f);
 }
+
+ scene_environment_with_multiple_lights::scene_environment_with_multiple_lights()
+ {
+ 	//background_color = { 1,1,1 };
+ 	projection = camera_projection::perspective(50.0f * Pi / 180, 1.0f, 0.1f, 500.0f);
+ }

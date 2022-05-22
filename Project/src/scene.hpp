@@ -60,6 +60,8 @@ struct scene_structure {
 
 	// Timer used for the animation
 	cgp::timer_basic timer;
+	// Timer used for flight
+	cgp::timer_basic flight_timer;
 
 
 	cgp::hierarchy_mesh_drawable city;
@@ -86,6 +88,10 @@ struct scene_structure {
 	// ****************************** //
 	// Functions
 	// ****************************** //
+
+	// Function to call in the animation loop in main (*)
+	//   This function replace the standard trackball behavior that must also be removed in the main (from mouse_move_callback)
+	void update_camera(); 
 
 	void initialize();  // Standard initialization to be called before the animation loop
 	//void initialize_nexus();
