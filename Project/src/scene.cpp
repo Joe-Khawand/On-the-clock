@@ -16,18 +16,17 @@ void scene_structure::update_camera()
 {
 	inputs_keyboard_parameters const& keyboard = inputs.keyboard;
 
-	// The camera moves forward all the time
-	// We consider in this example a constant velocity, so the displacement is: velocity * dt * front-camera-vector
+	// flight_speed modifiable avec shift et ctrl
 	float const dt = flight_timer.update();
 	vec3 const forward_displacement = flight_speed * 3.0f * dt * environment.camera.front();
 	environment.camera.center_of_rotation+= forward_displacement;
 	environment.camera.axis=camera_spherical_coordinates_axis::z;
 
 	// The camera rotates if we press on the arrow keys
-	//  The rotation is only applied to the roll and pitch degrees of freedom.
+	//  The rotation is only applied to the yaw and pitch degrees of freedom.
 	float const pitch = 0.5f; // speed of the pitch
 	float const yaw  = 0.7f; // speed of the yaw
-	//float const v = 30.f;
+
 	if (keyboard.up){
 		environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt);
 	}
@@ -74,16 +73,11 @@ void scene_structure::initialize()
 	// Initialize the skybox (*)
 	// ***************************************** //
 	skybox.initialize("assets/dark_skybox_hd/");
-	//skybox.transform.rotation=rotation_transform::from_axis_angle({ 0,1,0 }, M_PI_2);
-	//skybox.transform.rotation=rotation_transform::from_axis_angle({ -1,0,0 }, -M_PI_2);
 
 	// Basic set-up
 	// ***************************************** //
 
 	global_frame.initialize(mesh_primitive_frame(), "Frame");
-
-	//environment.camera.axis = camera_spherical_coordinates_axis::z;
-    //environment.camera.look_at({ 1.f,100.0f,1.0f }, { 0,0,0 });
 
 	//Initialise city
 	mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
@@ -137,7 +131,6 @@ void scene_structure::initialize()
     arrow.initialize(arrow_mesh, "Arrow");
 	arrow.transform.scaling=10.0;
 	
-
 	mesh ring_mesh = create_ring(9.0);
 	ring.initialize(ring_mesh,"ring_mesh");
 	ring.transform.scaling=10.0;
@@ -160,9 +153,6 @@ void scene_structure::initialize()
 
 	// city.add(ghetto,"Arrow",{15,2,2});
 	city.add(nuclear,"Arrow",{60,0,2});
-
-	//city["Arrow"].global_transform.translation = vec3(17, 0, 0);
-	//city["ghetto_obj"].transform.rotation=rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);	
 
 	//Nexus beam
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
@@ -193,7 +183,6 @@ void scene_structure::initialize()
 
 
 	// Load the shader used to display the implicit surface (only a polygon soup)
-	// GLuint shader_triangle_soup = opengl_load_shader("shaders/mesh_geometry/vert.glsl", "shaders/mesh_geometry/frag.glsl");
 	GLuint shader_triangle_soup = opengl_load_shader("shaders/implicit_lights/vert.glsl", "shaders/implicit_lights/frag.glsl");
 	triangle_soup_drawable::default_shader = shader_triangle_soup; //shader_lights; //
 
@@ -228,17 +217,10 @@ void scene_structure::display()
 	display_nexus();
 
 	// Basic elements of the scene
-	//environment.light = environment.camera.position();
+
 	if (gui.display.frame)
 		draw(global_frame, environment);
-	//draw(world,environment);
-	//draw(building,environment);
-	//arrow.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	//draw(arrow, environment);
-	//arrow.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t/12.0);
-	//draw(arrow, environment);
 
-	//draw(nuclear,environment);
 	draw(city,environment);
 	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
 	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
@@ -247,7 +229,7 @@ void scene_structure::display()
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
 	city.update_local_to_global_coordinates();
 
-	// Scene_orthographic has a fixed camera and an orthographic projection (*)
+	// Scene_orthographic : Player GUI
 	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2) * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
 	cube.transform.translation = { 0.75f,0.8f,0.0f };
 	draw(cube, environment_ortho);
@@ -258,7 +240,6 @@ void scene_structure::display()
 
 	if (gui.display.wireframe){
 		draw_wireframe(arrow, environment);
-		//draw_wireframe(ring, environment);
 		draw_wireframe(cylinder,environment);
 	}
 	display_semiTransparent();
@@ -367,13 +348,7 @@ void scene_structure::display_semiTransparent()
 	//  - They are supposed to be display from furest to nearest elements
 	glDepthMask(false);
 
-
-	// Re-orient the textures to always face the camera direction
-	//vec3 const front = normalize(environment.camera.front() * vec3 { 1, 1, 0 }); // front-vector of the camera without z-component
-	//vec3 const right = environment.camera.right();
-	// Rotation such that R*{1,0,0} = right-direction, R*{0,1,0} = front-direction
-	//rotation_transform R = rotation_transform::between_vector({ 1,0,0 }, { 0,1,0 }, right, front);
-	//halo.transform.rotation = R;
+	// Draw the billboards two times
 		gold_beam.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },0);
 		draw(gold_beam,environment);
 		gold_beam.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2);
@@ -383,7 +358,7 @@ void scene_structure::display_semiTransparent()
 		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2 );
 		draw(halo, environment);
 	
-	// Don't forget to re-activate the depth-buffer write
+	// Re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);
 }
