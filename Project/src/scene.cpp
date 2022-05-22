@@ -18,7 +18,7 @@ void scene_structure::update_camera()
 	camera_head& camera = environment.camera;
 
 	// The camera moves forward all the time
-	//   We consider in this example a constant velocity, so the displacement is: velocity * dt * front-camera-vector
+	// We consider in this example a constant velocity, so the displacement is: velocity * dt * front-camera-vector
 	float const dt = flight_timer.update();
 	vec3 const forward_displacement = speed * 10.0f * dt * camera.front();
 	camera.position_camera += forward_displacement;
