@@ -35,6 +35,10 @@ void scene_structure::update_camera()
 		camera.manipulator_rotate_roll_pitch_yaw(0, 0, yaw * dt);
 	if (keyboard.left)
 		camera.manipulator_rotate_roll_pitch_yaw(0, 0, -yaw * dt);
+	if (keyboard.shift)
+		camera.position_camera += vec3(0, 0, 10.0f * dt);
+	if (keyboard.ctrl)
+		camera.position_camera += vec3(0, 0, - 10.0f * dt);
 }
 
 void scene_structure::initialize()

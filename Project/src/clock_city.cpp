@@ -138,6 +138,25 @@ mesh create_ring(float r){
     return mesh_primitive_torus(r,0.5,vec3{0,0,0},vec3{0,0,1});
 }
 
+// mesh create_cylinder(float r1,float r2,float height){
+//     //r1 big radius, r2 small
+//     int nu= 2;
+//     int nv=70;
+//     mesh m= mesh_primitive_cylinder(r1,vec3(0,0,0),vec3(0,0,height),nu,nv,false);
+//     m.push_back(mesh_primitive_cylinder(r2,vec3(0,0,0),vec3(0,0,height),nu,nv,false));
+//     int size= nu*nv;
+//     for (int i = 0; i < size; i=i+1)
+//     {
+//         uint3 triangle_1 ={i%(2*size),(i+size)%(2*size), (i+1)%(2*size)};
+//         uint3 triangle_2 ={(i+size)%(2*size), (i+1+size)%(2*size), (i+1)%(2*size)};
+//         m.connectivity.push_back(triangle_1);
+//         m.connectivity.push_back(triangle_2);
+//     }
+//     m.fill_empty_field();
+//     return m;
+    
+// }
+
 mesh create_cylinder(float r1,float r2,float height){
     //r1 big radius, r2 small
     int nu= 2;
@@ -145,10 +164,14 @@ mesh create_cylinder(float r1,float r2,float height){
     mesh m= mesh_primitive_cylinder(r1,vec3(0,0,0),vec3(0,0,height),nu,nv,false);
     m.push_back(mesh_primitive_cylinder(r2,vec3(0,0,0),vec3(0,0,height),nu,nv,false));
     int size= nu*nv;
+    m.position.resize(4 * size);
+    for (int i = 0; i < 2 * size; i=i+1) {
+        m.position[2 * size + i] = m.position[i];
+    }
     for (int i = 0; i < size; i=i+1)
     {
-        uint3 triangle_1 ={i%(2*size),(i+size)%(2*size), (i+1)%(2*size)};
-        uint3 triangle_2 ={(i+size)%(2*size), (i+1+size)%(2*size), (i+1)%(2*size)};
+        uint3 triangle_1 ={2 * size + i%(2*size), 2 * size + (i+size)%(2*size), 2 * size + (i+1)%(2*size)};
+        uint3 triangle_2 ={2 * size + (i+size)%(2*size), 2 * size + (i+1+size)%(2*size), 2 * size + (i+1)%(2*size)};
         m.connectivity.push_back(triangle_1);
         m.connectivity.push_back(triangle_2);
     }
@@ -156,4 +179,3 @@ mesh create_cylinder(float r1,float r2,float height){
     return m;
     
 }
-
