@@ -32,15 +32,16 @@ struct scene_structure {
 
 	// Timer used for the animation
 	cgp::timer_basic timer;
-	// Timer used for flight
-	cgp::timer_basic flight_timer;
+
+	// Flight
+	cgp::timer_basic flight_timer;//independent timer for flight
+	float flight_speed= 0.0f;//modifiable flight speed
 
 	// Implicit surfaces
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
-	// Timer used for the animation
-	//cgp::timer_basic timer;
+	// Speed of nexus
 	float speed = 1.0f;
 	float speed_time = 1.0f;
 
