@@ -7,8 +7,6 @@
 #include "multiple_lights/multiple_lights.hpp" 
 #include "clock_city.hpp"
 
-
-
 // The structure of the custom scene
 struct scene_structure {
 	
@@ -21,6 +19,7 @@ struct scene_structure {
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                       // Standard GUI element storage
 
+	cgp::skybox_drawable skybox;
 
 	cgp::mesh_drawable halo;
 	cgp::mesh_drawable blue_beam;
@@ -28,22 +27,21 @@ struct scene_structure {
 
 	cgp::mesh_drawable cylinder;
 
-	cgp::skybox_drawable skybox;
 
-	// Timer used for the animation
+	// Timers used for the animation
 	cgp::timer_basic timer;
 
 	// Flight
 	cgp::timer_basic flight_timer;//independent timer for flight
-	float flight_speed= 0.0f;//modifiable flight speed
+	float flight_speed = 0.0f;//modifiable flight speed
 
 	// Implicit surfaces
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
 	// Speed of nexus
-	float speed = 1.0f;
-	float speed_time = 1.0f;
+	// float speed = 1.0f;
+	// float speed_time = 1.0f;
 
 	//cgp::mesh_drawable nexus;
 	cgp::hierarchy_mesh_drawable nexus_core;
@@ -52,7 +50,9 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
-	cgp::hierarchy_mesh_drawable city;
+	cgp::hierarchy_mesh_drawable hours;
+	cgp::hierarchy_mesh_drawable minutes;
+	cgp::hierarchy_mesh_drawable seconds;
 
 
 

@@ -23,7 +23,7 @@ void scene_structure::update_camera()
 	environment.camera.axis=camera_spherical_coordinates_axis::z;
 
 	// The camera rotates if we press on the arrow keys
-	//  The rotation is only applied to the yaw and pitch degrees of freedom.
+	// The rotation is only applied to the yaw and pitch degrees of freedom.
 	float const pitch = 0.5f; // speed of the pitch
 	float const yaw  = 0.7f; // speed of the yaw
 
@@ -60,15 +60,10 @@ void scene_structure::initialize()
 
 	// Multiple lights
 	// ***************************************** //
-
-	// Specific Shader (*)
-	// Load a new custom shader that take into account spotlights (note the new shader file in shader/ directory)
-	// Make sure you load an set this shader for the shapes that need to be illuminated
 	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");
 	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
-
 
 	// Initialize the skybox (*)
 	// ***************************************** //
@@ -76,11 +71,9 @@ void scene_structure::initialize()
 
 	// Initialize city
 	// ***************************************** //
-	city_struct city_temp;
-	city = initialize_city(city_temp);	
-
-	mesh cylinder_mesh= create_cylinder(100,90, 5);
-	cylinder.initialize(cylinder_mesh,"Cylindre");
+	hours = initialize_hours();
+	minutes = initialize_minutes();
+	seconds = initialize_seconds();
 
 	// Nexus beam
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
@@ -96,15 +89,11 @@ void scene_structure::initialize()
 	gold_beam.shader = shader_halo;
 	halo.shader = shader_halo;
 
-	halo.shading.phong = { 0.4f, 0.6f,0,1 };
-	gold_beam.shading.phong = { 0.4f, 0.6f,0,1 };
-
 	// Implicit surface and nexuses
 	// ***************************************** //
 
 	// Helper to visualize the box of the domain
 	segments_drawable::default_shader = curve_drawable::default_shader;
-
 
 	// Load the shader used to display the implicit surface (only a polygon soup)
 	GLuint shader_triangle_soup = opengl_load_shader("shaders/implicit_lights/vert.glsl", "shaders/implicit_lights/frag.glsl");
@@ -142,12 +131,18 @@ void scene_structure::display()
 
 	// Basic elements of the scene
   
-	draw(city,environment);
-	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
-	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	city.update_local_to_global_coordinates();
+	hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
+	hours.update_local_to_global_coordinates();
+	draw(hours, environment);
 
-	draw(cylinder,environment);	
+	minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 6.0);
+	minutes.update_local_to_global_coordinates();
+	draw(minutes, environment);
+
+	seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t);
+	seconds.update_local_to_global_coordinates();
+	draw(seconds, environment);
+	
 
 	// Scene_orthographic has a fixed camera and an orthographic projection : Player GUI
 	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
@@ -161,7 +156,9 @@ void scene_structure::display()
 
 	// TODO (later on tho)
 	if (gui.display.wireframe){
-		draw_wireframe(cylinder,environment);
+		draw_wireframe(hours, environment);
+		draw_wireframe(minutes, environment);
+		draw_wireframe(seconds, environment);
 	}
 	display_semiTransparent();
         
@@ -170,12 +167,9 @@ void scene_structure::display()
 
 void scene_structure::display_gui()
 {
-	ImGui::Checkbox("Frame", &gui.display.frame);
 	ImGui::Checkbox("Wireframe", &gui.display.wireframe);
 	ImGui::SliderFloat("Time scale", &timer.scale, 0.0f, 10.0f);
 	ImGui::SliderFloat("Flight time scale", &flight_timer.scale, 0.0f, 10.0f);
-  	ImGui::SliderFloat("Nexus speed", &speed, 0.f, 4.0f);
-	ImGui::SliderFloat("Speed of time", &speed_time, 0.f, 4.0f);
 	display_gui_falloff(environment);
 }
 
@@ -217,37 +211,22 @@ void scene_structure::display_core()
 
 void scene_structure::display_nexus()
 {
-	nexus_core["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * speed * timer.t);
-	nexus_core["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * speed * timer.t);
-	nexus_core["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * speed * timer.t);
-	nexus_core["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - speed * timer.t);
+	nexus_core["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * timer.t);
+	nexus_core["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * timer.t);
+	nexus_core["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * timer.t);
+	nexus_core["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - timer.t);
 
 	nexus_core.update_local_to_global_coordinates();
 
+	// TODO move this so that it only affects one nexus at a time, and take into account their own timer
 	nexus["Core"].transform.scaling = (2.5 + 0.5 * pow(cos(2 * timer.t), 10)) / 3.0f;
 	nexus["Outer ring"].transform.scaling = 1 / ((2.5 + 0.5 * pow(cos(2 * timer.t), 10)) / 3.0f);
-	nexus["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * speed * timer.t);
-	nexus["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * speed * timer.t);
-	nexus["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * speed * timer.t);
-	nexus["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - speed * timer.t);
+	nexus["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * timer.t);
+	nexus["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * timer.t);
+	nexus["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * timer.t);
+	nexus["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - timer.t);
 
-	nexus["Core"].transform.translation = vec3{20, 0, 0};
 	nexus.update_local_to_global_coordinates();
-	//draw(nexus, environment);
-	if (gui.display.wireframe)
-		draw_wireframe(nexus, environment, { 0,0,0 });
-	
-	nexus["Core"].transform.translation = vec3{-20, 0, 0};
-	nexus.update_local_to_global_coordinates();
-	//draw(nexus, environment);
-	if (gui.display.wireframe)
-		draw_wireframe(nexus, environment, { 0,0,0 });
-
-	nexus["Core"].transform.translation = vec3{15, 10, 0};
-	nexus.update_local_to_global_coordinates();
-	//draw(nexus, environment);
-	if (gui.display.wireframe)
-		draw_wireframe(nexus, environment, { 0,0,0 });
 
 	draw(nexus_core, environment);
 	if (gui.display.wireframe)

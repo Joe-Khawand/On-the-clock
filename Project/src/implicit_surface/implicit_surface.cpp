@@ -96,7 +96,7 @@ void implicit_surface_structure::gui_update(gui_parameters& gui, field_function_
 	bool is_update_field = false;
 	bool is_save_obj = false;
 
-	display_gui_implicit_surface(is_update_field, is_update_marching_cube, is_save_obj, gui, field_function);
+	//display_gui_implicit_surface(is_update_field, is_update_marching_cube, is_save_obj, gui, field_function);
 
 	if (is_update_marching_cube) 
 		update_marching_cube(gui.isovalue);

@@ -34,16 +34,16 @@ void compute_light_position(float t, scene_environment_with_multiple_lights& env
 	environment.spotlight_color[1] = { 0.0f, 1.0f, 1.0f };
 
 	environment.spotlight_position[2] = vec3{  2 * cos(3 * t),
-						sin(3 * t),
-						0.0f};
+											sin(3 * t),
+											0.0f};
 	environment.spotlight_color[2] = {0,0,0}; //2 * (std::cos(t) + 1.0f) / 2.0 * vec3(1, 1, 1);
 
 	environment.spotlight_position[3] = vec3{15, 10, 0};
 	environment.spotlight_color[3] = { 0.0f, 1.0f, 1.0f };
 
 	environment.spotlight_position[4] = vec3{ 3 * cos(3 * t) * cos(3 * t + 17.f),
-						1.7 * cos(3 * t)* sin(3 * t + 17.f),
-						2.3 * sin(3 * t) };
+											1.7 * cos(3 * t)* sin(3 * t + 17.f),
+											2.3 * sin(3 * t) };
 	environment.spotlight_color[4] = {0,0,0}; //{ 1.0f, 0.9f, 0.5f };
 }
 
@@ -68,12 +68,12 @@ void draw(light_shape_drawable lights, scene_environment_with_multiple_lights co
 
 void display_gui_falloff(scene_environment_with_multiple_lights& environment)
 {
-	ImGui::SliderFloat("Light falloff", &environment.spotlight_falloff, 0, 0.01f, "%0.4f", 2.0f);
-	ImGui::SliderFloat("Fog falloff", &environment.fog_falloff, 0, 0.001f, "%0.5f", 2.0f);
+	ImGui::SliderFloat("Light falloff", &environment.spotlight_falloff, 0, 0.01f, "%0.6f", 2.0f);
+	ImGui::SliderFloat("Fog falloff", &environment.fog_falloff, 0, 0.001f, "%0.7f", 2.0f);
 }
 
- scene_environment_with_multiple_lights::scene_environment_with_multiple_lights()
- {
+scene_environment_with_multiple_lights::scene_environment_with_multiple_lights()
+{
  	//background_color = { 1,1,1 };
  	projection = camera_projection::perspective(50.0f * Pi / 180, 1.0f, 0.1f, 500.0f);
- }
+}
