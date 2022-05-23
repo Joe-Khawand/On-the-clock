@@ -139,7 +139,7 @@ void scene_structure::display()
 	minutes.update_local_to_global_coordinates();
 	draw(minutes, environment);
 
-	seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t);
+	seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
 	seconds.update_local_to_global_coordinates();
 	draw(seconds, environment);
 	

@@ -214,10 +214,12 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
 {
     cgp::hierarchy_mesh_drawable city_hierarchy;
     mesh_drawable exterior_cylinder;
+    mesh_drawable exterior_base;
     mesh_drawable cylinder;
     mesh_drawable arrow;
 
     cylinder.initialize(create_cylinder(22, 20.0, 2.0), "Cylinder");
+    exterior_base.initialize(create_cylinder(154, 104.5, 2), "Base");
     mesh exterior_mesh = create_cylinder(140, 110, 2.0);
     for (int i = 0; i < 70; i++)
     {
@@ -226,6 +228,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
         exterior_mesh.position[i] *= 1.1;
         exterior_mesh.position[280 + i] *= 1.1;
     }
+    exterior_mesh.normal.clear();
     exterior_mesh.fill_empty_field();
 
     exterior_cylinder.initialize(exterior_mesh, "Exterior");
@@ -233,7 +236,8 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     arrow.initialize(create_arrow_mesh(1, 80, 3), "Arrow");
 	
     city_hierarchy.add(exterior_cylinder);
-    city_hierarchy.add(cylinder, "Exterior");
+    city_hierarchy.add(exterior_base, "Exterior", {0, 0, -2});
+    city_hierarchy.add(cylinder, "Exterior", {0, 0, -1});
 	city_hierarchy.add(arrow, "Cylinder", {20, 0, 0.5});
 
     mesh_drawable one;
@@ -292,9 +296,10 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
 
     mesh_drawable eight;
     mesh eight_mesh;
-    eight_mesh.push_back(brick(20, 2, 2, {0, 9, 0}));
-    eight_mesh.push_back(brick(20, 2, 2, {0, 5, 0}));
-    eight_mesh.push_back(x(20, 2, 2, {0, -4, 0}));
+    eight_mesh.push_back(brick(20, 2, 2, {0, -11, 0}));
+    eight_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
+    eight_mesh.push_back(brick(20, 2, 2, {0, -3, 0}));
+    eight_mesh.push_back(v(20, 2, 2, {0, 6, 0}));
     eight.initialize(eight_mesh, "Eight");
     eight.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 8*M_PI / 6);
     city_hierarchy.add(eight, "Exterior", {115 * std::cos(8 * M_PI / 6), - 115 * std::sin(8 * M_PI / 6), 2});
@@ -400,4 +405,11 @@ cgp::mesh x(float l, float w, float h, cgp::vec3 offset)
     x.fill_empty_field();
     x.color.fill({1,1,0});
     return x;
+}
+
+float angle_increment(float t)
+{
+    float x = floorf(t);
+    if (t-x < 0.75) return M_PI * x /30;
+    else return M_PI * (x + 4 * (t-x-0.75)) / 30;
 }
