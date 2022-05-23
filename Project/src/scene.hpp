@@ -9,15 +9,6 @@
 
 
 
-// The element of the GUI that are not already stored in other structures
-// struct gui_parameters {
-// 	bool display_frame      = true;
-// 	bool display_wireframe  = false;
-// };
-
-
-
-
 // The structure of the custom scene
 struct scene_structure {
 	
@@ -25,7 +16,6 @@ struct scene_structure {
 	// Elements and shapes of the scene
 	// ****************************** //
 
-	cgp::mesh_drawable global_frame;          // The standard global frame
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
@@ -44,10 +34,6 @@ struct scene_structure {
 	cgp::timer_basic timer;
 	// Timer used for flight
 	cgp::timer_basic flight_timer;
-
-
-	// Multiple lights
-	light_shape_drawable light_drawable; // Helper structure used to display the lights as spheres (*)
 
 	// Implicit surfaces
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
@@ -74,7 +60,7 @@ struct scene_structure {
 	// ****************************** //
 
 	// Function to call in the animation loop in main (*)
-	//   This function replace the standard trackball behavior that must also be removed in the main (from mouse_move_callback)
+	// This function replace the standard trackball behavior that must also be removed in the main (from mouse_move_callback)
 	void update_camera(); 
 
 	void initialize();  // Standard initialization to be called before the animation loop
@@ -84,11 +70,6 @@ struct scene_structure {
 	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
 	void display_nexus();
-	// Display function for semi-transparent shapes
-	void display_semiTransparent();
+	void display_semiTransparent(); // Display function for semi-transparent shapes
 };
-
-
-
-
 

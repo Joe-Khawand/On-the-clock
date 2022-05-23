@@ -146,6 +146,7 @@ mesh create_ring(float r){
     
 // }
 
+// radius_1 > radius_2
 mesh create_cylinder(float r1,float r2,float height){
     //r1 big radius, r2 small
     int nu= 2;
@@ -157,10 +158,19 @@ mesh create_cylinder(float r1,float r2,float height){
     for (int i = 0; i < 2 * size; i=i+1) {
         m.position[2 * size + i] = m.position[i];
     }
-    for (int i = 0; i < size; i=i+1)
+    for (int i = 0; i < size/2; i=i+1)
     {
-        uint3 triangle_1 ={2 * size + i%(2*size), 2 * size + (i+size)%(2*size), 2 * size + (i+1)%(2*size)};
-        uint3 triangle_2 ={2 * size + (i+size)%(2*size), 2 * size + (i+1+size)%(2*size), 2 * size + (i+1)%(2*size)};
+        uint3 triangle_1 ={2 * size + i, 2 * size + (i+size), 2 * size + (i+1)%(size/2)};
+        uint3 triangle_2 ={2 * size + (i+size)%(2*size), 2 * size + ((i+1)%(size/2)+size)%(2*size), 2 * size + (i+1)%(size/2)};
+        m.connectivity.push_back(triangle_1);
+        m.connectivity.push_back(triangle_2);
+    }
+    for (int i = 0; i < size/2; i=i+1)
+    {
+        uint3 triangle_1 ={2 * size + i + size/2, 2 * size + (i+size) + size/2, 2 * size + (i+1)%(size/2) + size/2};
+        uint3 triangle_2 ={2 * size + (i+size + size/2)%(2*size), 2 * size + ((i+1)%(size/2)+size + size/2)%(2*size), 2 * size + (i+1)%(size/2) + size/2};
+        //uint3 triangle_1 ={2 * size + i, 2 * size + (i+size)%(2*size), 2 * size + (i+1)%(2*size)};
+        //uint3 triangle_2 ={2 * size + (i+size)%(2*size), 2 * size + (i+1+size)%(2*size), 2 * size + (i+1)%(2*size)};
         m.connectivity.push_back(triangle_1);
         m.connectivity.push_back(triangle_2);
     }
@@ -168,77 +178,63 @@ mesh create_cylinder(float r1,float r2,float height){
     return m; 
 }
 
-cgp::hierarchy_mesh_drawable initialize_city(city_test cityy)
+// Initializes city and creates hierarchy
+cgp::hierarchy_mesh_drawable initialize_city(city_struct city)
 {
-    //Initialise city
+    //TODO instancing???? (instead of this shite)
+
+    mesh arrow_mesh = create_arrow_mesh(0.2, 7.0, 1.0);
+    city.arrow.initialize(arrow_mesh, "Arrow");
+	city.arrow.transform.scaling=10.0;
+
 	mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
-	cityy.building.initialize(building_mesh,"building_obj");
-	cityy.building.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building.transform.scaling=0.2;
-	cityy.building_2.initialize(building_mesh,"building_obj_2");
-	cityy.building_3.initialize(building_mesh,"building_obj_3");
-	cityy.building_4.initialize(building_mesh,"building_obj_4");
-	cityy.building_5.initialize(building_mesh,"building_obj_5");
-	cityy.building_6.initialize(building_mesh,"building_obj_6");
-	cityy.building_7.initialize(building_mesh,"building_obj_7");
-	cityy.building_8.initialize(building_mesh,"building_obj_8");
-	cityy.building_9.initialize(building_mesh,"building_obj_9");
-	//building_10.initialize(building_mesh,"building_obj_10");
-	cityy.building_2.transform.scaling=0.2;
-	cityy.building_2.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_3.transform.scaling=0.2;
-	cityy.building_3.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_4.transform.scaling=0.2;
-	cityy.building_4.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_5.transform.scaling=0.2;
-	cityy.building_5.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_6.transform.scaling=0.2;
-	cityy.building_6.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_7.transform.scaling=0.2;
-	cityy.building_7.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_8.transform.scaling=0.2;
-	cityy.building_8.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	cityy.building_9.transform.scaling=0.2;
-	cityy.building_9.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	// building_10.transform.scaling=0.2;
-	// building_10.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-
-	// mesh tower_mesh = mesh_load_file_obj("assets/Objects/TOWER.obj");
-	// tower.initialize(tower_mesh,"tower_obj");
-	// tower.transform.scaling=10.0;
-	// tower.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-
-	// mesh ghetto_mesh = mesh_load_file_obj("assets/Objects/ghetto_building.obj");
-	// ghetto.initialize(ghetto_mesh,"ghetto_obj");
-	// ghetto.transform.scaling=0.4;
-	// ghetto.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building.initialize(building_mesh,"building_obj");
+	city.building_2.initialize(building_mesh,"building_obj_2");
+	city.building_3.initialize(building_mesh,"building_obj_3");
+	city.building_4.initialize(building_mesh,"building_obj_4");
+	city.building_5.initialize(building_mesh,"building_obj_5");
+	city.building_6.initialize(building_mesh,"building_obj_6");
+	city.building_7.initialize(building_mesh,"building_obj_7");
+	city.building_8.initialize(building_mesh,"building_obj_8");
+	city.building_9.initialize(building_mesh,"building_obj_9");
+	city.building_10.initialize(building_mesh,"building_obj_10");
+    city.building.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building.transform.scaling=0.2;
+	city.building_2.transform.scaling=0.2;
+	city.building_2.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_3.transform.scaling=0.2;
+	city.building_3.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_4.transform.scaling=0.2;
+	city.building_4.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_5.transform.scaling=0.2;
+	city.building_5.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_6.transform.scaling=0.2;
+	city.building_6.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_7.transform.scaling=0.2;
+	city.building_7.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_8.transform.scaling=0.2;
+	city.building_8.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_9.transform.scaling=0.2;
+	city.building_9.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	city.building_10.transform.scaling=0.2;
+	city.building_10.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 
 	mesh nuclear_mesh = mesh_load_file_obj("assets/Objects/Nuclear_Cooling_Tower.obj");
-	cityy.nuclear.initialize(nuclear_mesh,"nuclear_obj");
-	cityy.nuclear.transform.scaling=0.0023;
+	city.nuclear.initialize(nuclear_mesh,"nuclear_obj");
+	city.nuclear.transform.scaling=0.0023;
 	
-    //mesh arrow_mesh = create_arrow_mesh(0.2);
-	mesh arrow_mesh = create_arrow_mesh(0.2, 7.0, 1.0);
-    cityy.arrow.initialize(arrow_mesh, "Arrow");
-	cityy.arrow.transform.scaling=10.0;
-	
-	cityy.city.add(cityy.arrow);
-	// city.add(tower,"Arrow",{7,1,2});
-	cityy.city.add(cityy.building,"Arrow",{1.2,3.5,2});
-	cityy.city.add(cityy.building_2,"Arrow",{1.2,1.5,2});
-	cityy.city.add(cityy.building_3,"Arrow",{1.2,-0.5,2});
-	cityy.city.add(cityy.building_4,"Arrow",{3.2,3.5,2});
-	cityy.city.add(cityy.building_5,"Arrow",{3.2,-3.5,2});
-	cityy.city.add(cityy.building_6,"Arrow",{5.2,-3.5,2});
-	cityy.city.add(cityy.building_7,"Arrow",{34,-2.5,2});
-	cityy.city.add(cityy.building_8,"Arrow",{34,2.5,2});
-	cityy.city.add(cityy.building_9,"Arrow",{24,-2.5,2});
-	//city.add(building_10,"Arrow",{29,2.5,2});
+	city.city_hierarchy.add(city.arrow);
+	city.city_hierarchy.add(city.building,"Arrow",{1.2,3.5,2});
+	city.city_hierarchy.add(city.building_2,"Arrow",{1.2,1.5,2});
+	city.city_hierarchy.add(city.building_3,"Arrow",{1.2,-0.5,2});
+	city.city_hierarchy.add(city.building_4,"Arrow",{3.2,3.5,2});
+	city.city_hierarchy.add(city.building_5,"Arrow",{3.2,-3.5,2});
+	city.city_hierarchy.add(city.building_6,"Arrow",{5.2,-3.5,2});
+	city.city_hierarchy.add(city.building_7,"Arrow",{34,-2.5,2});
+	city.city_hierarchy.add(city.building_8,"Arrow",{34,2.5,2});
+	city.city_hierarchy.add(city.building_9,"Arrow",{24,-2.5,2});
+	city.city_hierarchy.add(city.building_10,"Arrow",{29,2.5,2});
+	city.city_hierarchy.add(city.nuclear,"Arrow",{60,0,2});
 
-	// city.add(ghetto,"Arrow",{15,2,2});
-	cityy.city.add(cityy.nuclear,"Arrow",{60,0,2});
-
-	//city["Arrow"].global_transform.translation = vec3(17, 0, 0);
-	//city["ghetto_obj"].transform.rotation=rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);	
-    return cityy.city;
+    return city.city_hierarchy;
 }

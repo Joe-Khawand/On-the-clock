@@ -2,7 +2,7 @@
 
 #include "cgp/cgp.hpp"
 
-struct city_test {
+struct city_struct {
     cgp::mesh_drawable arrow;
     cgp::mesh_drawable ring;
     cgp::mesh_drawable world;
@@ -19,19 +19,18 @@ struct city_test {
     cgp::mesh_drawable building_7;
     cgp::mesh_drawable building_8;
     cgp::mesh_drawable building_9;
-    // cgp::mesh_drawable building_10;
+    cgp::mesh_drawable building_10;
     cgp::mesh_drawable building_11;
 
-    cgp::hierarchy_mesh_drawable city;
+    cgp::hierarchy_mesh_drawable city_hierarchy;
 };
-
-cgp::hierarchy_mesh_drawable initialize_city(city_test cityy);
 
 // ****************************** //
 // Functions
 // ****************************** //
 
-// cgp::mesh create_arrow_mesh(float h);
 cgp::mesh create_arrow_mesh(float h, float l, float w);
 cgp::mesh create_ring(float r);
-cgp::mesh create_cylinder(float radius_1,float radius_2,float height); // radius_1 > radius_2
+cgp::mesh create_cylinder(float radius_1,float radius_2,float height);
+
+cgp::hierarchy_mesh_drawable initialize_city(city_struct city);

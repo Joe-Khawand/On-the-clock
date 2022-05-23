@@ -48,6 +48,9 @@ void main()
 	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
 	vec3 color_shading = Ka * color_object;
 
+	color_shading += 0.3 * max(dot(N, normalize(vec3(10.0, 5.0, 3.0))), 0.) * vec3(1, 0.8, 0.8);
+
+
 	for(int k_light=0; k_light<5; k_light++)
 	{
 		vec3 v = spotlight_position[k_light]-fragment.position;
