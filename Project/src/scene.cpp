@@ -74,86 +74,15 @@ void scene_structure::initialize()
 	// ***************************************** //
 	skybox.initialize("assets/dark_skybox_hd/");
 
-	// Basic set-up
+	// Initialize city
 	// ***************************************** //
-
-	global_frame.initialize(mesh_primitive_frame(), "Frame");
-
-	//Initialise city
-	mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
-	building.initialize(building_mesh,"building_obj");
-	building.transform.scaling=0.2;
-	building.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_2.initialize(building_mesh,"building_obj_2");
-	building_3.initialize(building_mesh,"building_obj_3");
-	building_4.initialize(building_mesh,"building_obj_4");
-	building_5.initialize(building_mesh,"building_obj_5");
-	building_6.initialize(building_mesh,"building_obj_6");
-	building_7.initialize(building_mesh,"building_obj_7");
-	building_8.initialize(building_mesh,"building_obj_8");
-	building_9.initialize(building_mesh,"building_obj_9");
-	building_10.initialize(building_mesh,"building_obj_10");
-	building_2.transform.scaling=0.2;
-	building_2.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_3.transform.scaling=0.2;
-	building_3.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_4.transform.scaling=0.2;
-	building_4.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_5.transform.scaling=0.2;
-	building_5.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_6.transform.scaling=0.2;
-	building_6.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_7.transform.scaling=0.2;
-	building_7.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_8.transform.scaling=0.2;
-	building_8.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_9.transform.scaling=0.2;
-	building_9.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	building_10.transform.scaling=0.2;
-	building_10.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-
-	// mesh tower_mesh = mesh_load_file_obj("assets/Objects/TOWER.obj");
-	// tower.initialize(tower_mesh,"tower_obj");
-	// tower.transform.scaling=10.0;
-	// tower.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-
-	// mesh ghetto_mesh = mesh_load_file_obj("assets/Objects/ghetto_building.obj");
-	// ghetto.initialize(ghetto_mesh,"ghetto_obj");
-	// ghetto.transform.scaling=0.4;
-	// ghetto.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-
-	mesh nuclear_mesh = mesh_load_file_obj("assets/Objects/Nuclear_Cooling_Tower.obj");
-	nuclear.initialize(nuclear_mesh,"nuclear_obj");
-	nuclear.transform.scaling=0.0023;
-	
-	mesh arrow_mesh = create_arrow_mesh(0.2, 7.0, 1.0);
-    arrow.initialize(arrow_mesh, "Arrow");
-	arrow.transform.scaling=10.0;
-	
-	mesh ring_mesh = create_ring(9.0);
-	ring.initialize(ring_mesh,"ring_mesh");
-	ring.transform.scaling=10.0;
+	city_struct city_temp;
+	city = initialize_city(city_temp);	
 
 	mesh cylinder_mesh= create_cylinder(100,90, 5);
 	cylinder.initialize(cylinder_mesh,"Cylindre");
 
-	city.add(arrow);
-	// city.add(tower,"Arrow",{7,1,2});
-	city.add(building,"Arrow",{1.2,3.5,2});
-	city.add(building_2,"Arrow",{1.2,1.5,2});
-	city.add(building_3,"Arrow",{1.2,-0.5,2});
-	city.add(building_4,"Arrow",{3.2,3.5,2});
-	city.add(building_5,"Arrow",{3.2,-3.5,2});
-	city.add(building_6,"Arrow",{5.2,-3.5,2});
-	city.add(building_7,"Arrow",{34,-2.5,2});
-	city.add(building_8,"Arrow",{34,2.5,2});
-	city.add(building_9,"Arrow",{24,-2.5,2});
-	city.add(building_10,"Arrow",{29,2.5,2});
-
-	// city.add(ghetto,"Arrow",{15,2,2});
-	city.add(nuclear,"Arrow",{60,0,2});
-
-	//Nexus beam
+	// Nexus beam
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
 	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5.0,0,-10 }, { 5.0,0,-10 }, { 5.0,0,10 }, { -5.0,0,10 });
 	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5.0,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
@@ -169,10 +98,6 @@ void scene_structure::initialize()
 
 	halo.shading.phong = { 0.4f, 0.6f,0,1 };
 	gold_beam.shading.phong = { 0.4f, 0.6f,0,1 };
-
-	// The lights displayed as spheres using this helper initializer (*)-optionnal
-	light_drawable.initialize(shader_lights);
-
 
 	// Implicit surface and nexuses
 	// ***************************************** //
@@ -216,29 +141,26 @@ void scene_structure::display()
 	display_nexus();
 
 	// Basic elements of the scene
-
-	if (gui.display.frame)
-		draw(global_frame, environment);
-
+  
 	draw(city,environment);
 	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
 	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	draw(cylinder,environment);	
-
-	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
 	city.update_local_to_global_coordinates();
 
-	// Scene_orthographic : Player GUI
-	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2) * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	cube.transform.translation = { 0.75f,0.8f,0.0f };
+	draw(cylinder,environment);	
+
+	// Scene_orthographic has a fixed camera and an orthographic projection : Player GUI
+	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
+                            * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+	cube.transform.translation = { 0.75f, 0.8f, 0.0f };
 	draw(cube, environment_ortho);
-	cube.transform.translation= { 0.65f,0.8f,0.0f };
+	cube.transform.translation = { 0.65f, 0.8f, 0.0f };
 	draw(cube, environment_ortho);
-	cube.transform.translation= { 0.55f,0.8f,0.0f };
+	cube.transform.translation = { 0.55f, 0.8f, 0.0f };
 	draw(cube, environment_ortho);
 
+	// TODO (later on tho)
 	if (gui.display.wireframe){
-		draw_wireframe(arrow, environment);
 		draw_wireframe(cylinder,environment);
 	}
 	display_semiTransparent();
@@ -262,8 +184,6 @@ void scene_structure::display_lights()
 	// Update the position and color of the lights
 	compute_light_position(timer.t, environment);
 
-	// Display the elements of the scene
-	draw(light_drawable, environment); // this is a helper function from multiple_lights (display all the spotlights as spheres) (*)-optionnal
 	int const N_spotlight = environment.spotlight_color.size();
 	for(u_int k_light = 1; k_light<N_spotlight; k_light++){
 		nexus["Core"].transform.translation = environment.spotlight_position[k_light];
