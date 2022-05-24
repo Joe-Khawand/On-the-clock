@@ -23,19 +23,28 @@ float Boid::distance_to(Boid b){
 
 //TODO fix drawing
 void Boid::draw_boid(cgp::timer_basic time){
-    position= position;// + vitesse*time.t;
-    // if (position.x>= border_x || position.x<=0)
-    // {
-    //     position.x+= -position.x*time.t*0.000001;
-    // }
-    // else if (position.y>= border_y || position.y<=0)
-    // {
-    //     position.y+= -position.y*time.t*0.000001;
-    // }
-    // else if (position.z>= border_z || position.z<=0)
-    // {
-    //     position.z+= -position.z*time.t*0.000001;
-    // }
+    position= position + vitesse*time.t*0.01;
+    if (position.x>= border_x)
+    {
+        vitesse.x = -abs(vitesse.x);
+    }
+    if(position.x<=-border_x){
+        vitesse.x = abs(vitesse.x);
+    }
+    if (position.y>= border_y)
+    {
+        vitesse.y = -abs(vitesse.y);
+    }
+    if(position.y<=-border_y){
+        vitesse.y = abs(vitesse.y);
+    }
+    if (position.z>= border_z)
+    {
+        vitesse.z = -abs(vitesse.z);
+    }
+    if(position.z<=-border_z){
+        vitesse.z = abs(vitesse.z);
+    }
 
     //vitesse= vitesse - position*time.t*0.001;
     cgp::vec3 norm_v = vitesse/ sqrt(vitesse.x*vitesse.x+vitesse.y*vitesse.y+vitesse.z*vitesse.z);
@@ -73,19 +82,6 @@ std::vector<Boid *> initialize_boids(){
 void separation(std::vector<Boid *> boids){
     for (int i = 0; i < number_boids; i++)
     {   
-        // if (boids[i]->position.x>= border_x || boids[i]->position.x<=0)
-        // {
-        //     boids[i]->vitesse.x= -boids[i]->vitesse.x;
-        // }
-        // if (boids[i]->position.y>= border_y || boids[i]->position.y<=0)
-        // {
-        //     boids[i]->vitesse.y= boids[i]->vitesse.y;
-        // }
-        // if (boids[i]->position.z>= border_z || boids[i]->position.z<=0)
-        // {
-        //     boids[i]->vitesse.z= -boids[i]->vitesse.z;
-        // }
-        
         
         for (int j = 0; j < number_boids; j++)
         {

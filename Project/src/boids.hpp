@@ -21,12 +21,12 @@ class Boid{
 //class Boids{
     //public:
     //const std::vector<Boid *> boids;
-    const int number_boids=5;
+    const int number_boids=30;
 
     //cube confining the boids
-    const float border_x=10.0;
-    const float border_y=10.0;
-    const float border_z=10.0;
+    const float border_x=150.0;
+    const float border_y=150.0;
+    const float border_z=100.0;
 
     //cgp::timer_basic boid_timer;
 

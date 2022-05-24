@@ -167,7 +167,7 @@ void scene_structure::display()
 	//! Boids
 	//boid_timer.update();
 	//separation(b);
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < number_boids; i++)
 	{	
 		b[i]->draw_boid(timer);
 		draw(b[i]->shape,environment);
