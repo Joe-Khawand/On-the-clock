@@ -228,6 +228,10 @@ void scene_structure::display()
 		draw_wireframe(seconds, environment);
 		draw_wireframe(gold_beam, environment);
 		draw_wireframe(blue_beam, environment);
+		for (int i = 0; i < number_boids; i++)
+		{	
+			draw_wireframe(b[i]->shape,environment);
+		}
 	}
 	if (environment.spotlight_bool[0])
 		display_semiTransparent();
