@@ -99,6 +99,7 @@ void mouse_move_callback(GLFWwindow* /*window*/, double xpos, double ypos)
 void mouse_click_callback(GLFWwindow* /*window*/, int button, int action, int /*mods*/)
 {
 	scene.inputs.mouse.click.update_from_glfw_click(button, action);
+	scene.mouse_click();
 }
 
 // This function is called everytime a keyboard touch is pressed/released

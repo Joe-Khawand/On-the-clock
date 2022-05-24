@@ -10,20 +10,24 @@
 * 
 * Note: If you want a different number of lights, you will need to change the size of the array in the scene but also uniform parameters in the vertex shader.
 */
-const int n_lights = 5;
+const int n_lights = 13;
 
 struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 {
-	// Store position for 5 lights
+	// Store position for the lights
 	std::array<cgp::vec3, n_lights> spotlight_position;
-	// The (r,g,b) color of the 5 lights
+	// The (r,g,b) color of the lights
 	std::array<cgp::vec3, n_lights> spotlight_color;
+	// The timer associated to each nexus
+	std::array<cgp::timer_basic, n_lights> spotlight_timer;
+	// To check whether a nexus has been activated
+	std::array<bool, n_lights> spotlight_bool;
 
 	// The characteristic attenuation of the light
 	float spotlight_falloff = 0.0003f;
 
 	// The characteristic attenuation due to the fog
-	float fog_falloff = 0.0001f;
+	float fog_falloff = 0.00001f;
 
 	// Standard parameters (same as basic environment)
 	cgp::vec3 background_color;
