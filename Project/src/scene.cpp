@@ -8,6 +8,8 @@
 
 #include "nexus.hpp"
 
+#include "boids.hpp"
+
 
 using namespace cgp;
 
@@ -168,6 +170,9 @@ void scene_structure::initialize()
 	cube.initialize(mesh_primitive_cube({ 0,0,0 }, 0.2f), "Cube");
 	cube.transform.translation = { 0.75f,0.8f,0.0f };
 	cube.transform.scaling = 0.2;
+
+	//!Boids
+	b = initialize_boids();
 }
 
 void scene_structure::display()
@@ -175,7 +180,7 @@ void scene_structure::display()
 
 	draw(skybox, environment); 
 	// Update the current time
-	timer.update();
+	dt=timer.update();
 	display_lights(); // displays each nexus and every light source
 
 	// Basic elements of the scene
@@ -203,6 +208,20 @@ void scene_structure::display()
 	cube.transform.translation = { 0.55f, 0.8f, 0.0f };
 	draw(cube, environment_ortho);
 
+	//! Boids
+	//* Appliquer les 3 regles
+	separation(b);
+	alignment(b);
+	cohesion(b);
+	//dessiner les boids
+	for (int i = 0; i < number_boids; i++)
+	{	
+		b[i]->draw_boid(dt);
+		draw(b[i]->shape,environment);
+	}
+	
+
+	// TODO (later on tho)
 	if (gui.display.wireframe){
 		draw_wireframe(hours, environment);
 		draw_wireframe(minutes, environment);

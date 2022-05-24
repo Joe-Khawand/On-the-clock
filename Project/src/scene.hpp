@@ -6,6 +6,7 @@
 #include "gui_helper.hpp"
 #include "multiple_lights/multiple_lights.hpp" 
 #include "clock_city.hpp"
+#include "boids.hpp"
 
 // The structure of the custom scene
 struct scene_structure {
@@ -30,6 +31,7 @@ struct scene_structure {
 
 	// Timers used for the animation
 	cgp::timer_basic timer;
+	float dt;
 
 	// Flight
 	cgp::timer_basic flight_timer;//independent timer for flight
@@ -49,6 +51,12 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
+	cgp::hierarchy_mesh_drawable hours;
+	cgp::hierarchy_mesh_drawable minutes;
+	cgp::hierarchy_mesh_drawable seconds;
+
+	//! Boids
+	std::vector<Boid *> b; //tableau de pointeurs vers des boids
 
 	// text drawables
 	// bool display_too_far;
