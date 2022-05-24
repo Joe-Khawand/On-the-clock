@@ -115,22 +115,25 @@ cgp::hierarchy_mesh_drawable initialize_hours()
     mesh_drawable exterior_cylinder;
     mesh_drawable cylinder;
     mesh_drawable arrow;
-    mesh_drawable nuclear;
-    mesh_drawable building;
-    mesh_drawable building_2;
-    mesh_drawable building_3;
-    mesh_drawable building_4;
-    mesh_drawable building_5;
-    mesh_drawable building_6;
-    mesh_drawable building_7;
-    mesh_drawable building_8;
-    mesh_drawable building_9;
-    mesh_drawable building_10;
+
+    mesh_drawable city;
+    // mesh_drawable nuclear;
+    // mesh_drawable building;
+    // mesh_drawable building_2;
+    // mesh_drawable building_3;
+    // mesh_drawable building_4;
+    // mesh_drawable building_5;
+    // mesh_drawable building_6;
+    // mesh_drawable building_7;
+    // mesh_drawable building_8;
+    // mesh_drawable building_9;
+    // mesh_drawable building_10;
 
     cylinder.initialize(create_cylinder(16, 14.0, 2.0), "Cylinder");
     exterior_cylinder.initialize(create_cylinder(78, 75.0, 2.0), "Exterior");
 
-    arrow.initialize(create_arrow_mesh(1.0, 50, 7), "Arrow");
+    arrow.initialize(create_arrow_mesh(1.0, 50, 6.5), "Arrow");
+    city.initialize(create_city(1, 1, 0.1, 31, 6, 7), "City");
 	//arrow.transform.scaling=10.0;
 
 	// mesh building_mesh = mesh_load_file_obj("assets/Objects/Building.obj");
@@ -172,6 +175,7 @@ cgp::hierarchy_mesh_drawable initialize_hours()
     city_hierarchy.add(exterior_cylinder);
     city_hierarchy.add(cylinder, "Exterior");
 	city_hierarchy.add(arrow, "Cylinder", {14, 0, 0.5});
+    city_hierarchy.add(city, "Arrow", {2, -3.25, 1});
 	// city_hierarchy.add(building,"Arrow",{1.2,3.5,2});
 	// city_hierarchy.add(building_2,"Arrow",{1.2,1.5,2});
 	// city_hierarchy.add(building_3,"Arrow",{1.2,-0.5,2});
@@ -195,15 +199,18 @@ cgp::hierarchy_mesh_drawable initialize_minutes()
     mesh_drawable exterior_cylinder;
     mesh_drawable cylinder;
     mesh_drawable arrow;
+    mesh_drawable city;
 
     cylinder.initialize(create_cylinder(11, 5, 2.0), "Cylinder");
     exterior_cylinder.initialize(create_cylinder(118, 115.0, 2.0), "Exterior");    
 
-    arrow.initialize(create_arrow_mesh(1, 95, 7), "Arrow");
+    arrow.initialize(create_arrow_mesh(1, 95, 6.5), "Arrow");
+    city.initialize(create_city(1, 1, 0.1, 70, 6, 7), "City");
 	
     city_hierarchy.add(exterior_cylinder);
     city_hierarchy.add(cylinder, "Exterior");
 	city_hierarchy.add(arrow, "Cylinder", {5, 0, 0.5});
+    city_hierarchy.add(city, "Arrow", {6, -3.25, 1});
 
     city_hierarchy["Exterior"].transform.translation = {0, 0, -25};
     city_hierarchy.update_local_to_global_coordinates();
@@ -217,6 +224,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     mesh_drawable exterior_base;
     mesh_drawable cylinder;
     mesh_drawable arrow;
+    mesh_drawable city;
 
     cylinder.initialize(create_cylinder(22, 20.0, 2.0), "Cylinder");
     exterior_base.initialize(create_cylinder(154, 104.5, 2), "Base");
@@ -233,12 +241,14 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
 
     exterior_cylinder.initialize(exterior_mesh, "Exterior");
 
-    arrow.initialize(create_arrow_mesh(1, 80, 3), "Arrow");
+    arrow.initialize(create_arrow_mesh(1, 80, 3.2), "Arrow");
+    city.initialize(create_city(1, 1, 0.1, 70, 3, 7), "City");
 	
     city_hierarchy.add(exterior_cylinder);
     city_hierarchy.add(exterior_base, "Exterior", {0, 0, -2});
     city_hierarchy.add(cylinder, "Exterior", {0, 0, -1});
 	city_hierarchy.add(arrow, "Cylinder", {20, 0, 0.5});
+    city_hierarchy.add(city, "Arrow", {2, -1.6, 1});
 
     mesh_drawable one;
     one.initialize(brick(20, 2, 2), "One");
@@ -407,9 +417,50 @@ cgp::mesh x(float l, float w, float h, cgp::vec3 offset)
     return x;
 }
 
+// Buildings of dimensions l x w with streets of width s
+cgp::mesh create_city(float l, float w, float s, int nl, int nw, float hmax)
+{
+    mesh city;
+    for (int i=0; i<nl; i++) {
+        for (int j=0; j<nw; j++) {
+            float h = rand_interval(0, (1 - (float) i / (float) nl) * (1 - (float) i / (float) nl) * hmax);
+            //south face
+            city.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s), 0},
+                                                    {i*(l+s) + l, j*(w+s), 0},
+                                                    {i*(l+s) + l, j*(w+s), h},
+                                                    {i*(l+s), j*(w+s), h}));
+            
+            //west face
+            city.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s) + w, 0},
+                                                    {i*(l+s), j*(w+s), 0},
+                                                    {i*(l+s), j*(w+s), h},
+                                                    {i*(l+s), j*(w+s) + w, h}));
+            
+            //north face
+            city.push_back(mesh_primitive_quadrangle({i*(l+s) + l, j*(w+s) + w, 0},
+                                                    {i*(l+s), j*(w+s) + w, 0},
+                                                    {i*(l+s), j*(w+s) + w, h},
+                                                    {i*(l+s) + l, j*(w+s) + w, h}));
+            
+            //east face
+            city.push_back(mesh_primitive_quadrangle({i*(l+s) + l, j*(w+s), 0},
+                                                    {i*(l+s) + l, j*(w+s) + w, 0},
+                                                    {i*(l+s) + l, j*(w+s) + w, h},
+                                                    {i*(l+s) + l, j*(w+s), h}));
+            
+            //top face
+            city.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s), h},
+                                                    {i*(l+s) + l, j*(w+s), h},
+                                                    {i*(l+s) + l, j*(w+s) + w, h},
+                                                    {i*(l+s), j*(w+s) + w, h}));
+        }
+    }
+    return city;
+}
+
 float angle_increment(float t)
 {
     float x = floorf(t);
-    if (t-x < 0.75) return M_PI * x /30;
-    else return M_PI * (x + 4 * (t-x-0.75)) / 30;
+    if (t-x < 0.75) return M_PI * x /6;
+    else return M_PI * (x + 4 * (t-x-0.75)) / 6;
 }

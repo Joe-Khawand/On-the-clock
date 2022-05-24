@@ -14,6 +14,8 @@ cgp::mesh create_cylinder(float radius_1,float radius_2,float height);
 cgp::mesh brick(float l, float w, float h, cgp::vec3 offset = {0, 0, 0});
 cgp::mesh v(float l, float w, float h, cgp::vec3 offset = {0, 0, 0});
 cgp::mesh x(float l, float w, float h, cgp::vec3 offset = {0, 0, 0});
+cgp::mesh create_city(float l, float w, float s, int nl, int nw, float hmax);
+// TODO cgp::mesh maze(float nl, float nw, float h);
 
 
 // Used externally
