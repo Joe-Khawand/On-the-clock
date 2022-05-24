@@ -21,11 +21,11 @@ struct scene_structure {
 
 	cgp::skybox_drawable skybox;
 
-	cgp::mesh_drawable halo;
-	cgp::mesh_drawable blue_beam;
-	cgp::mesh_drawable gold_beam;
-
 	cgp::mesh_drawable cylinder;
+
+	cgp::hierarchy_mesh_drawable hours;
+	cgp::hierarchy_mesh_drawable minutes;
+	cgp::hierarchy_mesh_drawable seconds;
 
 
 	// Timers used for the animation
@@ -39,17 +39,24 @@ struct scene_structure {
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
-	//cgp::mesh_drawable nexus;
 	cgp::hierarchy_mesh_drawable nexus_core;
 	cgp::hierarchy_mesh_drawable nexus;
+
+	cgp::mesh_drawable halo;
+	cgp::mesh_drawable blue_beam;
+	cgp::mesh_drawable gold_beam;
 
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
 
-	cgp::hierarchy_mesh_drawable hours;
-	cgp::hierarchy_mesh_drawable minutes;
-	cgp::hierarchy_mesh_drawable seconds;
+	// text drawables
+	// bool display_too_far;
+	cgp::mesh_drawable text;
+	bool display_text;
+	float time_text_appeared;
+	int idx_text;
+	std::array<GLuint, 7> text_textures;
 
 	// ****************************** //
 	// Functions

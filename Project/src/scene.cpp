@@ -70,8 +70,11 @@ void scene_structure::mouse_click()
 
 void scene_structure::activate_nexus(float d, int i)
 {
-	if (d > 40.0f)
-		std::cout << "Try moving closer..." << std::endl;
+	if (d > 40.0f) {
+		time_text_appeared = timer.t;
+		display_text = true;
+		text.texture = text_textures[0];
+	}
 	else {
 		if (!environment.spotlight_bool[i]){
 			if (i > 0 && environment.spotlight_bool[0]) {
@@ -121,19 +124,22 @@ void scene_structure::initialize()
 	minutes = initialize_minutes();
 	seconds = initialize_seconds();
 
-	// Nexus beam
+	// Nexus beam and other semi-transparent billboards
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
-	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5.0,0,-10 }, { 5.0,0,-10 }, { 5.0,0,10 }, { -5.0,0,10 });
-	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5.0,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
+	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5,-5,0 }, { 5,-5,0 }, { 5,5,0 }, { -5,5,0 });
+	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
 	halo.initialize(quad_mesh_1, "Halo");
 	gold_beam.initialize(quad_mesh_3,"Gold Beam");
+	text.initialize(quad_mesh_2, "Too far");
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
 	gold_beam.texture = opengl_load_texture_image("assets/beamduloveforever.png");
+	text_textures[0] = opengl_load_texture_image("assets/Text/too_far.png");
 	gold_beam.transform.scaling = 4;
 	gold_beam.transform.translation = vec3(0, 0, -3);
 	gold_beam.shader = shader_halo;
 	halo.shader = shader_halo;
+	text.shader = shader_halo;
 
 	// Implicit surface and nexuses
 	// ***************************************** //
@@ -296,7 +302,13 @@ void scene_structure::display_semiTransparent()
 		draw(halo, environment);
 		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2 );
 		draw(halo, environment);
-	
+		if (display_text){
+			text.transform.translation = environment.camera.position() + 20 * environment.camera.front();
+			text.transform.rotation = environment.camera.orientation();
+			draw(text, environment);
+			if (timer.t - time_text_appeared > 1.0)
+				display_text = false;
+		}
 	// Re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);
