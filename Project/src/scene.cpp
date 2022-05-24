@@ -8,6 +8,8 @@
 
 #include "nexus.hpp"
 
+#include "boids.hpp"
+
 
 using namespace cgp;
 
@@ -127,6 +129,9 @@ void scene_structure::initialize()
 	cube.initialize(mesh_primitive_cube({ 0,0,0 }, 0.2f), "Cube");
 	cube.transform.translation = { 0.75f,0.8f,0.0f };
 	cube.transform.scaling = 0.2;
+
+	//!Boids
+	b = initialize_boids();
 }
 
 
@@ -158,6 +163,16 @@ void scene_structure::display()
 	draw(cube, environment_ortho);
 	cube.transform.translation = { 0.55f, 0.8f, 0.0f };
 	draw(cube, environment_ortho);
+
+	//! Boids
+	//boid_timer.update();
+	//separation(b);
+	for (int i = 0; i < 5; i++)
+	{	
+		b[i]->draw_boid(timer);
+		draw(b[i]->shape,environment);
+	}
+	
 
 	// TODO (later on tho)
 	if (gui.display.wireframe){

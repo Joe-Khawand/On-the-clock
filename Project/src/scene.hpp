@@ -6,6 +6,7 @@
 #include "gui_helper.hpp"
 #include "multiple_lights/multiple_lights.hpp" 
 #include "clock_city.hpp"
+#include "boids.hpp"
 
 
 
@@ -54,6 +55,10 @@ struct scene_structure {
 	cgp::scene_environment_basic environment_ortho;
 	cgp::hierarchy_mesh_drawable city;
 
+	//! Boids
+	//Boids boid_tab (int n);
+	//cgp::timer_basic boid_timer;
+	std::vector<Boid *> b;
 
 
 	// ****************************** //
