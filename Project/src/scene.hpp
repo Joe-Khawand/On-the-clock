@@ -51,9 +51,6 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
-	cgp::hierarchy_mesh_drawable hours;
-	cgp::hierarchy_mesh_drawable minutes;
-	cgp::hierarchy_mesh_drawable seconds;
 
 	//! Boids
 	std::vector<Boid *> b; //tableau de pointeurs vers des boids
