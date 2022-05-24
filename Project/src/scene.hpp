@@ -39,10 +39,6 @@ struct scene_structure {
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
-	// Speed of nexus
-	// float speed = 1.0f;
-	// float speed_time = 1.0f;
-
 	//cgp::mesh_drawable nexus;
 	cgp::hierarchy_mesh_drawable nexus_core;
 	cgp::hierarchy_mesh_drawable nexus;
@@ -50,11 +46,10 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
 	cgp::scene_environment_basic environment_ortho;
+
 	cgp::hierarchy_mesh_drawable hours;
 	cgp::hierarchy_mesh_drawable minutes;
 	cgp::hierarchy_mesh_drawable seconds;
-
-
 
 	// ****************************** //
 	// Functions
@@ -63,6 +58,8 @@ struct scene_structure {
 	// Function to call in the animation loop in main (*)
 	// This function replace the standard trackball behavior that must also be removed in the main (from mouse_move_callback)
 	void update_camera(); 
+	void mouse_click(); // To activate nexus
+	void activate_nexus(float d, int i);
 
 	void initialize();  // Standard initialization to be called before the animation loop
 
@@ -70,7 +67,6 @@ struct scene_structure {
 	void display_lights();
 	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
-	void display_nexus();
 	void display_semiTransparent(); // Display function for semi-transparent shapes
 };
 
