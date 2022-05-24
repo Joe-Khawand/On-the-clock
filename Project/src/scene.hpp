@@ -22,11 +22,11 @@ struct scene_structure {
 
 	cgp::skybox_drawable skybox;
 
-	cgp::mesh_drawable halo;
-	cgp::mesh_drawable blue_beam;
-	cgp::mesh_drawable gold_beam;
-
 	cgp::mesh_drawable cylinder;
+
+	cgp::hierarchy_mesh_drawable hours;
+	cgp::hierarchy_mesh_drawable minutes;
+	cgp::hierarchy_mesh_drawable seconds;
 
 
 	// Timers used for the animation
@@ -41,13 +41,12 @@ struct scene_structure {
 	implicit_surface_structure implicit_surface; // Structures used for the implicit surface (*)
 	field_function_structure field_function;     // A Parametric function used to generate the discrete field (*)
 
-	// Speed of nexus
-	// float speed = 1.0f;
-	// float speed_time = 1.0f;
-
-	//cgp::mesh_drawable nexus;
 	cgp::hierarchy_mesh_drawable nexus_core;
 	cgp::hierarchy_mesh_drawable nexus;
+
+	cgp::mesh_drawable halo;
+	cgp::mesh_drawable blue_beam;
+	cgp::mesh_drawable gold_beam;
 
 	//orthographic projection gui
 	cgp::mesh_drawable cube;
@@ -59,6 +58,13 @@ struct scene_structure {
 	//! Boids
 	std::vector<Boid *> b; //tableau de pointeurs vers des boids
 
+	// text drawables
+	// bool display_too_far;
+	cgp::mesh_drawable text;
+	bool display_text;
+	float time_text_appeared;
+	int idx_text;
+	std::array<GLuint, 7> text_textures;
 
 	// ****************************** //
 	// Functions
@@ -67,6 +73,8 @@ struct scene_structure {
 	// Function to call in the animation loop in main (*)
 	// This function replace the standard trackball behavior that must also be removed in the main (from mouse_move_callback)
 	void update_camera(); 
+	void mouse_click(); // To activate nexus
+	void activate_nexus(float d, int i);
 
 	void initialize();  // Standard initialization to be called before the animation loop
 
@@ -74,7 +82,6 @@ struct scene_structure {
 	void display_lights();
 	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
-	void display_nexus();
 	void display_semiTransparent(); // Display function for semi-transparent shapes
 };
 

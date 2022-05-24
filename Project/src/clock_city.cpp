@@ -242,7 +242,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     exterior_cylinder.initialize(exterior_mesh, "Exterior");
 
     arrow.initialize(create_arrow_mesh(1, 80, 3.2), "Arrow");
-    city.initialize(create_city(1, 1, 0.1, 70, 3, 7), "City");
+    city.initialize(create_city(1, 1, 0.1, 65, 3, 7), "City");
 	
     city_hierarchy.add(exterior_cylinder);
     city_hierarchy.add(exterior_base, "Exterior", {0, 0, -2});

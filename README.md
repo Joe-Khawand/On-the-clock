@@ -12,7 +12,6 @@ TODO list
         - nombre de nexus à collecter encore (GUI? billboard devant camera?...)
         - explications
     - cinématiques avec trajectoire caméra prédéfinie
-    - nexus cliquables
     - musique de fond (dans le jeu ET dans la vidéo) --> synchroniser la musique avec les temps forts de la vidéo
  - Portail de téléportation (montre cassée)
 
@@ -30,3 +29,5 @@ Done
  - camera volante
  - hierarchies
  - surface implicite
+ - lumières multiples et fog effect
+ - nexus cliquables

@@ -28,18 +28,19 @@ void scene_structure::update_camera()
 	// The rotation is only applied to the yaw and pitch degrees of freedom.
 	float const pitch = 0.5f; // speed of the pitch
 	float const yaw  = 0.7f; // speed of the yaw
+	float scale = std::max(flight_timer.scale, 0.01f);
 
 	if (keyboard.up){
-		environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt);
+		environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt / scale);
 	}
 	if (keyboard.down){
-		environment.camera.manipulator_rotate_spherical_coordinates(0,-pitch*dt);
+		environment.camera.manipulator_rotate_spherical_coordinates(0,-pitch*dt / scale);
 	}
 	if (keyboard.right){
-		environment.camera.manipulator_rotate_spherical_coordinates(yaw*dt,0);
+		environment.camera.manipulator_rotate_spherical_coordinates(yaw*dt / scale,0);
 	}
 	if (keyboard.left){
-		environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt,0);
+		environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
 	}
 	if (keyboard.shift)
 		if (flight_speed<3.0)
@@ -54,6 +55,48 @@ void scene_structure::update_camera()
 		}
 }
 
+void scene_structure::mouse_click()
+{
+	if (inputs.mouse.click.last_action == last_mouse_cursor_action::click_left) 
+	{
+		vec3 ray_direction = camera_ray_direction(environment.camera.matrix_frame(), environment.projection.matrix_inverse(), inputs.mouse.position.current);
+
+		for (int i=0; i<n_lights; i++) {
+			vec3 cam_to_light = environment.spotlight_position[i] - environment.camera.position();
+			float d = cgp::norm(cam_to_light);
+			if (cgp::norm(d * normalize(ray_direction) - cam_to_light) < 1.5f)
+				activate_nexus(d, i);
+		}
+	}
+}
+
+void scene_structure::activate_nexus(float d, int i)
+{
+	if (d > 40.0f) {
+		time_text_appeared = timer.t;
+		display_text = true;
+		text.texture = text_textures[0];
+	}
+	else {
+		if (!environment.spotlight_bool[i]){
+			if (i > 0 && environment.spotlight_bool[0]) {
+				environment.spotlight_color[i] = { 1.0f, 0.9f, 0.5f };
+				environment.spotlight_timer[i].start();
+				environment.spotlight_bool[i] = true;
+				environment.spotlight_timer[0].scale += 0.1f;
+				timer.scale += 0.1f;
+			}
+			if (i == 0) {
+				environment.spotlight_color[0] = { 1.0f, 0.9f, 0.5f };
+				environment.spotlight_timer[0].start();
+				environment.spotlight_bool[0] = true;
+				environment.spotlight_timer[0].scale += 0.3f;
+				timer.scale += 0.3f;
+			}
+		}
+	}
+}
+
 void scene_structure::initialize()
 {
 	// Initial placement of the camera
@@ -64,6 +107,11 @@ void scene_structure::initialize()
 	// ***************************************** //
 	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");
 	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
+	for (int i=0; i < n_lights; i++) {
+		environment.spotlight_color[i] = { 0,0,0 };
+		environment.spotlight_timer[i].stop();
+	}
+	environment.spotlight_timer[0].scale = 0;
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
@@ -73,23 +121,27 @@ void scene_structure::initialize()
 
 	// Initialize city
 	// ***************************************** //
+	timer.scale = 0.1f;
 	hours = initialize_hours();
 	minutes = initialize_minutes();
 	seconds = initialize_seconds();
 
-	// Nexus beam
+	// Nexus beam and other semi-transparent billboards
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
-	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5.0,0,-10 }, { 5.0,0,-10 }, { 5.0,0,10 }, { -5.0,0,10 });
-	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5.0,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
+	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5,-5,0 }, { 5,-5,0 }, { 5,5,0 }, { -5,5,0 });
+	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
 	halo.initialize(quad_mesh_1, "Halo");
 	gold_beam.initialize(quad_mesh_3,"Gold Beam");
+	text.initialize(quad_mesh_2, "Too far");
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
 	gold_beam.texture = opengl_load_texture_image("assets/beamduloveforever.png");
+	text_textures[0] = opengl_load_texture_image("assets/Text/too_far.png");
 	gold_beam.transform.scaling = 4;
 	gold_beam.transform.translation = vec3(0, 0, -3);
 	gold_beam.shader = shader_halo;
 	halo.shader = shader_halo;
+	text.shader = shader_halo;
 
 	// Implicit surface and nexuses
 	// ***************************************** //
@@ -123,16 +175,13 @@ void scene_structure::initialize()
 	b = initialize_boids();
 }
 
-
 void scene_structure::display()
 {
 
 	draw(skybox, environment); 
 	// Update the current time
 	dt=timer.update();
-	display_lights();
-	display_core();
-	display_nexus();
+	display_lights(); // displays each nexus and every light source
 
 	// Basic elements of the scene
   
@@ -180,10 +229,9 @@ void scene_structure::display()
 		draw_wireframe(gold_beam, environment);
 		draw_wireframe(blue_beam, environment);
 	}
-	display_semiTransparent();
-        
+	if (environment.spotlight_bool[0])
+		display_semiTransparent();
 }
-
 
 void scene_structure::display_gui()
 {
@@ -198,19 +246,41 @@ void scene_structure::display_lights()
 	// Update the position and color of the lights
 	compute_light_position(timer.t, environment);
 
-	int const N_spotlight = environment.spotlight_color.size();
-	for(u_int k_light = 1; k_light<N_spotlight; k_light++){
-		nexus["Core"].transform.translation = environment.spotlight_position[k_light];
+	environment.spotlight_timer[0].update();
+	float t0 = environment.spotlight_timer[0].t;
+	nexus_core["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * t0);
+	nexus_core["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * t0);
+	nexus_core["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * t0);
+	nexus_core["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - t0);
+
+	nexus_core.update_local_to_global_coordinates();
+
+	draw(nexus_core, environment);
+	display_core();
+	if (gui.display.wireframe)
+	    draw_wireframe(nexus_core, environment);
+
+	for(int i = 1; i<n_lights; i++){
+		environment.spotlight_timer[i].update();
+		float t = environment.spotlight_timer[i].t;
+		nexus["Core"].transform.translation = environment.spotlight_position[i];
+		nexus["Core"].transform.scaling = (2.5 + 0.5 * pow(cos(2 * t), 10)) / 3.0f;
+		nexus["Outer ring"].transform.scaling = 1 / ((2.5 + 0.5 * pow(cos(2 * t), 10)) / 3.0f);
+		nexus["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * t);
+		nexus["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * t);
+		nexus["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * t);
+		nexus["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - t);
+
 		nexus.update_local_to_global_coordinates();
 		draw(nexus, environment);
+		if (gui.display.wireframe)
+			draw_wireframe(nexus, environment);
 	}
 
 }
 
-
 void scene_structure::display_core()
 {
-	if (gui.display.surface)    // Display the implicit surface (*)
 	field_function.pa = {  2 * cos(3 * timer.t),
 						sin(3 * timer.t),
 						0.0f};
@@ -221,36 +291,12 @@ void scene_structure::display_core()
 						0.4 * sin(- 4 * timer.t) * sin(- 1.17 * timer.t),
 						1.9 * sin(- 4 * timer.t) * cos(- 1.17 * timer.t) };
 	field_function.noise_offset = 1000 * timer.t;
-	implicit_surface.gui_update(gui, field_function);
+	implicit_surface.update_field(field_function, gui.isovalue);
 	
 	draw(implicit_surface.drawable_param.shape, environment);
 
 	if (gui.display.wireframe)  // Display the wireframe of the implicit surface (*)
 		draw_wireframe(implicit_surface.drawable_param.shape, environment, { 0,0,0 });
-}
-
-void scene_structure::display_nexus()
-{
-	nexus_core["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * timer.t);
-	nexus_core["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * timer.t);
-	nexus_core["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * timer.t);
-	nexus_core["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - timer.t);
-
-	nexus_core.update_local_to_global_coordinates();
-
-	// TODO move this so that it only affects one nexus at a time, and take into account their own timer
-	nexus["Core"].transform.scaling = (2.5 + 0.5 * pow(cos(2 * timer.t), 10)) / 3.0f;
-	nexus["Outer ring"].transform.scaling = 1 / ((2.5 + 0.5 * pow(cos(2 * timer.t), 10)) / 3.0f);
-	nexus["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * timer.t);
-	nexus["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * timer.t);
-	nexus["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * timer.t);
-	nexus["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - timer.t);
-
-	nexus.update_local_to_global_coordinates();
-
-	draw(nexus_core, environment);
-	if (gui.display.wireframe)
-	    draw_wireframe(nexus_core, environment);
 }
 
 void scene_structure::display_semiTransparent()
@@ -275,7 +321,13 @@ void scene_structure::display_semiTransparent()
 		draw(halo, environment);
 		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2 );
 		draw(halo, environment);
-	
+		if (display_text){
+			text.transform.translation = environment.camera.position() + 20 * environment.camera.front();
+			text.transform.rotation = environment.camera.orientation();
+			draw(text, environment);
+			if (timer.t - time_text_appeared > 1.0)
+				display_text = false;
+		}
 	// Re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);
