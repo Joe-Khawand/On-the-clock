@@ -5,8 +5,6 @@ Made by:
 @Khokho199
 
 TODO list
- - PERSONNAGE + vue 3e personne? + hitboxes
- - fenêtres qui s'allument avec double textures + lumière qui bouge
  - placer les lumières (mettre le nombre de lumières en paramètre uniform @Joel démerde-toi <3)
  - plaquer des textures un jour ca serait cool
  - mécanisme du jeu :
@@ -18,8 +16,12 @@ TODO list
     - musique de fond (dans le jeu ET dans la vidéo) --> synchroniser la musique avec les temps forts de la vidéo
  - Portail de téléportation (montre cassée)
 
+En option
+ - PERSONNAGE + vue 3e personne? + hitboxes
+ - fenêtres qui s'allument avec double textures + lumière qui bouge
+
 En cours
- - Ville canon
+ - Ville canon, autres éléments de décor (l-systems, labyrinthes...)
  - Boyds
  - Interface affichant instructions
 

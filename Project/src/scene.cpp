@@ -159,6 +159,8 @@ void scene_structure::display()
 		draw_wireframe(hours, environment);
 		draw_wireframe(minutes, environment);
 		draw_wireframe(seconds, environment);
+		draw_wireframe(gold_beam, environment);
+		draw_wireframe(blue_beam, environment);
 	}
 	display_semiTransparent();
         
