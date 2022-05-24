@@ -12,7 +12,7 @@ class Boid{
     Boid();//constructor 
     //~Boid();//destructor
 
-    void draw_boid(cgp::timer_basic time);
+    void draw_boid(float dt);
     float distance_to(Boid b);
     void apply_force();//apply force to boid changing its speed
     void steer(cgp::vec3 s);

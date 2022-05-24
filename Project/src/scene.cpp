@@ -140,7 +140,7 @@ void scene_structure::display()
 
 	draw(skybox, environment); 
 	// Update the current time
-	timer.update();
+	dt=timer.update();
 	display_lights();
 	display_core();
 	display_nexus();
@@ -166,10 +166,12 @@ void scene_structure::display()
 
 	//! Boids
 	//boid_timer.update();
-	//separation(b);
+	separation(b);
+	alignment(b);
+	cohesion(b);
 	for (int i = 0; i < number_boids; i++)
 	{	
-		b[i]->draw_boid(timer);
+		b[i]->draw_boid(dt);
 		draw(b[i]->shape,environment);
 	}
 	

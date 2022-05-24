@@ -33,6 +33,7 @@ struct scene_structure {
 
 	// Timer used for the animation
 	cgp::timer_basic timer;
+	float dt;
 
 	// Flight
 	cgp::timer_basic flight_timer;//independent timer for flight
