@@ -9,35 +9,25 @@ class Boid{
     cgp::vec3 vitesse;
     cgp::mesh_drawable shape;
 
-    Boid();//constructor 
-    //~Boid();//destructor
+    Boid();//constructeur 
 
     void draw_boid(float dt);
     float distance_to(Boid b);
-    void apply_force();//apply force to boid changing its speed
-    void steer(cgp::vec3 s);
 };
 
-//class Boids{
-    //public:
-    //const std::vector<Boid *> boids;
-    const int number_boids=30;
+const int number_boids=80;
 
-    //cube confining the boids
-    const float border_x=150.0;
-    const float border_y=150.0;
-    const float border_z=100.0;
-
-    //cgp::timer_basic boid_timer;
-
-    //Boids(int n);//constructor 
-    std::vector<Boid *> initialize_boids();
-//};
+//cube qui confine les boids
+const float border_x=150.0;
+const float border_y=150.0;
+const float border_z=100.0;
 
 
 // ****************************** //
 // Functions
 // ****************************** //
+
+std::vector<Boid *> initialize_boids();
 
 void separation(std::vector<Boid *> b);
 void alignment(std::vector<Boid *> b);

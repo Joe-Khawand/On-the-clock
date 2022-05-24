@@ -57,9 +57,7 @@ struct scene_structure {
 	cgp::hierarchy_mesh_drawable city;
 
 	//! Boids
-	//Boids boid_tab (int n);
-	//cgp::timer_basic boid_timer;
-	std::vector<Boid *> b;
+	std::vector<Boid *> b; //tableau de pointeurs vers des boids
 
 
 	// ****************************** //

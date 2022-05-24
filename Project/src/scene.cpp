@@ -146,7 +146,6 @@ void scene_structure::display()
 	display_nexus();
 
 	// Basic elements of the scene
-  
 	draw(city,environment);
 	city["Arrow"].transform.translation = vec3(17 * cos(timer.t), 17 * sin(timer.t),0);
 	city["Arrow"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
@@ -165,10 +164,11 @@ void scene_structure::display()
 	draw(cube, environment_ortho);
 
 	//! Boids
-	//boid_timer.update();
+	//* Appliquer les 3 regles
 	separation(b);
 	alignment(b);
 	cohesion(b);
+	//dessiner les boids
 	for (int i = 0; i < number_boids; i++)
 	{	
 		b[i]->draw_boid(dt);

@@ -1,28 +1,26 @@
 #include "boids.hpp"
-//#include "scene.hpp"
+#define _USE_MATH_DEFINES
 #include <random>
 #include <cmath>
 #include <iostream>
 
 //Boid constructor
-
 Boid::Boid(){
     
-    shape.initialize(cgp::mesh_primitive_cone(2.0,3.0,cgp::vec3{0,0,20})); 
-
-    position= cgp::vec3{cgp::rand_interval(0,10.0),cgp::rand_interval(0,10.0),cgp::rand_interval(0,10.0)};
-    vitesse= cgp::vec3{cgp::rand_interval(0,10.0),cgp::rand_interval(0,10.0),cgp::rand_interval(0,10.0)};
-    //TODO normaliser la vitesse 
-    //position+=vitesse*boid_timer.t;
+    ////shape.initialize(cgp::mesh_primitive_cone(0.25,1.0,cgp::vec3{0,0,20})); 
+    //! Obj plane model oriente selon l'axe x, une reortentation est requise quand on alignera avec la vitesse
+    shape.initialize(cgp::mesh_load_file_obj("assets/Objects/UFO_Triangle.obj"));
+    shape.transform.scaling=0.0009;
+    position= cgp::vec3{cgp::rand_interval(-border_x,border_x),cgp::rand_interval(-border_y,border_y),cgp::rand_interval(-border_z,border_z)};
+    vitesse= cgp::vec3{cgp::rand_interval(-10.0,10.0),cgp::rand_interval(-10.0,10.0),cgp::rand_interval(-10.0,10.0)};
 }
 
 float Boid::distance_to(Boid b){
-    //TODO implement distance
     return sqrt(pow(position.x-b.position.x,2)+pow(position.y-b.position.y,2)+pow(position.z-b.position.z,2));
 }
 
-//TODO fix drawing
 void Boid::draw_boid(float dt){
+    //Evite les collision avec le cube
     if (position.x>= border_x)
     {
         vitesse.x = -abs(vitesse.x);
@@ -44,39 +42,19 @@ void Boid::draw_boid(float dt){
     if(position.z<=-border_z){
         vitesse.z = abs(vitesse.z);
     }
-    //if(cgp::norm(vitesse)>)
-    //float dt= time.update();
 
     position= position + vitesse*dt*20;
     shape.transform.translation= position;
     
     if(cgp::norm(vitesse)>0.000001){
-        cgp::vec3 norm_v = cgp::normalize(vitesse);//sqrt(vitesse.x*vitesse.x+vitesse.y*vitesse.y+vitesse.z*vitesse.z);
-    
-        shape.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{0,0,1.0f}, norm_v);
-    
+        cgp::vec3 norm_v = cgp::normalize(vitesse);
+        //! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
+        shape.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, norm_v);
     }
-    
-    //!cgp::draw(shape,scene_structure::environment);
 }
 
-void Boid::steer(cgp::vec3 s){
-    //cgp::vec3 norm_v = vitesse/ sqrt(vitesse.x*vitesse.x+vitesse.y*vitesse.y+vitesse.z*vitesse.z);
-    //cgp::vec3 norm_s=  s/sqrt(s.x*s.x+s.y*s.y+s.z*s.z);
-    vitesse = s;;
-}
-
-// Boids::Boids(int n){
-//     number_boids = n;
-//     boids.resize(n);
-//     for (int i = 0; i < n; i++)
-//     {
-//        (boids[i]) = new Boid();
-//     }
-// }
 std::vector<Boid *> initialize_boids(){
     std::vector<Boid *> boids;
-    //number_boids=n;
     boids.resize(number_boids);
     for (int i = 0; i < number_boids; i++)
     {
@@ -85,7 +63,8 @@ std::vector<Boid *> initialize_boids(){
     return boids;
 }
 
-// evite les collisions entre boids et entre la face du cube
+//! Separation
+//* Evite les collisions entre boids
 void separation(std::vector<Boid *> boids){
     for (int i = 0; i < number_boids; i++)
     {   
@@ -94,25 +73,19 @@ void separation(std::vector<Boid *> boids){
             if (j!=i)
             {
                 float d= boids[i]->distance_to(*(boids[j]));
-                if (d<5.0)
-                {//TODO steer
-
+                if (d<10.0)
+                {//TODO ste
                     cgp::vec3 dir= boids[j]->position-boids[i]->position;
                     cgp::vec3 norm_dir = dir/ sqrt(dir.x*dir.x+dir.y*dir.y+dir.z*dir.z);
-                    boids[i]->vitesse = cgp::normalize(boids[i]->vitesse)+3*(norm_dir)*1/(d*d);
-                    //boids[i]->steer(cgp::vec3{0,0,1});
-                }
-                
+                    boids[i]->vitesse = cgp::normalize(boids[i]->vitesse)+(norm_dir)*(0.01/(d+0.00001) -1/(10.0*10.0));
+                             
+                }  
             }
-            
         }
-        
     }
-    
 }
-// Alignment
-// Calculates the average velocity of boids in the field of vision and
-// manipulates the velocity of the current boid in order to match it
+//! Alignment
+//* Calul la vitesse moyenne des voisin d'un boid et applique la moyenne au mouvement
 void alignment(std::vector<Boid *> boids){
     for (int i = 0; i < number_boids; i++)
     {   
@@ -130,14 +103,13 @@ void alignment(std::vector<Boid *> boids){
             }
             if(nb!=0){
                 v= v/((float)nb);
-                boids[i]->vitesse =cgp::normalize(boids[i]->vitesse)+  v*0.01;
+                boids[i]->vitesse =cgp::normalize(boids[i]->vitesse)+  v*0.001;
             }
         }
     }
-};
-// Cohesion
-// Finds the average location of nearby boids and manipulates the
-// steering force to move in that direction.
+}
+//! Cohesion
+//* Trouve la position du centre des voisins du boid et l'oriente vers celui-ci
 void cohesion(std::vector<Boid *> boids){
     for (int i = 0; i < number_boids; i++)
     {   
@@ -147,7 +119,7 @@ void cohesion(std::vector<Boid *> boids){
         {
             
             float d= boids[i]->distance_to(*(boids[j]));
-            if(d<20.0){
+            if(d<30.0){
                 p+= boids[j]-> position ;
                 nb+=1;  
             }        
