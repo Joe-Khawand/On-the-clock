@@ -8,6 +8,8 @@
 
 #include "nexus.hpp"
 
+#include "boids.hpp"
+
 
 using namespace cgp;
 
@@ -169,12 +171,12 @@ void scene_structure::initialize()
 	cube.transform.translation = { 0.75f,0.8f,0.0f };
 	cube.transform.scaling = 0.2;
 
-
 	mesh maze_mesh = initialize_maze();
 	maze.initialize(maze_mesh, "Maze");
 	maze.transform.translation = {-525, -525, -100};
 
-	//square.initialize(mesh_primitive_quadrangle({0,0,0},{1,0,0},{1,0,1},{0,0,1}));
+	//!Boids
+	b = initialize_boids();
 }
 
 // void scene_structure::initialize_maze(int nl, int nw) {
@@ -253,7 +255,7 @@ void scene_structure::display()
 
 	draw(skybox, environment); 
 	// Update the current time
-	timer.update();
+	dt=timer.update();
 	display_lights(); // displays each nexus and every light source
 
 	// Basic elements of the scene
@@ -281,14 +283,21 @@ void scene_structure::display()
 	cube.transform.translation = { 0.55f, 0.8f, 0.0f };
 	draw(cube, environment_ortho);
 
-	// Display maze
-	// for (int i=0; i<55*55; i++) {
-	// 	if (maze[i] == 0) {
-	// 		square.transform.translation = vec3{i/55,0, i%55};
-	// 		draw(square, environment);
-	// 	}
-	// }
 	draw(maze, environment);
+
+
+	//! Boids
+	//* Appliquer les 3 regles
+	separation(b);
+	alignment(b);
+	cohesion(b);
+	//dessiner les boids
+	for (int i = 0; i < number_boids; i++)
+	{	
+		b[i]->draw_boid(dt);
+		draw(b[i]->shape,environment);
+	}
+	
 
 	if (gui.display.wireframe){
 		draw_wireframe(hours, environment);
@@ -297,6 +306,10 @@ void scene_structure::display()
 		draw_wireframe(gold_beam, environment);
 		draw_wireframe(blue_beam, environment);
 		draw_wireframe(maze, environment);
+		for (int i = 0; i < number_boids; i++)
+		{	
+			draw_wireframe(b[i]->shape,environment);
+		}
 	}
 	if (environment.spotlight_bool[0])
 		display_semiTransparent();
