@@ -172,7 +172,7 @@ void scene_structure::initialize()
 
 	mesh maze_mesh = initialize_maze();
 	maze.initialize(maze_mesh, "Maze");
-	maze.transform.translation = {-775, -775, -100};
+	maze.transform.translation = {-525, -525, -100};
 
 	//square.initialize(mesh_primitive_quadrangle({0,0,0},{1,0,0},{1,0,1},{0,0,1}));
 }
