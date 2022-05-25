@@ -6,6 +6,7 @@
 #include "gui_helper.hpp"
 #include "multiple_lights/multiple_lights.hpp" 
 #include "clock_city.hpp"
+#include "maze.hpp"
 
 // The structure of the custom scene
 struct scene_structure {
@@ -27,6 +28,7 @@ struct scene_structure {
 	cgp::hierarchy_mesh_drawable minutes;
 	cgp::hierarchy_mesh_drawable seconds;
 
+	cgp::mesh_drawable maze;
 
 	// Timers used for the animation
 	cgp::timer_basic timer;
@@ -59,9 +61,6 @@ struct scene_structure {
 	std::array<GLuint, 7> text_textures;
 
 
-	std::array<int, 55*55> maze;
-	cgp::mesh_drawable square;
-
 	// ****************************** //
 	// Functions
 	// ****************************** //
@@ -73,8 +72,8 @@ struct scene_structure {
 	void activate_nexus(float d, int i);
 
 	void initialize();  // Standard initialization to be called before the animation loop
-	std::vector<std::pair<int, int> > neighboring_walls(int i, int j);
-	void initialize_maze(int nl = 55, int nw = 55);
+	// std::vector<std::pair<int, int> > neighboring_walls(int i, int j);
+	// void initialize_maze(int nl = 55, int nw = 55);
 
 	void display();     // The frame display to be called within the animation loop
 	void display_lights();

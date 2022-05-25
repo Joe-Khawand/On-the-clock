@@ -70,7 +70,7 @@ void scene_structure::mouse_click()
 
 void scene_structure::activate_nexus(float d, int i)
 {
-	if (d > 150.0f) {
+	if (d > 300.0f) {
 		time_text_appeared = timer.t;
 		display_text = true;
 		text.texture = text_textures[0];
@@ -170,81 +170,83 @@ void scene_structure::initialize()
 	cube.transform.scaling = 0.2;
 
 
-	initialize_maze();
+	mesh maze_mesh = initialize_maze();
+	maze.initialize(maze_mesh, "Maze");
+	maze.transform.translation = {-775, -775, -100};
 
-	square.initialize(mesh_primitive_quadrangle({0,0,0},{1,0,0},{1,0,1},{0,0,1}));
+	//square.initialize(mesh_primitive_quadrangle({0,0,0},{1,0,0},{1,0,1},{0,0,1}));
 }
 
-void scene_structure::initialize_maze(int nl, int nw) {
-	std::cout << "Started ini maze" << std::endl;
-	for (int i=0; i<nl; i++) {
-        for (int j=0; j<nw; j++) {
-            maze[i * nw + j] = 1;
-        }
-    }
-    std::vector<std::pair<int, int> > stack;
-    maze[nw + 1] = 0;
-    stack.push_back({1, 2});
-    stack.push_back({2, 1});
-    while (stack.size() > 0)
-    {
-        std::pair<int, int> p = stack[stack.size()-1];
-        int i = p.first;
-        int j = p.second;
-        stack.pop_back();
-        if (!(i==0 or i==nl-1 or j==0 or j==nw-1 or maze[i*nw +j]==0 or maze[i*nw +j-1] + maze[(i+1)*nw +j] + maze[i*nw +j+1] + maze[(i-1)*nw +j] < 3)) {
-            int i = p.first;
-			int j = p.second;
-			std::pair<int, int> next;
-			if (maze[(i-1) * nw +j] == 0) next = {i+1, j};
-			else {
-				if (maze[(i+1) * nw +j] == 0) next = {i-1, j};
-				else {
-					if (maze[i * nw +j-1] == 0) next = {i, j+1};
-					else {
-						if (maze[i * nw +j+1] == 0) next = {i, j-1};
-						else
-							next = {-1, -1};
-					}
-				}
-			}
+// void scene_structure::initialize_maze(int nl, int nw) {
+// 	std::cout << "Started ini maze" << std::endl;
+// 	for (int i=0; i<nl; i++) {
+//         for (int j=0; j<nw; j++) {
+//             maze[i * nw + j] = 1;
+//         }
+//     }
+//     std::vector<std::pair<int, int> > stack;
+//     maze[nw + 1] = 0;
+//     stack.push_back({1, 2});
+//     stack.push_back({2, 1});
+//     while (stack.size() > 0)
+//     {
+//         std::pair<int, int> p = stack[stack.size()-1];
+//         int i = p.first;
+//         int j = p.second;
+//         stack.pop_back();
+//         if (!(i==0 or i==nl-1 or j==0 or j==nw-1 or maze[i*nw +j]==0 or maze[i*nw +j-1] + maze[(i+1)*nw +j] + maze[i*nw +j+1] + maze[(i-1)*nw +j] < 3)) {
+//             int i = p.first;
+// 			int j = p.second;
+// 			std::pair<int, int> next;
+// 			if (maze[(i-1) * nw +j] == 0) next = {i+1, j};
+// 			else {
+// 				if (maze[(i+1) * nw +j] == 0) next = {i-1, j};
+// 				else {
+// 					if (maze[i * nw +j-1] == 0) next = {i, j+1};
+// 					else {
+// 						if (maze[i * nw +j+1] == 0) next = {i, j-1};
+// 						else
+// 							next = {-1, -1};
+// 					}
+// 				}
+// 			}
 			
-            int i2 = next.first;
-            int j2 = next.second;
-            std::vector<std::pair<int, int> > li = neighboring_walls(i2, j2);
-            for (std::pair<int, int> pair:li) {
-                stack.push_back(pair);
-            }
-            maze[i2 * nw + j2] = 0;
-            maze[i * nw + j] = 0;
-        }
-    }
-	std::cout << "Ended ini maze" << std::endl;
-}
+//             int i2 = next.first;
+//             int j2 = next.second;
+//             std::vector<std::pair<int, int> > li = neighboring_walls(i2, j2);
+//             for (std::pair<int, int> pair:li) {
+//                 stack.push_back(pair);
+//             }
+//             maze[i2 * nw + j2] = 0;
+//             maze[i * nw + j] = 0;
+//         }
+//     }
+// 	std::cout << "Ended ini maze" << std::endl;
+// }
 
-std::vector<std::pair<int, int> > scene_structure::neighboring_walls(int i, int j){
-    std::vector<std::pair<int, int> > t;
-    t.push_back({i, j-1});
-    t.push_back({i+1, j});
-    t.push_back({i, j+1});
-    t.push_back({i-1, j});
+// std::vector<std::pair<int, int> > scene_structure::neighboring_walls(int i, int j){
+//     std::vector<std::pair<int, int> > t;
+//     t.push_back({i, j-1});
+//     t.push_back({i+1, j});
+//     t.push_back({i, j+1});
+//     t.push_back({i-1, j});
 
-	int d[4];
-    for (int i=0; i<4; i++) {
-        d[i] = i;
-    }
-    for (int i=0; i<4-1; i++) {
-        int j = i + (rand() % (4-i));
-        int x = d[i];
-        d[i] = d[j];
-        d[j] = x;
-    }
-    std::vector<std::pair<int, int> > t2;
-    for (int i=0; i<4; i++) {
-        t2.push_back(t[d[i]]);
-    }
-    return t2;
-}
+// 	int d[4];
+//     for (int i=0; i<4; i++) {
+//         d[i] = i;
+//     }
+//     for (int i=0; i<4-1; i++) {
+//         int j = i + (rand() % (4-i));
+//         int x = d[i];
+//         d[i] = d[j];
+//         d[j] = x;
+//     }
+//     std::vector<std::pair<int, int> > t2;
+//     for (int i=0; i<4; i++) {
+//         t2.push_back(t[d[i]]);
+//     }
+//     return t2;
+// }
 
 void scene_structure::display()
 {
@@ -280,12 +282,13 @@ void scene_structure::display()
 	draw(cube, environment_ortho);
 
 	// Display maze
-	for (int i=0; i<55*55; i++) {
-		if (maze[i] == 0) {
-			square.transform.translation = vec3{i/55,0, i%55};
-			draw(square, environment);
-		}
-	}
+	// for (int i=0; i<55*55; i++) {
+	// 	if (maze[i] == 0) {
+	// 		square.transform.translation = vec3{i/55,0, i%55};
+	// 		draw(square, environment);
+	// 	}
+	// }
+	draw(maze, environment);
 
 	if (gui.display.wireframe){
 		draw_wireframe(hours, environment);
@@ -293,6 +296,7 @@ void scene_structure::display()
 		draw_wireframe(seconds, environment);
 		draw_wireframe(gold_beam, environment);
 		draw_wireframe(blue_beam, environment);
+		draw_wireframe(maze, environment);
 	}
 	if (environment.spotlight_bool[0])
 		display_semiTransparent();

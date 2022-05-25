@@ -23,7 +23,7 @@ En cours
  - Ville canon, autres éléments de décor (l-systems, labyrinthes...)
  - Boyds
  - Interface affichant instructions
- - labyrinthe automatique
+ - labyrinthe cylindrique
 
 Done
  - Cylindre creux
@@ -32,4 +32,5 @@ Done
  - surface implicite
  - lumières multiples et fog effect
  - nexus cliquables
+ - génération automatique de labyrinthes + affichage
  - texte à l'écran
