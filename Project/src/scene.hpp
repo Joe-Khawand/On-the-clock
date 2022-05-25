@@ -58,6 +58,10 @@ struct scene_structure {
 	int idx_text;
 	std::array<GLuint, 7> text_textures;
 
+
+	std::array<int, 55*55> maze;
+	cgp::mesh_drawable square;
+
 	// ****************************** //
 	// Functions
 	// ****************************** //
@@ -69,6 +73,8 @@ struct scene_structure {
 	void activate_nexus(float d, int i);
 
 	void initialize();  // Standard initialization to be called before the animation loop
+	std::vector<std::pair<int, int> > neighboring_walls(int i, int j);
+	void initialize_maze(int nl = 55, int nw = 55);
 
 	void display();     // The frame display to be called within the animation loop
 	void display_lights();
