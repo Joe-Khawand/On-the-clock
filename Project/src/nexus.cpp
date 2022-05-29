@@ -74,7 +74,8 @@ cgp::hierarchy_mesh_drawable initialize_nexus(bool is_core)
 	GLuint silver_texture_image_id = opengl_load_texture_image("assets/silver.jpg",
         GL_REPEAT,
         GL_REPEAT);
-	GLuint star_texture_image_id = opengl_load_texture_image("assets/star3.jpg",
+	//GLuint star_texture_image_id = opengl_load_texture_image("assets/star3.jpg",
+	GLuint star_texture_image_id = opengl_load_texture_image("assets/color2.jpg",
         GL_REPEAT,
         GL_REPEAT);
 	
