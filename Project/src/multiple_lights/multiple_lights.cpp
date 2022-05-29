@@ -20,6 +20,7 @@ void opengl_uniform(GLuint shader, scene_environment_with_multiple_lights const&
 	opengl_uniform(shader, "fog_falloff", environment.fog_falloff);
 	opengl_uniform(shader, "projection", environment.projection.matrix());
 	opengl_uniform(shader, "view", environment.camera.matrix_view());
+	opengl_uniform(shader, "colors_displayed", environment.colors_displayed, false);
 }
 
 void compute_light_position(float t, scene_environment_with_multiple_lights& environment)

@@ -268,6 +268,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     three_mesh.push_back(brick(20, 2, 2));
     three_mesh.push_back(brick(20, 2, 2, {0, -4, 0}));
     three_mesh.push_back(brick(20, 2, 2, {0, 4, 0}));
+    three_mesh.color.fill({0,1,0});
     three.initialize(three_mesh, "Three");
     three.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 3*M_PI / 6);
     city_hierarchy.add(three, "Exterior", {115 * std::cos(3 * M_PI / 6), - 115 * std::sin(3 * M_PI / 6), 2});
@@ -276,6 +277,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     mesh four_mesh;
     four_mesh.push_back(brick(20, 2, 2, {0, 7, 0}));
     four_mesh.push_back(v(20, 2, 2, {0, -2, 0}));
+    four_mesh.color.fill({0,1,1});
     four.initialize(four_mesh, "Four");
     four.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 4*M_PI / 6);
     city_hierarchy.add(four, "Exterior", {115 * std::cos(4 * M_PI / 6), - 115 * std::sin(4 * M_PI / 6), 2});
@@ -283,6 +285,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     mesh_drawable five;
     mesh five_mesh;
     five_mesh.push_back(v(20, 2, 2));
+    five_mesh.color.fill({0,0,1});
     five.initialize(five_mesh, "Five");
     five.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 5*M_PI / 6);
     city_hierarchy.add(five, "Exterior", {115 * std::cos(5 * M_PI / 6), - 115 * std::sin(5 * M_PI / 6), 2});
@@ -291,6 +294,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     mesh six_mesh;
     six_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
     six_mesh.push_back(v(20, 2, 2, {0, 2, 0}));
+    six_mesh.color.fill({1,0,1});
     six.initialize(six_mesh, "Six");
     six.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 6*M_PI / 6);
     city_hierarchy.add(six, "Exterior", {115 * std::cos(6 * M_PI / 6), - 115 * std::sin(6 * M_PI / 6), 2});
@@ -300,6 +304,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     seven_mesh.push_back(brick(20, 2, 2, {0, -9, 0}));
     seven_mesh.push_back(brick(20, 2, 2, {0, -5, 0}));
     seven_mesh.push_back(v(20, 2, 2, {0, 4, 0}));
+    seven_mesh.color.fill({1,0,0});
     seven.initialize(seven_mesh, "Seven");
     seven.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 7*M_PI / 6);
     city_hierarchy.add(seven, "Exterior", {115 * std::cos(7 * M_PI / 6), - 115 * std::sin(7 * M_PI / 6), 2});
@@ -310,6 +315,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     eight_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
     eight_mesh.push_back(brick(20, 2, 2, {0, -3, 0}));
     eight_mesh.push_back(v(20, 2, 2, {0, 6, 0}));
+    eight_mesh.color.fill({0,0,0});
     eight.initialize(eight_mesh, "Eight");
     eight.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 8*M_PI / 6);
     city_hierarchy.add(eight, "Exterior", {115 * std::cos(8 * M_PI / 6), - 115 * std::sin(8 * M_PI / 6), 2});
@@ -318,6 +324,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     mesh nine_mesh;
     nine_mesh.push_back(brick(20, 2, 2, {0, 7, 0}));
     nine_mesh.push_back(x(20, 2, 2, {0, -2, 0}));
+    four_mesh.color.fill({1,1,1});
     nine.initialize(nine_mesh, "Nine");
     nine.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 9*M_PI / 6);
     city_hierarchy.add(nine, "Exterior", {115 * std::cos(9 * M_PI / 6), - 115 * std::sin(9 * M_PI / 6), 2});
@@ -423,38 +430,43 @@ cgp::mesh create_city(float l, float w, float s, int nl, int nw, float hmax)
     mesh city;
     for (int i=0; i<nl; i++) {
         for (int j=0; j<nw; j++) {
-            float h = rand_interval(0, (1 - (float) i / (float) nl) * (1 - (float) i / (float) nl) * hmax);
+            float local_max_height = (1 - (float) i / (float) nl) * (1 - (float) i / (float) nl) * hmax;
+            float h = rand_interval(local_max_height * 0.25, local_max_height);
+            mesh block;
             //south face
-            city.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s), 0},
+            block.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s), 0},
                                                     {i*(l+s) + l, j*(w+s), 0},
                                                     {i*(l+s) + l, j*(w+s), h},
                                                     {i*(l+s), j*(w+s), h}));
             
             //west face
-            city.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s) + w, 0},
+            block.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s) + w, 0},
                                                     {i*(l+s), j*(w+s), 0},
                                                     {i*(l+s), j*(w+s), h},
                                                     {i*(l+s), j*(w+s) + w, h}));
             
             //north face
-            city.push_back(mesh_primitive_quadrangle({i*(l+s) + l, j*(w+s) + w, 0},
+            block.push_back(mesh_primitive_quadrangle({i*(l+s) + l, j*(w+s) + w, 0},
                                                     {i*(l+s), j*(w+s) + w, 0},
                                                     {i*(l+s), j*(w+s) + w, h},
                                                     {i*(l+s) + l, j*(w+s) + w, h}));
             
             //east face
-            city.push_back(mesh_primitive_quadrangle({i*(l+s) + l, j*(w+s), 0},
+            block.push_back(mesh_primitive_quadrangle({i*(l+s) + l, j*(w+s), 0},
                                                     {i*(l+s) + l, j*(w+s) + w, 0},
                                                     {i*(l+s) + l, j*(w+s) + w, h},
                                                     {i*(l+s) + l, j*(w+s), h}));
             
             //top face
-            city.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s), h},
+            block.push_back(mesh_primitive_quadrangle({i*(l+s), j*(w+s), h},
                                                     {i*(l+s) + l, j*(w+s), h},
                                                     {i*(l+s) + l, j*(w+s) + w, h},
                                                     {i*(l+s), j*(w+s) + w, h}));
+            block.color.fill(vec3(rand_interval(), rand_interval(), rand_interval()));
+            city.push_back(block);
         }
     }
+    city.fill_empty_field();
     return city;
 }
 

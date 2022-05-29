@@ -30,6 +30,7 @@ uniform vec3 spotlight_position[13];
 uniform float spotlight_falloff;
 uniform float fog_falloff;
 uniform int N_spotlight;
+uniform int colors_displayed;
 
 void main()
 {
@@ -37,7 +38,7 @@ void main()
 	if (gl_FrontFacing == false) {
 		N = -N;
 	}
-	vec2 uv_image = vec2(fragment.uv.x, 1.0-fragment.uv.y);
+	vec2 uv_image = vec2(fragment.uv.r, 1.0-fragment.uv.y);
 	if(texture_inverse_y) {
 		uv_image.y = 1.0-uv_image.y;
 	}
@@ -47,6 +48,23 @@ void main()
 	}
 
 	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
+	if(colors_displayed==0) {
+		color_object = (color_object.rrr + color_object.ggg + color_object.bbb) / 6.0;
+	}
+	if(colors_displayed==1) {
+		float red = (4 * color_object.r + color_object.g + color_object.b) / 6.0;
+		float green = (color_object.r + color_object.g + color_object.b) / 6.0;
+		float blue = (color_object.r + color_object.g + color_object.b) / 6.0;
+		color_object = vec3(red, green, blue);
+	}
+	if(colors_displayed==2) {
+		float red = (4 * color_object.r + color_object.b) / 5.0;
+		float green = (4 * color_object.g + color_object.b) / 5.0;
+		float blue = (color_object.r + color_object.g + color_object.b) / 5.0;
+		color_object = vec3(red, green, blue);
+	}
+
+
 	//float Ka = 0.1;
 	vec3 color_shading = 0 * color_object;
 
