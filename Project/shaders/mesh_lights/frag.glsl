@@ -31,6 +31,8 @@ uniform float spotlight_falloff;
 uniform float fog_falloff;
 uniform int N_spotlight;
 uniform int colors_displayed;
+uniform vec3 activation_colors;
+uniform float time;
 
 void main()
 {
@@ -48,16 +50,34 @@ void main()
 	}
 
 	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
-	if(colors_displayed==0) {
+
+	float dist_to_center = length(fragment.position);
+
+	bool not_reached = true;
+	int nb_colors = colors_displayed;
+	while(nb_colors > 0 && not_reached) {
+		float time_activated;
+		if (nb_colors==1)
+			time_activated = activation_colors.r;
+		if (nb_colors==2)
+			time_activated = activation_colors.g;
+		if (nb_colors==3)
+			time_activated = activation_colors.b;
+		if ((time - 0.01 * dist_to_center) > time_activated)
+			not_reached = false;
+		else
+			nb_colors -= 1;
+	}
+	if(nb_colors==0) {
 		color_object = (color_object.rrr + color_object.ggg + color_object.bbb) / 6.0;
 	}
-	if(colors_displayed==1) {
+	if(nb_colors==1) {
 		float red = (4 * color_object.r + color_object.g + color_object.b) / 6.0;
 		float green = (color_object.r + color_object.g + color_object.b) / 6.0;
 		float blue = (color_object.r + color_object.g + color_object.b) / 6.0;
 		color_object = vec3(red, green, blue);
 	}
-	if(colors_displayed==2) {
+	if(nb_colors==2) {
 		float red = (4 * color_object.r + color_object.b) / 5.0;
 		float green = (4 * color_object.g + color_object.b) / 5.0;
 		float blue = (color_object.r + color_object.g + color_object.b) / 5.0;
@@ -71,7 +91,7 @@ void main()
 	color_shading += 0.3 * max(dot(N, normalize(vec3(10.0, 5.0, 3.0))), 0.) * vec3(1, 0.8, 0.8);
 
 
-	for(int k_light=0; k_light<13; k_light++)
+	for(int k_light=0; k_light<N_spotlight; k_light++)
 	{
 		vec3 v = spotlight_position[k_light]-fragment.position;
 		float dist = length(v);

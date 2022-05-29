@@ -85,7 +85,15 @@ void scene_structure::activate_nexus(float d, int i)
 				environment.spotlight_bool[i] = true;
 				environment.spotlight_timer[0].scale += 0.1f;
 				timer.scale += 0.1f;
-				environment.colors_displayed += 1;
+				if (environment.colors_displayed < 3) {
+					environment.colors_displayed += 1;
+					if (environment.colors_displayed == 1)
+						environment.red_activated = environment.spotlight_timer[0].t;
+					if (environment.colors_displayed == 2)
+						environment.green_activated = environment.spotlight_timer[0].t;
+					if (environment.colors_displayed == 3)
+						environment.blue_activated = environment.spotlight_timer[0].t;
+				}
 			}
 			if (i == 0) {
 				environment.spotlight_color[0] = {1, 1, 1}; //{ 1.0f, 0.9f, 0.5f };
