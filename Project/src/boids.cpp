@@ -6,11 +6,6 @@
 
 //Boid constructor
 Boid::Boid(){
-    
-    ////shape.initialize(cgp::mesh_primitive_cone(0.25,1.0,cgp::vec3{0,0,20})); 
-    //! Obj plane model oriente selon l'axe x, une reortentation est requise quand on alignera avec la vitesse
-    shape.initialize(cgp::mesh_load_file_obj("assets/Objects/UFO_Triangle.obj"));
-    shape.transform.scaling=0.0009;
     position= cgp::vec3{cgp::rand_interval(-border_x,border_x),cgp::rand_interval(-border_y,border_y),cgp::rand_interval(-border_z,border_z)};
     vitesse= cgp::vec3{cgp::rand_interval(-10.0,10.0),cgp::rand_interval(-10.0,10.0),cgp::rand_interval(-10.0,10.0)};
 }
@@ -44,13 +39,6 @@ void Boid::draw_boid(float dt){
     }
 
     position= position + vitesse*dt*20;
-    shape.transform.translation= position;
-    
-    if(cgp::norm(vitesse)>0.000001){
-        cgp::vec3 norm_v = cgp::normalize(vitesse);
-        //! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
-        shape.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, norm_v);
-    }
 }
 
 std::vector<Boid *> initialize_boids(){

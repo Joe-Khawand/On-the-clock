@@ -7,7 +7,6 @@ class Boid{
     public:
     cgp::vec3 position;
     cgp::vec3 vitesse;
-    cgp::mesh_drawable shape;
 
     Boid();//constructeur 
 

@@ -56,6 +56,7 @@ struct scene_structure {
 
 	//! Boids
 	std::vector<Boid *> b; //tableau de pointeurs vers des boids
+	cgp::mesh_drawable boid_drawable;
 
 	// text drawables
 	// bool display_too_far;

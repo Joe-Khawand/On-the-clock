@@ -177,6 +177,9 @@ void scene_structure::initialize()
 
 	//!Boids
 	b = initialize_boids();
+	//! Obj plane model oriente selon l'axe x, une reortentation est requise quand on alignera avec la vitesse
+	boid_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/UFO_Triangle.obj"));
+    boid_drawable.transform.scaling=0.0009;
 }
 
 
@@ -225,7 +228,16 @@ void scene_structure::display()
 	for (int i = 0; i < number_boids; i++)
 	{	
 		b[i]->draw_boid(dt);
-		draw(b[i]->shape,environment);
+		boid_drawable.transform.translation= b[i]->position;
+    
+    	if(cgp::norm(b[i]->vitesse)>0.000001){
+			//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
+			boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
+    	}
+		draw(boid_drawable,environment);
+		if (gui.display.wireframe){
+			draw_wireframe(boid_drawable,environment);
+		}
 	}
 	
 
@@ -236,10 +248,6 @@ void scene_structure::display()
 		draw_wireframe(gold_beam, environment);
 		draw_wireframe(blue_beam, environment);
 		draw_wireframe(maze, environment);
-		for (int i = 0; i < number_boids; i++)
-		{	
-			draw_wireframe(b[i]->shape,environment);
-		}
 	}
 	if (environment.spotlight_bool[0])
 		display_semiTransparent();
