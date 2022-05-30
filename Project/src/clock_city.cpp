@@ -250,106 +250,166 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
 	city_hierarchy.add(arrow, "Cylinder", {20, 0, 0.5});
     city_hierarchy.add(city, "Arrow", {2, -1.6, 1});
 
+    // mesh_drawable one;
+    // one.initialize(brick(20, 2, 2), "One");
+    // one.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - M_PI / 6);
+    // city_hierarchy.add(one, "Exterior", {115 * std::cos(M_PI / 6), - 115 * std::sin(M_PI / 6), 2});
+
+    // mesh_drawable two;
+    // mesh two_mesh;
+    // two_mesh.push_back(brick(20, 2, 2, {0, -2, 0}));
+    // two_mesh.push_back(brick(20, 2, 2, {0, 2, 0}));
+    // two.initialize(two_mesh, "Two");
+    // two.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 2*M_PI / 6);
+    // city_hierarchy.add(two, "Exterior", {115 * std::cos(2 * M_PI / 6), - 115 * std::sin(2 * M_PI / 6), 2});
+
+    // mesh_drawable three;
+    // mesh three_mesh;
+    // three_mesh.push_back(brick(20, 2, 2));
+    // three_mesh.push_back(brick(20, 2, 2, {0, -4, 0}));
+    // three_mesh.push_back(brick(20, 2, 2, {0, 4, 0}));
+    // three_mesh.color.fill({0,1,0});
+    // three.initialize(three_mesh, "Three");
+    // three.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 3*M_PI / 6);
+    // city_hierarchy.add(three, "Exterior", {115 * std::cos(3 * M_PI / 6), - 115 * std::sin(3 * M_PI / 6), 2});
+
+    // mesh_drawable four;
+    // mesh four_mesh;
+    // four_mesh.push_back(brick(20, 2, 2, {0, 7, 0}));
+    // four_mesh.push_back(v(20, 2, 2, {0, -2, 0}));
+    // four_mesh.color.fill({0,1,1});
+    // four.initialize(four_mesh, "Four");
+    // four.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 4*M_PI / 6);
+    // city_hierarchy.add(four, "Exterior", {115 * std::cos(4 * M_PI / 6), - 115 * std::sin(4 * M_PI / 6), 2});
+
+    // mesh_drawable five;
+    // mesh five_mesh;
+    // five_mesh.push_back(v(20, 2, 2));
+    // five_mesh.color.fill({0,0,1});
+    // five.initialize(five_mesh, "Five");
+    // five.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 5*M_PI / 6);
+    // city_hierarchy.add(five, "Exterior", {115 * std::cos(5 * M_PI / 6), - 115 * std::sin(5 * M_PI / 6), 2});
+
+    // mesh_drawable six;
+    // mesh six_mesh;
+    // six_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
+    // six_mesh.push_back(v(20, 2, 2, {0, 2, 0}));
+    // six_mesh.color.fill({1,0,1});
+    // six.initialize(six_mesh, "Six");
+    // six.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 6*M_PI / 6);
+    // city_hierarchy.add(six, "Exterior", {115 * std::cos(6 * M_PI / 6), - 115 * std::sin(6 * M_PI / 6), 2});
+
+    // mesh_drawable seven;
+    // mesh seven_mesh;
+    // seven_mesh.push_back(brick(20, 2, 2, {0, -9, 0}));
+    // seven_mesh.push_back(brick(20, 2, 2, {0, -5, 0}));
+    // seven_mesh.push_back(v(20, 2, 2, {0, 4, 0}));
+    // seven_mesh.color.fill({1,0,0});
+    // seven.initialize(seven_mesh, "Seven");
+    // seven.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 7*M_PI / 6);
+    // city_hierarchy.add(seven, "Exterior", {115 * std::cos(7 * M_PI / 6), - 115 * std::sin(7 * M_PI / 6), 2});
+
+    // mesh_drawable eight;
+    // mesh eight_mesh;
+    // eight_mesh.push_back(brick(20, 2, 2, {0, -11, 0}));
+    // eight_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
+    // eight_mesh.push_back(brick(20, 2, 2, {0, -3, 0}));
+    // eight_mesh.push_back(v(20, 2, 2, {0, 6, 0}));
+    // eight_mesh.color.fill({0,0,0});
+    // eight.initialize(eight_mesh, "Eight");
+    // eight.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 8*M_PI / 6);
+    // city_hierarchy.add(eight, "Exterior", {115 * std::cos(8 * M_PI / 6), - 115 * std::sin(8 * M_PI / 6), 2});
+
+    // mesh_drawable nine;
+    // mesh nine_mesh;
+    // nine_mesh.push_back(brick(20, 2, 2, {0, 7, 0}));
+    // nine_mesh.push_back(x(20, 2, 2, {0, -2, 0}));
+    // four_mesh.color.fill({1,1,1});
+    // nine.initialize(nine_mesh, "Nine");
+    // nine.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 9*M_PI / 6);
+    // city_hierarchy.add(nine, "Exterior", {115 * std::cos(9 * M_PI / 6), - 115 * std::sin(9 * M_PI / 6), 2});
+
+    // mesh_drawable ten;
+    // mesh ten_mesh;
+    // ten_mesh.push_back(x(20, 2, 2));
+    // ten.initialize(ten_mesh, "Ten");
+    // ten.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 10*M_PI / 6);
+    // city_hierarchy.add(ten, "Exterior", {115 * std::cos(10 * M_PI / 6), - 115 * std::sin(10 * M_PI / 6), 2});
+
+    // mesh_drawable eleven;
+    // mesh eleven_mesh;
+    // eleven_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
+    // eleven_mesh.push_back(x(20, 2, 2, {0, 2, 0}));
+    // eleven.initialize(eleven_mesh, "Eleven");
+    // eleven.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 11*M_PI / 6);
+    // city_hierarchy.add(eleven, "Exterior", {115 * std::cos(11 * M_PI / 6), - 115 * std::sin(11 * M_PI / 6), 2});
+
+    // mesh_drawable twelve;
+    // mesh twelve_mesh;
+    // twelve_mesh.push_back(brick(20, 2, 2, {0, -9, 0}));
+    // twelve_mesh.push_back(brick(20, 2, 2, {0, -5, 0}));
+    // twelve_mesh.push_back(x(20, 2, 2, {0, 4, 0}));
+    // twelve.initialize(twelve_mesh, "Twelve");
+    // twelve.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 12*M_PI / 6);
+    // city_hierarchy.add(twelve, "Exterior", {115 * std::cos(12 * M_PI / 6), - 115 * std::sin(12 * M_PI / 6), 2});
+
     mesh_drawable one;
-    one.initialize(brick(20, 2, 2), "One");
+    one.initialize(number_mesh(1), "One");
     one.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - M_PI / 6);
     city_hierarchy.add(one, "Exterior", {115 * std::cos(M_PI / 6), - 115 * std::sin(M_PI / 6), 2});
 
     mesh_drawable two;
-    mesh two_mesh;
-    two_mesh.push_back(brick(20, 2, 2, {0, -2, 0}));
-    two_mesh.push_back(brick(20, 2, 2, {0, 2, 0}));
-    two.initialize(two_mesh, "Two");
+    two.initialize(number_mesh(2), "Two");
     two.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 2*M_PI / 6);
     city_hierarchy.add(two, "Exterior", {115 * std::cos(2 * M_PI / 6), - 115 * std::sin(2 * M_PI / 6), 2});
 
     mesh_drawable three;
-    mesh three_mesh;
-    three_mesh.push_back(brick(20, 2, 2));
-    three_mesh.push_back(brick(20, 2, 2, {0, -4, 0}));
-    three_mesh.push_back(brick(20, 2, 2, {0, 4, 0}));
-    three_mesh.color.fill({0,1,0});
-    three.initialize(three_mesh, "Three");
+    three.initialize(number_mesh(3), "Three");
     three.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 3*M_PI / 6);
     city_hierarchy.add(three, "Exterior", {115 * std::cos(3 * M_PI / 6), - 115 * std::sin(3 * M_PI / 6), 2});
 
     mesh_drawable four;
-    mesh four_mesh;
-    four_mesh.push_back(brick(20, 2, 2, {0, 7, 0}));
-    four_mesh.push_back(v(20, 2, 2, {0, -2, 0}));
-    four_mesh.color.fill({0,1,1});
-    four.initialize(four_mesh, "Four");
+    four.initialize(number_mesh(4), "Four");
     four.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 4*M_PI / 6);
     city_hierarchy.add(four, "Exterior", {115 * std::cos(4 * M_PI / 6), - 115 * std::sin(4 * M_PI / 6), 2});
 
     mesh_drawable five;
-    mesh five_mesh;
-    five_mesh.push_back(v(20, 2, 2));
-    five_mesh.color.fill({0,0,1});
-    five.initialize(five_mesh, "Five");
+    five.initialize(number_mesh(5), "Five");
     five.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 5*M_PI / 6);
     city_hierarchy.add(five, "Exterior", {115 * std::cos(5 * M_PI / 6), - 115 * std::sin(5 * M_PI / 6), 2});
 
     mesh_drawable six;
-    mesh six_mesh;
-    six_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
-    six_mesh.push_back(v(20, 2, 2, {0, 2, 0}));
-    six_mesh.color.fill({1,0,1});
-    six.initialize(six_mesh, "Six");
+    six.initialize(number_mesh(6), "Six");
     six.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 6*M_PI / 6);
     city_hierarchy.add(six, "Exterior", {115 * std::cos(6 * M_PI / 6), - 115 * std::sin(6 * M_PI / 6), 2});
 
     mesh_drawable seven;
-    mesh seven_mesh;
-    seven_mesh.push_back(brick(20, 2, 2, {0, -9, 0}));
-    seven_mesh.push_back(brick(20, 2, 2, {0, -5, 0}));
-    seven_mesh.push_back(v(20, 2, 2, {0, 4, 0}));
-    seven_mesh.color.fill({1,0,0});
-    seven.initialize(seven_mesh, "Seven");
+    seven.initialize(number_mesh(7), "Seven");
     seven.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 7*M_PI / 6);
     city_hierarchy.add(seven, "Exterior", {115 * std::cos(7 * M_PI / 6), - 115 * std::sin(7 * M_PI / 6), 2});
 
     mesh_drawable eight;
-    mesh eight_mesh;
-    eight_mesh.push_back(brick(20, 2, 2, {0, -11, 0}));
-    eight_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
-    eight_mesh.push_back(brick(20, 2, 2, {0, -3, 0}));
-    eight_mesh.push_back(v(20, 2, 2, {0, 6, 0}));
-    eight_mesh.color.fill({0,0,0});
-    eight.initialize(eight_mesh, "Eight");
+    eight.initialize(number_mesh(8), "Eight");
     eight.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 8*M_PI / 6);
     city_hierarchy.add(eight, "Exterior", {115 * std::cos(8 * M_PI / 6), - 115 * std::sin(8 * M_PI / 6), 2});
 
     mesh_drawable nine;
-    mesh nine_mesh;
-    nine_mesh.push_back(brick(20, 2, 2, {0, 7, 0}));
-    nine_mesh.push_back(x(20, 2, 2, {0, -2, 0}));
-    four_mesh.color.fill({1,1,1});
-    nine.initialize(nine_mesh, "Nine");
+    nine.initialize(number_mesh(9), "Nine");
     nine.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 9*M_PI / 6);
     city_hierarchy.add(nine, "Exterior", {115 * std::cos(9 * M_PI / 6), - 115 * std::sin(9 * M_PI / 6), 2});
 
     mesh_drawable ten;
-    mesh ten_mesh;
-    ten_mesh.push_back(x(20, 2, 2));
-    ten.initialize(ten_mesh, "Ten");
+    ten.initialize(number_mesh(10), "Ten");
     ten.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 10*M_PI / 6);
     city_hierarchy.add(ten, "Exterior", {115 * std::cos(10 * M_PI / 6), - 115 * std::sin(10 * M_PI / 6), 2});
 
     mesh_drawable eleven;
-    mesh eleven_mesh;
-    eleven_mesh.push_back(brick(20, 2, 2, {0, -7, 0}));
-    eleven_mesh.push_back(x(20, 2, 2, {0, 2, 0}));
-    eleven.initialize(eleven_mesh, "Eleven");
+    eleven.initialize(number_mesh(11), "Eleven");
     eleven.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 11*M_PI / 6);
     city_hierarchy.add(eleven, "Exterior", {115 * std::cos(11 * M_PI / 6), - 115 * std::sin(11 * M_PI / 6), 2});
 
     mesh_drawable twelve;
-    mesh twelve_mesh;
-    twelve_mesh.push_back(brick(20, 2, 2, {0, -9, 0}));
-    twelve_mesh.push_back(brick(20, 2, 2, {0, -5, 0}));
-    twelve_mesh.push_back(x(20, 2, 2, {0, 4, 0}));
-    twelve.initialize(twelve_mesh, "Twelve");
+    twelve.initialize(number_mesh(12), "Twelve");
     twelve.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - 12*M_PI / 6);
     city_hierarchy.add(twelve, "Exterior", {115 * std::cos(12 * M_PI / 6), - 115 * std::sin(12 * M_PI / 6), 2});
     
@@ -422,6 +482,61 @@ cgp::mesh x(float l, float w, float h, cgp::vec3 offset)
     x.fill_empty_field();
     x.color.fill({1,1,0});
     return x;
+}
+
+cgp::mesh number_mesh(int nb) {
+    mesh num;
+    if (nb == 1)
+        num.push_back(brick(20, 2, 2));
+    if (nb == 2) {
+        num.push_back(brick(20, 2, 2, {0, -2, 0}));
+        num.push_back(brick(20, 2, 2, {0, 2, 0}));
+    }
+    if (nb == 3) {
+        num.push_back(brick(20, 2, 2));
+        num.push_back(brick(20, 2, 2, {0, -4, 0}));
+        num.push_back(brick(20, 2, 2, {0, 4, 0}));
+    }
+    if (nb == 4) {
+        num.push_back(brick(20, 2, 2, {0, 7, 0}));
+        num.push_back(v(20, 2, 2, {0, -2, 0}));
+    }
+    if (nb == 5) {
+        num.push_back(v(20, 2, 2));
+    }
+    if (nb == 6) {
+        num.push_back(brick(20, 2, 2, {0, -7, 0}));
+        num.push_back(v(20, 2, 2, {0, 2, 0}));
+    }
+    if (nb == 7) {
+        num.push_back(brick(20, 2, 2, {0, -9, 0}));
+        num.push_back(brick(20, 2, 2, {0, -5, 0}));
+        num.push_back(v(20, 2, 2, {0, 4, 0}));
+    }
+    if (nb == 8) {
+        num.push_back(brick(20, 2, 2, {0, -11, 0}));
+        num.push_back(brick(20, 2, 2, {0, -7, 0}));
+        num.push_back(brick(20, 2, 2, {0, -3, 0}));
+        num.push_back(v(20, 2, 2, {0, 6, 0}));
+    }
+    if (nb == 9) {
+        num.push_back(brick(20, 2, 2, {0, 7, 0}));
+        num.push_back(x(20, 2, 2, {0, -2, 0}));
+    }
+    if (nb == 10) {
+        num.push_back(x(20, 2, 2));
+    }
+    if (nb == 11) {
+        num.push_back(brick(20, 2, 2, {0, -7, 0}));
+        num.push_back(x(20, 2, 2, {0, 2, 0}));
+    }
+    if (nb == 12) {
+        num.push_back(brick(20, 2, 2, {0, -9, 0}));
+        num.push_back(brick(20, 2, 2, {0, -5, 0}));
+        num.push_back(x(20, 2, 2, {0, 4, 0}));
+    }
+    num.color.fill({1,0,0});
+    return num;
 }
 
 // Buildings of dimensions l x w with streets of width s

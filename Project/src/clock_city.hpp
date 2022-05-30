@@ -23,4 +23,5 @@ cgp::mesh create_city(float l, float w, float s, int nl, int nw, float hmax);
 cgp::hierarchy_mesh_drawable initialize_hours();
 cgp::hierarchy_mesh_drawable initialize_minutes();
 cgp::hierarchy_mesh_drawable initialize_seconds();
+cgp::mesh number_mesh(int nb);
 float angle_increment(float t);

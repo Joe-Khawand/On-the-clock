@@ -51,7 +51,7 @@ struct scene_structure {
 	cgp::mesh_drawable gold_beam;
 
 	//orthographic projection gui
-	cgp::mesh_drawable cube;
+	cgp::mesh_drawable number;
 	cgp::scene_environment_basic environment_ortho;
 
 	//! Boids

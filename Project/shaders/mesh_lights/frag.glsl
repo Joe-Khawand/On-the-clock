@@ -39,7 +39,7 @@ void main()
 	// Determines which colors/textures to display
 	float dist_to_center = length(fragment.position);
 	bool not_reached = true;
-	int nb_colors = colors_displayed;
+	int nb_colors = min(colors_displayed, 4);
 	while(nb_colors > 0 && not_reached) {
 		float time_activated;
 		if (nb_colors==1)

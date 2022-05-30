@@ -85,8 +85,14 @@ void scene_structure::activate_nexus(float d, int i)
 				environment.spotlight_bool[i] = true;
 				environment.spotlight_timer[0].scale += 0.1f;
 				timer.scale += 0.1f;
+				environment.colors_displayed += 1;
+				number.clear();
+				number.initialize(number_mesh(12-environment.colors_displayed));
+				number.transform.translation = { 0.75f,0.8f,0.0f };
+				number.transform.scaling = 0.01;
+				number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
+				number.shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
 				if (environment.colors_displayed < 4) {
-					environment.colors_displayed += 1;
 					if (environment.colors_displayed == 1)
 						environment.red_activated = environment.spotlight_timer[0].t;
 					if (environment.colors_displayed == 2)
@@ -176,11 +182,13 @@ void scene_structure::initialize()
 	//*****************************************************
 	environment_ortho.projection = camera_projection::orthographic(-1, 1, -1, 1, -1, 1);
 	environment_ortho.camera.distance_to_center = 2.5f;
-	environment_ortho.light = { 0,0,1 };
+	environment_ortho.light = { -1,-1,-1 };
 	environment_ortho.camera.look_at({ 0, 0, 0.5f }, {0,0,0}, {0,1,0});
-	cube.initialize(mesh_primitive_cube({ 0,0,0 }, 0.2f), "Cube");
-	cube.transform.translation = { 0.75f,0.8f,0.0f };
-	cube.transform.scaling = 0.2;
+	number.initialize(number_mesh(12), "Number");
+	number.transform.translation = { 0.75f,0.8f,0.0f };
+	number.transform.scaling = 0.01;
+	number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
+	number.shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
 
 	mesh maze_mesh = initialize_maze();
 	maze.initialize(maze_mesh, "Maze");
@@ -215,14 +223,16 @@ void scene_structure::display()
 	
 
 	// Scene_orthographic has a fixed camera and an orthographic projection : Player GUI
-	cube.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
-                            * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	cube.transform.translation = { 0.75f, 0.8f, 0.0f };
-	draw(cube, environment_ortho);
-	cube.transform.translation = { 0.65f, 0.8f, 0.0f };
-	draw(cube, environment_ortho);
-	cube.transform.translation = { 0.55f, 0.8f, 0.0f };
-	draw(cube, environment_ortho);
+	// number.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
+    //                         * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+	// number.transform.translation = { 0.75f, 0.8f, 0.0f };
+	// draw(number, environment_ortho);
+	// number.transform.translation = { 0.65f, 0.8f, 0.0f };
+	// draw(number, environment_ortho);
+	// number.transform.translation = { 0.55f, 0.8f, 0.0f };
+	// draw(number, environment_ortho);
+	draw(number, environment_ortho);
+	
 
 	draw(maze, environment);
 
