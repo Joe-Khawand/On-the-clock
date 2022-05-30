@@ -12,7 +12,6 @@ TODO list
     - cinématiques avec trajectoire caméra prédéfinie
     - musique de fond (dans le jeu ET dans la vidéo) --> synchroniser la musique avec les temps forts de la vidéo
  - Portail de téléportation (montre cassée)
- - nexus qui apportent les couleurs (RVB) puis les textures (apparition en propagation)
  - RAPPORT
 
 En option
@@ -48,3 +47,4 @@ Done
  - génération automatique de labyrinthes + affichage
  - texte à l'écran
  - Boids
+ - nexus qui apportent les couleurs (R -> B -> V) puis les textures (apparition en propagation)

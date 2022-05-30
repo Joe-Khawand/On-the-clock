@@ -9,17 +9,22 @@ void opengl_uniform(GLuint shader, scene_environment_with_multiple_lights const&
 
 	// Send the position and color of sphere as uniforms
 	/** Note: Here we use the raw OpenGL call to glUniform3fv allowing us to pass a vector of data (here an array of 5 positions and 5 colors) */
-	int const N_spotlight = environment.spotlight_color.max_size();
+	int const N_spotlight = environment.spotlight_color.size();
 	GLint const location_color = glGetUniformLocation(shader, "spotlight_color");
 	GLint const location_position = glGetUniformLocation(shader, "spotlight_position");
 	glUniform3fv(location_color, N_spotlight, ptr(environment.spotlight_color[0]));
 	glUniform3fv(location_position, N_spotlight, ptr(environment.spotlight_position[0]));
+	vec4 activation_colors = vec4(environment.red_activated, environment.green_activated, environment.blue_activated, environment.textures_activated);
 		
 	// Send the falloff values as uniforms
 	opengl_uniform(shader, "spotlight_falloff", environment.spotlight_falloff);
 	opengl_uniform(shader, "fog_falloff", environment.fog_falloff);
 	opengl_uniform(shader, "projection", environment.projection.matrix());
 	opengl_uniform(shader, "view", environment.camera.matrix_view());
+	opengl_uniform(shader, "colors_displayed", environment.colors_displayed, false);
+	opengl_uniform(shader, "activation_colors", activation_colors, false);
+	opengl_uniform(shader, "N_spotlight", N_spotlight, false);
+	opengl_uniform(shader, "time", environment.spotlight_timer[0].t, false);
 }
 
 void compute_light_position(float t, scene_environment_with_multiple_lights& environment)
