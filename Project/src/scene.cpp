@@ -173,82 +173,12 @@ void scene_structure::initialize()
 
 	mesh maze_mesh = initialize_maze();
 	maze.initialize(maze_mesh, "Maze");
-	maze.transform.translation = {-525, -525, -100};
+	maze.transform.translation = {-525, -525, -200};
 
 	//!Boids
 	b = initialize_boids();
 }
 
-// void scene_structure::initialize_maze(int nl, int nw) {
-// 	std::cout << "Started ini maze" << std::endl;
-// 	for (int i=0; i<nl; i++) {
-//         for (int j=0; j<nw; j++) {
-//             maze[i * nw + j] = 1;
-//         }
-//     }
-//     std::vector<std::pair<int, int> > stack;
-//     maze[nw + 1] = 0;
-//     stack.push_back({1, 2});
-//     stack.push_back({2, 1});
-//     while (stack.size() > 0)
-//     {
-//         std::pair<int, int> p = stack[stack.size()-1];
-//         int i = p.first;
-//         int j = p.second;
-//         stack.pop_back();
-//         if (!(i==0 or i==nl-1 or j==0 or j==nw-1 or maze[i*nw +j]==0 or maze[i*nw +j-1] + maze[(i+1)*nw +j] + maze[i*nw +j+1] + maze[(i-1)*nw +j] < 3)) {
-//             int i = p.first;
-// 			int j = p.second;
-// 			std::pair<int, int> next;
-// 			if (maze[(i-1) * nw +j] == 0) next = {i+1, j};
-// 			else {
-// 				if (maze[(i+1) * nw +j] == 0) next = {i-1, j};
-// 				else {
-// 					if (maze[i * nw +j-1] == 0) next = {i, j+1};
-// 					else {
-// 						if (maze[i * nw +j+1] == 0) next = {i, j-1};
-// 						else
-// 							next = {-1, -1};
-// 					}
-// 				}
-// 			}
-			
-//             int i2 = next.first;
-//             int j2 = next.second;
-//             std::vector<std::pair<int, int> > li = neighboring_walls(i2, j2);
-//             for (std::pair<int, int> pair:li) {
-//                 stack.push_back(pair);
-//             }
-//             maze[i2 * nw + j2] = 0;
-//             maze[i * nw + j] = 0;
-//         }
-//     }
-// 	std::cout << "Ended ini maze" << std::endl;
-// }
-
-// std::vector<std::pair<int, int> > scene_structure::neighboring_walls(int i, int j){
-//     std::vector<std::pair<int, int> > t;
-//     t.push_back({i, j-1});
-//     t.push_back({i+1, j});
-//     t.push_back({i, j+1});
-//     t.push_back({i-1, j});
-
-// 	int d[4];
-//     for (int i=0; i<4; i++) {
-//         d[i] = i;
-//     }
-//     for (int i=0; i<4-1; i++) {
-//         int j = i + (rand() % (4-i));
-//         int x = d[i];
-//         d[i] = d[j];
-//         d[j] = x;
-//     }
-//     std::vector<std::pair<int, int> > t2;
-//     for (int i=0; i<4; i++) {
-//         t2.push_back(t[d[i]]);
-//     }
-//     return t2;
-// }
 
 void scene_structure::display()
 {
@@ -346,8 +276,9 @@ void scene_structure::display_lights()
 		environment.spotlight_timer[i].update();
 		float t = environment.spotlight_timer[i].t;
 		nexus["Core"].transform.translation = environment.spotlight_position[i];
-		nexus["Core"].transform.scaling = (2.5 + 0.5 * pow(cos(2 * t), 10)) / 3.0f;
-		nexus["Outer ring"].transform.scaling = 1 / ((2.5 + 0.5 * pow(cos(2 * t), 10)) / 3.0f);
+		float dilatation = (2.5 + 0.5 * pow(cos(2 * t), 10)) / 3.0f;
+		nexus["Core"].transform.scaling = dilatation;
+		nexus["Outer ring"].transform.scaling = 1 / dilatation;
 		nexus["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * t);
 		nexus["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * t);
 		nexus["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * t);
