@@ -90,9 +90,9 @@ void scene_structure::activate_nexus(float d, int i)
 					if (environment.colors_displayed == 1)
 						environment.red_activated = environment.spotlight_timer[0].t;
 					if (environment.colors_displayed == 2)
-						environment.green_activated = environment.spotlight_timer[0].t;
-					if (environment.colors_displayed == 3)
 						environment.blue_activated = environment.spotlight_timer[0].t;
+					if (environment.colors_displayed == 3)
+						environment.green_activated = environment.spotlight_timer[0].t;
 					if (environment.colors_displayed == 4)
 						environment.textures_activated = environment.spotlight_timer[0].t;
 				}

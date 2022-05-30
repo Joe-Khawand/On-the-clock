@@ -30,8 +30,8 @@ struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 	float fog_falloff = 0; //0.00001f;
 	int colors_displayed = 0;
 	float red_activated = 0;
-	float green_activated = 0;
 	float blue_activated = 0;
+	float green_activated = 0;
 	float textures_activated = 0;
 
 	// Standard parameters (same as basic environment)

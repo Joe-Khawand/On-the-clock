@@ -45,9 +45,9 @@ void main()
 		if (nb_colors==1)
 			time_activated = activation_colors.r;
 		if (nb_colors==2)
-			time_activated = activation_colors.g;
-		if (nb_colors==3)
 			time_activated = activation_colors.b;
+		if (nb_colors==3)
+			time_activated = activation_colors.g;
 		if (nb_colors==4)
 			time_activated = activation_colors.a; // textures
 		if ((time - 0.01 * dist_to_center) > time_activated)
@@ -81,9 +81,9 @@ void main()
 		color_object = vec3(red, green, blue);
 	}
 	if(nb_colors==2) {
-		float red = (4 * color_object.r + color_object.b) / 5.0;
-		float green = (4 * color_object.g + color_object.b) / 5.0;
-		float blue = (color_object.r + color_object.g + color_object.b) / 5.0;
+		float red = (4 * color_object.r + color_object.g) / 5.0;
+		float green = (color_object.r + color_object.g + color_object.b) / 5.0;
+		float blue = (4 * color_object.b + color_object.g) / 5.0;
 		color_object = vec3(red, green, blue);
 	}
 
