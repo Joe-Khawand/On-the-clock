@@ -14,7 +14,7 @@ void opengl_uniform(GLuint shader, scene_environment_with_multiple_lights const&
 	GLint const location_position = glGetUniformLocation(shader, "spotlight_position");
 	glUniform3fv(location_color, N_spotlight, ptr(environment.spotlight_color[0]));
 	glUniform3fv(location_position, N_spotlight, ptr(environment.spotlight_position[0]));
-	vec3 activation_colors = vec3(environment.red_activated, environment.green_activated, environment.blue_activated);
+	vec4 activation_colors = vec4(environment.red_activated, environment.green_activated, environment.blue_activated, environment.textures_activated);
 		
 	// Send the falloff values as uniforms
 	opengl_uniform(shader, "spotlight_falloff", environment.spotlight_falloff);

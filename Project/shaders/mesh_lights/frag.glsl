@@ -31,28 +31,13 @@ uniform float spotlight_falloff;
 uniform float fog_falloff;
 uniform int N_spotlight;
 uniform int colors_displayed;
-uniform vec3 activation_colors;
+uniform vec4 activation_colors;
 uniform float time;
 
 void main()
 {
-	vec3 N = normalize(fragment.normal);
-	if (gl_FrontFacing == false) {
-		N = -N;
-	}
-	vec2 uv_image = vec2(fragment.uv.r, 1.0-fragment.uv.y);
-	if(texture_inverse_y) {
-		uv_image.y = 1.0-uv_image.y;
-	}
-	vec4 color_image_texture = texture(image_texture, uv_image);
-	if(use_texture==false) {
-		color_image_texture=vec4(1.0,1.0,1.0,1.0);
-	}
-
-	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
-
+	// Determines which colors/textures to display
 	float dist_to_center = length(fragment.position);
-
 	bool not_reached = true;
 	int nb_colors = colors_displayed;
 	while(nb_colors > 0 && not_reached) {
@@ -63,11 +48,29 @@ void main()
 			time_activated = activation_colors.g;
 		if (nb_colors==3)
 			time_activated = activation_colors.b;
+		if (nb_colors==4)
+			time_activated = activation_colors.a; // textures
 		if ((time - 0.01 * dist_to_center) > time_activated)
 			not_reached = false;
 		else
 			nb_colors -= 1;
 	}
+	
+	vec3 N = normalize(fragment.normal);
+	if (gl_FrontFacing == false) {
+		N = -N;
+	}
+	vec2 uv_image = vec2(fragment.uv.r, 1.0-fragment.uv.y);
+	if(texture_inverse_y) {
+		uv_image.y = 1.0-uv_image.y;
+	}
+	vec4 color_image_texture = texture(image_texture, uv_image);
+	if(use_texture==false || nb_colors<4) {
+		color_image_texture=vec4(1.0,1.0,1.0,1.0);
+	}
+
+	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
+	
 	if(nb_colors==0) {
 		color_object = (color_object.rrr + color_object.ggg + color_object.bbb) / 6.0;
 	}
@@ -112,6 +115,8 @@ void main()
 	float depth = length(fragment.eye-fragment.position);
 	float w_depth = exp(-fog_falloff*depth*depth);
 	vec3 color_with_fog = w_depth*color_shading+(1-w_depth)*vec3(0,0,0); //w_depth*color_shading+(1-w_depth)*vec3(0.7,0.7,0.7);
+	if (fragment.position.z < -150)
+		color_with_fog = color_with_fog * (fragment.position.z + 200) / 50;
 
 	FragColor = vec4( color_with_fog, alpha * color_image_texture.a);
 }
