@@ -50,7 +50,7 @@ void main()
 			time_activated = activation_colors.g;
 		if (nb_colors==4)
 			time_activated = activation_colors.a; // textures
-		if ((time - 0.01 * dist_to_center) > time_activated)
+		if ((time - time_activated)*50 > dist_to_center)
 			not_reached = false;
 		else
 			nb_colors -= 1;

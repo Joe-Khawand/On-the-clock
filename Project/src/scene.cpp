@@ -87,11 +87,13 @@ void scene_structure::activate_nexus(float d, int i)
 				timer.scale += 0.1f;
 				environment.colors_displayed += 1;
 				number.clear();
-				number.initialize(number_mesh(12-environment.colors_displayed));
-				number.transform.translation = { 0.75f,0.8f,0.0f };
-				number.transform.scaling = 0.01;
-				number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
-				number.shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+				if (environment.colors_displayed < 12) {
+					number.initialize(number_mesh(12-environment.colors_displayed));
+					number.transform.translation = { 0.75f,0.8f,0.0f };
+					number.transform.scaling = 0.01;
+					number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
+					number.shader = ortho_shader;
+				}
 				if (environment.colors_displayed < 4) {
 					if (environment.colors_displayed == 1)
 						environment.red_activated = environment.spotlight_timer[0].t;
@@ -188,7 +190,8 @@ void scene_structure::initialize()
 	number.transform.translation = { 0.75f,0.8f,0.0f };
 	number.transform.scaling = 0.01;
 	number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
-	number.shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+	ortho_shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+	number.shader = ortho_shader;
 
 	mesh maze_mesh = initialize_maze();
 	maze.initialize(maze_mesh, "Maze");
