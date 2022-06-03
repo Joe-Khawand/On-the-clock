@@ -116,6 +116,8 @@ void scene_structure::activate_nexus(float d, int i)
 
 void scene_structure::initialize()
 {
+	// Initilisation dans la premiere scene
+	init=true;
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{80,0,20};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_2,0);
@@ -199,79 +201,87 @@ void scene_structure::initialize()
 	//! Obj plane model oriente selon l'axe x, une reortentation est requise quand on alignera avec la vitesse
 	boid_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/UFO_Triangle.obj"));
     boid_drawable.transform.scaling=0.0009;
+
+	scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
+	scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	scene_drawable.transform.scaling = 2.0;
 }
 
 
 void scene_structure::display()
 {
+	if(init){
+		draw(scene_drawable,environment);
+	}
+	else{
+		draw(skybox, environment); 
+		// Update the current time
+		dt=timer.update();
+		display_lights(); // displays each nexus and every light source
 
-	draw(skybox, environment); 
-	// Update the current time
-	dt=timer.update();
-	display_lights(); // displays each nexus and every light source
-
-	// Basic elements of the scene
-  
-	hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
-	hours.update_local_to_global_coordinates();
-	draw(hours, environment);
-
-	minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
-	minutes.update_local_to_global_coordinates();
-	draw(minutes, environment);
-
-	seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
-	seconds.update_local_to_global_coordinates();
-	draw(seconds, environment);
+		// Basic elements of the scene
 	
+		hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
+		hours.update_local_to_global_coordinates();
+		draw(hours, environment);
 
-	// Scene_orthographic has a fixed camera and an orthographic projection : Player GUI
-	// number.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
-    //                         * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-	// number.transform.translation = { 0.75f, 0.8f, 0.0f };
-	// draw(number, environment_ortho);
-	// number.transform.translation = { 0.65f, 0.8f, 0.0f };
-	// draw(number, environment_ortho);
-	// number.transform.translation = { 0.55f, 0.8f, 0.0f };
-	// draw(number, environment_ortho);
-	draw(number, environment_ortho);
-	
+		minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
+		minutes.update_local_to_global_coordinates();
+		draw(minutes, environment);
 
-	draw(maze, environment);
+		seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
+		seconds.update_local_to_global_coordinates();
+		draw(seconds, environment);
+		
+
+		// Scene_orthographic has a fixed camera and an orthographic projection : Player GUI
+		// number.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
+		//                         * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
+		// number.transform.translation = { 0.75f, 0.8f, 0.0f };
+		// draw(number, environment_ortho);
+		// number.transform.translation = { 0.65f, 0.8f, 0.0f };
+		// draw(number, environment_ortho);
+		// number.transform.translation = { 0.55f, 0.8f, 0.0f };
+		// draw(number, environment_ortho);
+		draw(number, environment_ortho);
+		
+
+		draw(maze, environment);
 
 
-	//! Boids
-	//* Appliquer les 3 regles
-	separation(b);
-	alignment(b);
-	cohesion(b);
-	//dessiner les boids
-	for (int i = 0; i < number_boids; i++)
-	{	
-		b[i]->draw_boid(dt);
-		boid_drawable.transform.translation= b[i]->position;
-    
-    	if(cgp::norm(b[i]->vitesse)>0.000001){
-			//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
-			boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
-    	}
-		draw(boid_drawable,environment);
-		if (gui.display.wireframe){
-			draw_wireframe(boid_drawable,environment);
+		//! Boids
+		//* Appliquer les 3 regles
+		separation(b);
+		alignment(b);
+		cohesion(b);
+		//dessiner les boids
+		for (int i = 0; i < number_boids; i++)
+		{	
+			b[i]->draw_boid(dt);
+			boid_drawable.transform.translation= b[i]->position;
+		
+			if(cgp::norm(b[i]->vitesse)>0.000001){
+				//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
+				boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
+			}
+			draw(boid_drawable,environment);
+			if (gui.display.wireframe){
+				draw_wireframe(boid_drawable,environment);
+			}
 		}
-	}
-	
+		
 
-	if (gui.display.wireframe){
-		draw_wireframe(hours, environment);
-		draw_wireframe(minutes, environment);
-		draw_wireframe(seconds, environment);
-		draw_wireframe(gold_beam, environment);
-		draw_wireframe(blue_beam, environment);
-		draw_wireframe(maze, environment);
+		if (gui.display.wireframe){
+			draw_wireframe(hours, environment);
+			draw_wireframe(minutes, environment);
+			draw_wireframe(seconds, environment);
+			draw_wireframe(gold_beam, environment);
+			draw_wireframe(blue_beam, environment);
+			draw_wireframe(maze, environment);
+		}
+		if (environment.spotlight_bool[0])
+			display_semiTransparent();
 	}
-	if (environment.spotlight_bool[0])
-		display_semiTransparent();
 }
 
 void scene_structure::display_gui()

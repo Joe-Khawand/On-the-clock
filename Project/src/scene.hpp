@@ -16,6 +16,9 @@ struct scene_structure {
 	// Elements and shapes of the scene
 	// ****************************** //
 
+	bool init;
+	cgp::mesh_drawable scene_drawable;
+
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
