@@ -61,11 +61,20 @@ void scene_structure::mouse_click()
 	{
 		vec3 ray_direction = camera_ray_direction(environment.camera.matrix_frame(), environment.projection.matrix_inverse(), inputs.mouse.position.current);
 
-		for (int i=0; i<n_lights; i++) {
+		if (init)
+		{
+			vec3 cam_to_clock = cgp::vec3{-13,0,13} - environment.camera.position();
+			float s = cgp::norm(cam_to_clock);
+			if (cgp::norm(s * normalize(ray_direction) - cam_to_clock) < 2.0f)
+				init=false;
+		}
+		else{
+			for (int i=0; i<n_lights; i++) {
 			vec3 cam_to_light = environment.spotlight_position[i] - environment.camera.position();
 			float d = cgp::norm(cam_to_light);
 			if (cgp::norm(d * normalize(ray_direction) - cam_to_light) < 1.5f)
 				activate_nexus(d, i);
+		}
 		}
 	}
 }
@@ -204,7 +213,12 @@ void scene_structure::initialize()
 
 	scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
 	scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	scene_drawable.transform.scaling = 2.0;
+	scene_drawable.transform.scaling = 4.0;
+
+	clock_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Clock.obj"));
+	clock_drawable.transform.scaling = 0.1;
+	clock_drawable.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
+	clock_drawable.transform.translation = {-13,0,0};
 }
 
 
@@ -212,6 +226,7 @@ void scene_structure::display()
 {
 	if(init){
 		draw(scene_drawable,environment);
+		draw(clock_drawable,environment);
 	}
 	else{
 		draw(skybox, environment); 
