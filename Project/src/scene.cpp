@@ -130,6 +130,7 @@ void scene_structure::initialize()
 		environment.spotlight_color[i] = { 0,0,0 };
 		environment.spotlight_timer[i].stop();
 	}
+	environment.spotlight_color[0] = {1, 0.9, 0.8};
 	environment.spotlight_timer[0].scale = 0;
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
@@ -204,7 +205,9 @@ void scene_structure::initialize()
 
 	scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
 	scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	scene_drawable.transform.translation = vec3(0,0,-20);
 	scene_drawable.transform.scaling = 2.0;
+	spherre.initialize(mesh_primitive_sphere(1, vec3(0,0,0)).flip_connectivity());
 }
 
 
@@ -212,6 +215,7 @@ void scene_structure::display()
 {
 	if(init){
 		draw(scene_drawable,environment);
+		draw(spherre, environment);
 	}
 	else{
 		draw(skybox, environment); 

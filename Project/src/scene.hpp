@@ -18,6 +18,7 @@ struct scene_structure {
 
 	bool init;
 	cgp::mesh_drawable scene_drawable;
+	cgp::mesh_drawable spherre;
 
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
