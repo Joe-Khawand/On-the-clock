@@ -71,7 +71,6 @@ void scene_structure::mouse_click()
 			vec3 cam_to_clock = cgp::vec3{-13,0,-7} - environment.camera.position();
 			float s = cgp::norm(cam_to_clock);
 			if (cgp::norm(s * normalize(ray_direction) - cam_to_clock) < 2.0f){
-				//dt_init=timer_init.t;
 				click= true;
 			}
 		}
@@ -135,13 +134,15 @@ void scene_structure::activate_nexus(float d, int i)
 
 void scene_structure::initialize()
 {
+	transition=false;
+	click= false;
 	// Initilisation dans la premiere scene
 	init=true;
-	click=false;
+	clock=false;
+	basket_scene=false;
 	t_init = 0.0;
 	// Initialisation de la scene de basket
-	basket_scene=false;
-	transition=false;
+	
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
@@ -267,133 +268,21 @@ void scene_structure::display()
 {
 	dt_init=timer_init.update();
 	if(init){
-		draw(scene_drawable,environment);
-		draw(clock_drawable, environment);
-		if(click){
-			t_init += dt_init;
-			environment.fog_falloff+=0.001*dt_init;
-		}
-		if(t_init>2.4){
-			init=false;
-			t_init=0.0;
-			environment.camera.center_of_rotation= vec3{80,0,20};
-			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
-		}
+		draw_scene_init();
 	}
 	else{
 		if(click){
-		t_init += dt_init;
-		if (environment.fog_falloff>0.0001)
-		{
-			environment.fog_falloff-=0.0007*dt_init;
+			transition_in();
 		}
-		else{
-			click=false;
-			t_init=0.0;
-		}
-		}
-
-	
 		if (basket_scene)
 		{
 			if(transition){
-				if (environment.fog_falloff>0.0001)
-				{
-					environment.fog_falloff-=0.0007*dt_init;
-				}
-				else{
-					transition=false;
-					t_init=0.0;
-				}
+				transition_in();
 			}
-			draw(bright_skybox,environment);
+			draw_scene_basket();
 		}
-		else{
-			draw(dark_skybox, environment); 
-			// Update the current time
-			dt=timer.update();
-			display_lights(); // displays each nexus and every light source
-			if(environment.colors_displayed==6){
-			
-				t_init += dt_init;
-				environment.fog_falloff+=0.001*dt_init;
-				if(t_init>2.4){
-					basket_scene=true;
-					transition=true;
-					environment.camera.center_of_rotation= vec3{80,0,20};
-					environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
-				}
-			}
-			
-			// Elements of the scene
-		
-			hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
-			hours.update_local_to_global_coordinates();
-	
-			draw(hours, environment);
-
-			minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
-			minutes.update_local_to_global_coordinates();
-
-			draw(minutes, environment);
-
-			seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
-			seconds.update_local_to_global_coordinates();
-
-			draw(seconds, environment);
-			
-			central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
-			pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
-			pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
-			pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
-
-			draw(central_cylinder,environment);
-			draw(pulsating_cylinder_1,environment);
-			draw(pulsating_cylinder_2,environment);
-			draw(pulsating_cylinder_3,environment);
-
-			pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
-			pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
-			pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
-
-			draw(pulsating_cylinder_1,environment);
-			draw(pulsating_cylinder_2,environment);
-			draw(pulsating_cylinder_3,environment);
-			draw(number, environment_ortho);
-			
-			draw(maze, environment);
-
-			//! Boids
-			//* Appliquer les 3 regles
-			separation(b);
-			alignment(b);
-			cohesion(b);
-			//dessiner les boids
-			for (int i = 0; i < number_boids; i++)
-			{	
-				b[i]->draw_boid(dt);
-				boid_drawable.transform.translation= b[i]->position;
-			
-				if(cgp::norm(b[i]->vitesse)>0.000001){
-					//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
-					boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
-				}
-				draw(boid_drawable,environment);
-				if (gui.display.wireframe){
-					draw_wireframe(boid_drawable,environment);
-				}
-			}
-			
-			if (gui.display.wireframe){
-				draw_wireframe(hours, environment);
-				draw_wireframe(minutes, environment);
-				draw_wireframe(seconds, environment);
-				draw_wireframe(gold_beam, environment);
-				draw_wireframe(blue_beam, environment);
-				draw_wireframe(maze, environment);
-			}
-			if (environment.spotlight_bool[0])
-				display_semiTransparent();
+		if(clock){
+			draw_scene_clock();
 		}
 	}
 }		
@@ -495,4 +384,128 @@ void scene_structure::display_semiTransparent()
 	// Re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);
+}
+
+void scene_structure::draw_scene_init(){
+	draw(scene_drawable,environment);
+	draw(clock_drawable, environment);
+	if(click){
+		t_init += dt_init;
+		environment.fog_falloff+=0.001*dt_init;
+	}
+	if(t_init>2.4){
+		init=false;
+		clock=true;
+		t_init=0.0;
+		environment.camera.center_of_rotation= vec3{80,0,20};
+		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+	}
+}
+
+void scene_structure::draw_scene_basket(){
+	//TODO add basket ball court and win condition
+	draw(bright_skybox,environment);
+}
+
+void scene_structure::transition_in(){
+	t_init += dt_init;
+		if (environment.fog_falloff>0.0001)
+		{
+			environment.fog_falloff-=0.0007*dt_init;
+		}
+		else{
+			transition=false;
+			click=false;
+			t_init=0.0;
+		}
+}
+
+
+void scene_structure::draw_scene_clock(){
+		draw(dark_skybox, environment); 
+		// Update the current time
+		dt=timer.update();
+		display_lights(); // displays each nexus and every light source
+		if(environment.colors_displayed==6){
+		
+			t_init += dt_init;
+			environment.fog_falloff+=0.001*dt_init;
+			if(t_init>2.4){
+				basket_scene=true;
+				clock=false;
+				transition=true;
+				environment.camera.center_of_rotation= vec3{80,0,20};
+				environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+				}
+			}
+			
+		// Elements of the scene
+	
+		hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
+		hours.update_local_to_global_coordinates();
+	
+		draw(hours, environment);
+
+		minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
+		minutes.update_local_to_global_coordinates();
+
+		draw(minutes, environment);
+
+		seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
+		seconds.update_local_to_global_coordinates();
+
+		draw(seconds, environment);
+			
+		central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
+		pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
+		pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
+		pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
+
+		draw(central_cylinder,environment);
+		draw(pulsating_cylinder_1,environment);
+		draw(pulsating_cylinder_2,environment);
+		draw(pulsating_cylinder_3,environment);
+
+		pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
+		pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
+		pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
+
+		draw(pulsating_cylinder_1,environment);
+		draw(pulsating_cylinder_2,environment);
+		draw(pulsating_cylinder_3,environment);
+		draw(number, environment_ortho);
+			
+		draw(maze, environment);
+
+		//! Boids
+		//* Appliquer les 3 regles
+		separation(b);
+		alignment(b);
+		cohesion(b);
+		//dessiner les boids
+		for (int i = 0; i < number_boids; i++)
+		{	
+			b[i]->draw_boid(dt);
+			boid_drawable.transform.translation= b[i]->position;
+			
+			if(cgp::norm(b[i]->vitesse)>0.000001){
+				//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
+				boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
+			}
+			draw(boid_drawable,environment);
+			if (gui.display.wireframe){
+				draw_wireframe(boid_drawable,environment);
+			}
+		}
+			
+		if (gui.display.wireframe){
+			draw_wireframe(hours, environment);
+			draw_wireframe(minutes, environment);
+			draw_wireframe(seconds, environment);
+			draw_wireframe(gold_beam, environment);
+			draw_wireframe(blue_beam, environment);
+			draw_wireframe(maze, environment);
+		}
+		if (environment.spotlight_bool[0])
+			display_semiTransparent();
 }

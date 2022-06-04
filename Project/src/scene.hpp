@@ -15,19 +15,28 @@ struct scene_structure {
 	// ****************************** //
 	// Elements and shapes of the scene
 	// ****************************** //
+	
+	//scene bools
+
+	bool init;
+	bool clock;
+	bool basket_scene;
+	bool transition;
+	bool click;
 
 	//elements de la premiere scene
-	bool init;
+	
 	float t_init;
 	float dt_init;
+	
 	cgp::timer_basic timer_init;
-	bool click;
 	cgp::mesh_drawable scene_drawable;
 	cgp::mesh_drawable clock_drawable;
 
 	//elements scene basket
-	bool basket_scene;
-	bool transition;
+	
+	cgp::skybox_drawable bright_skybox;
+	
 
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
@@ -35,7 +44,7 @@ struct scene_structure {
 	gui_parameters gui;                       // Standard GUI element storage
 
 	cgp::skybox_drawable dark_skybox;
-	cgp::skybox_drawable bright_skybox;
+	
 
 	cgp::mesh_drawable cylinder;
 	cgp::mesh_drawable central_cylinder;
@@ -99,6 +108,12 @@ struct scene_structure {
 	void initialize();  // Standard initialization to be called before the animation loop
 	// std::vector<std::pair<int, int> > neighboring_walls(int i, int j);
 	// void initialize_maze(int nl = 55, int nw = 55);
+
+	void draw_scene_init();
+	void draw_scene_clock();
+	void draw_scene_basket();
+	void transition_in();
+	void transition_out();
 
 	void display();     // The frame display to be called within the animation loop
 	void display_lights();
