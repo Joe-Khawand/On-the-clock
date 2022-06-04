@@ -89,8 +89,8 @@ struct scene_structure {
 	// text drawables
 	// bool display_too_far;
 	cgp::mesh_drawable text;
-	bool display_text;
-	float time_text_appeared;
+	bool display_text = false;
+	float time_text_appeared = 0;
 	int idx_text;
 	std::array<GLuint, 7> text_textures;
 
@@ -120,5 +120,6 @@ struct scene_structure {
 	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
 	void display_semiTransparent(); // Display function for semi-transparent shapes
+	void display_text_billboard(float duration = 2.5f);
 };
 
