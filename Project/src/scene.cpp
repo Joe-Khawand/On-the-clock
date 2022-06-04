@@ -265,8 +265,8 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
+	dt_init=timer_init.update();
 	if(init){
-		dt_init=timer_init.update();
 		draw(scene_drawable,environment);
 		draw(clock_drawable, environment);
 		if(click){
@@ -282,7 +282,6 @@ void scene_structure::display()
 	}
 	else{
 		if(click){
-			dt_init=timer_init.update();
 			t_init += dt_init;
 			if (environment.fog_falloff>0.0001)
 			{
@@ -290,12 +289,12 @@ void scene_structure::display()
 			}
 			else{
 				click=false;
+				t_init=0.0;
 			}
 		}
 		if(environment.colors_displayed==6 && !basket_scene){
 			if (basket_scene)
 			{
-				dt_init=timer_init.update();//!fix time
 				t_init += dt_init;
 				environment.fog_falloff+=0.001*dt_init;
 				if(t_init>2.4){
@@ -308,7 +307,6 @@ void scene_structure::display()
 			}
 			else{
 				if(transition){
-					dt_init=timer_init.update();
 					t_init += dt_init;
 					if (environment.fog_falloff>0.0001)
 					{
@@ -316,6 +314,7 @@ void scene_structure::display()
 					}
 					else{
 						transition=false;
+						t_init=0.0;
 					}
 				}
 				draw(bright_skybox,environment);
