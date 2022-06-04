@@ -53,6 +53,7 @@ struct scene_structure {
 	//orthographic projection gui
 	cgp::mesh_drawable number;
 	cgp::scene_environment_basic environment_ortho;
+	GLuint ortho_shader;
 
 	//! Boids
 	std::vector<Boid *> b; //tableau de pointeurs vers des boids
