@@ -308,6 +308,8 @@ void scene_structure::display()
 			}
 			else{
 				click=false;
+				t_init=0.0;
+
 			}
 		}
 		draw(dark_skybox, environment); 
