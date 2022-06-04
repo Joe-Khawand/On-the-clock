@@ -172,12 +172,7 @@ void scene_structure::initialize()
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
-<<<<<<< HEAD
-
-	// Initialize the skybox (*)
-=======
 	// Initialize the skybox
->>>>>>> 24d2e07eda0bbc2ff868cb0332d521249155d63a
 	// ***************************************** //
 	dark_skybox.initialize("assets/dark_skybox_hd/");
 	bright_skybox.initialize("assets/bright_skybox_hd");
