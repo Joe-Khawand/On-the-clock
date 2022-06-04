@@ -16,9 +16,14 @@ struct scene_structure {
 	// Elements and shapes of the scene
 	// ****************************** //
 
+	//elements de la premiere scene
 	bool init;
+	float t_init;
+	float dt_init;
+	cgp::timer_basic timer_init;
+	bool click;
+
 	cgp::mesh_drawable scene_drawable;
-	cgp::mesh_drawable spherre;
 	cgp::mesh_drawable clock_drawable;
 
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler

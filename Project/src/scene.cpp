@@ -29,8 +29,9 @@ void scene_structure::update_camera()
 	float const pitch = 0.5f; // speed of the pitch
 	float const yaw  = 0.7f; // speed of the yaw
 	float scale = std::max(flight_timer.scale, 0.01f);
-
-	if (keyboard.up){
+	if(!init){
+		
+		if (keyboard.up){
 		environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt / scale);
 	}
 	if (keyboard.down){
@@ -53,6 +54,7 @@ void scene_structure::update_camera()
 		{
 			flight_speed-=1.0f;
 		}
+	}
 }
 
 void scene_structure::mouse_click()
@@ -63,10 +65,12 @@ void scene_structure::mouse_click()
 
 		if (init)
 		{
-			vec3 cam_to_clock = cgp::vec3{-13,0,13} - environment.camera.position();
+			vec3 cam_to_clock = cgp::vec3{-13,0,-7} - environment.camera.position();
 			float s = cgp::norm(cam_to_clock);
-			if (cgp::norm(s * normalize(ray_direction) - cam_to_clock) < 2.0f)
-				init=false;
+			if (cgp::norm(s * normalize(ray_direction) - cam_to_clock) < 2.0f){
+				//dt_init=timer_init.t;
+				click= true;
+			}
 		}
 		else{
 			for (int i=0; i<n_lights; i++) {
@@ -127,9 +131,11 @@ void scene_structure::initialize()
 {
 	// Initilisation dans la premiere scene
 	init=true;
+	click=false;
+	t_init = 0.0;
 	// Initial placement of the camera
-	environment.camera.center_of_rotation= vec3{80,0,20};
-	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_2,0);
+	environment.camera.center_of_rotation= vec3{22,-22,0};
+	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
 
 	// Multiple lights
 	// ***************************************** //
@@ -221,23 +227,45 @@ void scene_structure::initialize()
 	clock_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Clock.obj"));
 	clock_drawable.transform.scaling = 0.1;
 	clock_drawable.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
-	clock_drawable.transform.translation = {-13,0,0};
+	clock_drawable.transform.translation = {-13,0,-20};
 }
 
 
 void scene_structure::display()
 {
 	if(init){
+		dt_init=timer_init.update();
 		draw(scene_drawable,environment);
-		draw(spherre, environment);
+		draw(clock_drawable, environment);
+		if(click){
+			t_init += dt_init;
+			environment.fog_falloff+=0.001*dt_init;
+		}
+		if(t_init>2.4){
+			init=false;
+			t_init=0.0;
+			environment.camera.center_of_rotation= vec3{80,0,20};
+			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		}
 	}
 	else{
+		if(click){
+			dt_init=timer_init.update();
+			t_init += dt_init;
+			if (environment.fog_falloff>0.0001)
+			{
+				environment.fog_falloff-=0.0007*dt_init;
+			}
+			else{
+				click=false;
+			}
+		}
 		draw(skybox, environment); 
 		// Update the current time
 		dt=timer.update();
 		display_lights(); // displays each nexus and every light source
 
-		// Basic elements of the scene
+		// Elements of the scene
 	
 		hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
 		hours.update_local_to_global_coordinates();
@@ -252,20 +280,9 @@ void scene_structure::display()
 		draw(seconds, environment);
 		
 
-		// Scene_orthographic has a fixed camera and an orthographic projection : Player GUI
-		// number.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.1f * M_PI_2)
-		//                         * rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
-		// number.transform.translation = { 0.75f, 0.8f, 0.0f };
-		// draw(number, environment_ortho);
-		// number.transform.translation = { 0.65f, 0.8f, 0.0f };
-		// draw(number, environment_ortho);
-		// number.transform.translation = { 0.55f, 0.8f, 0.0f };
-		// draw(number, environment_ortho);
 		draw(number, environment_ortho);
 		
-
 		draw(maze, environment);
-
 
 		//! Boids
 		//* Appliquer les 3 regles
@@ -371,9 +388,6 @@ void scene_structure::display_core()
 
 void scene_structure::display_semiTransparent()
 {
-	// Enable use of alpha component as color blending for transparent elements
-	//  alpha = current_color.alpha
-	//  new color = previous_color * alpha + current_color * (1-alpha)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
