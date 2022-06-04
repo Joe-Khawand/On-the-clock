@@ -123,6 +123,7 @@ void scene_structure::activate_nexus(float d, int i)
 				environment.spotlight_timer[0].start();
 				environment.spotlight_bool[0] = true;
 				environment.spotlight_timer[0].scale += 0.3f;
+				environment.fog_falloff = 0.0000080f;
 				timer.scale += 0.3f;
 			}
 		}

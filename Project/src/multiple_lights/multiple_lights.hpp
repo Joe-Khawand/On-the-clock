@@ -25,7 +25,7 @@ struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 	std::array<bool, n_lights> spotlight_bool;
 
 	// The characteristic attenuation of the light
-	float spotlight_falloff = 0; //0.0003f;
+	float spotlight_falloff = 0.00003f; //0.0003f;
 
 	// The characteristic attenuation due to the fog
 	float fog_falloff = 0; //0.00001f;
