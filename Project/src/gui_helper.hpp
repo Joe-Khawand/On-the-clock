@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgp/cgp.hpp"
-#include "implicit_surface/field_function.hpp"
+#include "scenes/main_scene/implicit_surface/field_function.hpp"
 
 
 // Element of the GUI that are not already stored in other structures

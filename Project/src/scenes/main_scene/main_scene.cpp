@@ -7,58 +7,60 @@
 #include "clock_city.hpp"
 #include "nexus.hpp"
 #include "boids.hpp"
+#include "main.cpp"
 
 
 using namespace cgp;
 
-void scene_structure::activate_nexus(float d, int i)
+void main_scene_structure::activate_nexus(float d, int i)
 {
-	if (d > 300.0f) {
-		time_text_appeared = timer.t;
-		display_text = true;
-		text.texture = opengl_load_texture_image("assets/Text/too_far.png");
-	}
-	else {
-		if (!environment.spotlight_bool[i]){
-			if (i > 0 && environment.spotlight_bool[0]) {
-				environment.spotlight_color[i] = environment.spotlight_colors[i-1];
-				environment.spotlight_timer[i].start();
-				environment.spotlight_bool[i] = true;
-				environment.spotlight_timer[0].scale += 0.1f;
+	// TODO move this to scene.cpp
+	// if (d > 300.0f) {
+	// 	scene.time_text_appeared = scene.timer.t;
+	// 	display_text = true;
+	// 	text.texture = opengl_load_texture_image("assets/Text/too_far.png");
+	// }
+	// else {
+		if (!main_environment.spotlight_bool[i]){
+			if (i > 0 && main_environment.spotlight_bool[0]) {
+				main_environment.spotlight_color[i] = main_environment.spotlight_colors[i-1];
+				main_environment.spotlight_timer[i].start();
+				main_environment.spotlight_bool[i] = true;
+				main_environment.spotlight_timer[0].scale += 0.1f;
 				timer.scale += 0.1f;
-				environment.colors_displayed += 1;
+				main_environment.colors_displayed += 1;
 				number.clear();
-				if (environment.colors_displayed < 12) {
-					number.initialize(number_mesh(12-environment.colors_displayed));
+				if (main_environment.colors_displayed < 12) {
+					number.initialize(number_mesh(12-main_environment.colors_displayed));
 					number.transform.translation = { 0.75f,0.8f,0.0f };
 					number.transform.scaling = 0.01;
 					number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
 					number.shader = ortho_shader;
 				}
-				if (environment.colors_displayed < 5) {
-					if (environment.colors_displayed == 1)
-						environment.red_activated = environment.spotlight_timer[0].t;
-					if (environment.colors_displayed == 2)
-						environment.blue_activated = environment.spotlight_timer[0].t;
-					if (environment.colors_displayed == 3)
-						environment.green_activated = environment.spotlight_timer[0].t;
-					if (environment.colors_displayed == 4)
-						environment.textures_activated = environment.spotlight_timer[0].t;
+				if (main_environment.colors_displayed < 5) {
+					if (main_environment.colors_displayed == 1)
+						main_environment.red_activated = main_environment.spotlight_timer[0].t;
+					if (main_environment.colors_displayed == 2)
+						main_environment.blue_activated = main_environment.spotlight_timer[0].t;
+					if (main_environment.colors_displayed == 3)
+						main_environment.green_activated = main_environment.spotlight_timer[0].t;
+					if (main_environment.colors_displayed == 4)
+						main_environment.textures_activated = main_environment.spotlight_timer[0].t;
 				}
 			}
 			if (i == 0) {
-				environment.spotlight_color[0] = {1, 1, 1};
-				environment.spotlight_timer[0].start();
-				environment.spotlight_bool[0] = true;
-				environment.spotlight_timer[0].scale += 0.3f;
-				environment.fog_falloff = 0.0000080f;
+				main_environment.spotlight_color[0] = {1, 1, 1};
+				main_environment.spotlight_timer[0].start();
+				main_environment.spotlight_bool[0] = true;
+				main_environment.spotlight_timer[0].scale += 0.3f;
+				main_environment.fog_falloff = 0.0000080f;
 				timer.scale += 0.3f;
 			}
 		}
-	}
+	// }
 }
 
-void scene_structure::initialize_main_scene()
+void main_scene_structure::initialize_main_scene()
 {
 	// // Initilisation dans la premiere scene
 	// init=true;
@@ -71,32 +73,32 @@ void scene_structure::initialize_main_scene()
 	// Initial placement of the camera
 	// TODO do we need to move this so that it is done only when we begin displaying the scene?
 	// TODO actually since it's an independent scene moving the camera in another won't affect it so no probs (but we have to adapt update_camera function to implement this)
-	environment.camera.center_of_rotation= vec3{22,-22,0};
-	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
+	main_environment.camera.center_of_rotation= vec3{22,-22,0};
+	main_environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
 
 	// Multiple lights
 	// ***************************************** //
 	GLuint const shader_lights = opengl_load_shader("shaders/mesh_lights/vert.glsl", "shaders/mesh_lights/frag.glsl");
 	mesh_drawable::default_shader = shader_lights;   // set this shader as the default one for all new shapes declared after this line
 	for (int i=0; i < n_lights; i++) {
-		environment.spotlight_color[i] = { 0,0,0 };
-		environment.spotlight_timer[i].stop();
+		main_environment.spotlight_color[i] = { 0,0,0 };
+		main_environment.spotlight_timer[i].stop();
 	}
-	environment.spotlight_color[0] = {1, 0.9, 0.8};
-	environment.spotlight_timer[0].scale = 0;
+	main_environment.spotlight_color[0] = {1, 0.9, 0.8};
+	main_environment.spotlight_timer[0].scale = 0;
 
-	environment.spotlight_colors[0] = {1,0,0.5};
-	environment.spotlight_colors[1] = {1,0,0};
-	environment.spotlight_colors[2] = {1,0.5,0};
-	environment.spotlight_colors[3] = {1,1,0};
-	environment.spotlight_colors[4] = {0.5,1,0};
-	environment.spotlight_colors[5] = {0,1,0};
-	environment.spotlight_colors[6] = {0,1,0.5};
-	environment.spotlight_colors[7] = {0,1,1};
-	environment.spotlight_colors[8] = {0,0.5,1};
-	environment.spotlight_colors[9] = {0,0,1};
-	environment.spotlight_colors[10] = {0.5,0,1};
-	environment.spotlight_colors[11] = {1,0,1};
+	main_environment.spotlight_colors[0] = {1,0,0.5};
+	main_environment.spotlight_colors[1] = {1,0,0};
+	main_environment.spotlight_colors[2] = {1,0.5,0};
+	main_environment.spotlight_colors[3] = {1,1,0};
+	main_environment.spotlight_colors[4] = {0.5,1,0};
+	main_environment.spotlight_colors[5] = {0,1,0};
+	main_environment.spotlight_colors[6] = {0,1,0.5};
+	main_environment.spotlight_colors[7] = {0,1,1};
+	main_environment.spotlight_colors[8] = {0,0.5,1};
+	main_environment.spotlight_colors[9] = {0,0,1};
+	main_environment.spotlight_colors[10] = {0.5,0,1};
+	main_environment.spotlight_colors[11] = {1,0,1};
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
@@ -126,7 +128,6 @@ void scene_structure::initialize_main_scene()
 	mesh quad_mesh_3 = mesh_primitive_quadrangle({ -5,0,-7 }, { 5.0,0,-7 }, { 5.0,0,40 }, { -5.0,0,40 });
 	halo.initialize(quad_mesh_1, "Halo");
 	gold_beam.initialize(quad_mesh_3,"Gold Beam");
-	text.initialize(quad_mesh_2, "Too far");
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
 	gold_beam.texture = opengl_load_texture_image("assets/beamduloveforever.png");
@@ -134,14 +135,15 @@ void scene_structure::initialize_main_scene()
 	gold_beam.transform.translation = vec3(0, 0, -3);
 	gold_beam.shader = shader_halo;
 	halo.shader = shader_halo;
-	text.shader = shader_halo;
 
 	// Implicit surface and nexuses
 	// ***************************************** //
 
+	// TODO check what this does
 	// Helper to visualize the box of the domain
 	segments_drawable::default_shader = curve_drawable::default_shader;
 
+	// TODO check whether there is not conflict on redefinitions of default shaders left and right
 	// Load the shader used to display the implicit surface (only a polygon soup)
 	GLuint shader_triangle_soup = opengl_load_shader("shaders/implicit_lights/vert.glsl", "shaders/implicit_lights/frag.glsl");
 	triangle_soup_drawable::default_shader = shader_triangle_soup; //shader_lights; //
@@ -190,65 +192,64 @@ void scene_structure::initialize_main_scene()
 }
 
 
-void scene_structure::display_main_scene()
+void main_scene_structure::display_main_scene()
 {
 	dt_init=timer_init.update();
-	if(init){
-		draw(scene_drawable,environment);
-		draw(clock_drawable, environment);
-		if(click){
-			t_init += dt_init;
-			environment.fog_falloff+=0.001*dt_init;
-		}
-		if(t_init>2.4){
-			init=false;
-			t_init=0.0;
-			environment.camera.center_of_rotation= vec3{80,0,20};
-			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
-		}
-	}
-	else{
-		if(click){
-		t_init += dt_init;
-		if (environment.fog_falloff>0.0001)
-		{
-			environment.fog_falloff-=0.0007*dt_init;
-		}
-		else{
-			click=false;
-			t_init=0.0;
-		}
-		}
+	// if(init){
+	// 	draw(scene_drawable,main_environment);
+	// 	draw(clock_drawable, main_environment);
+	// 	if(click){
+	// 		t_init += dt_init;
+	// 		main_environment.fog_falloff+=0.001*dt_init;
+	// 	}
+	// 	if(t_init>2.4){
+	// 		init=false;
+	// 		t_init=0.0;
+	// 		main_environment.camera.center_of_rotation= vec3{80,0,20};
+	// 		main_environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+	// 	}
+	// }
+	// else{
+		// if(click){
+		// t_init += dt_init;
+		// if (main_environment.fog_falloff>0.0001)
+		// {
+		// 	main_environment.fog_falloff-=0.0007*dt_init;
+		// }
+		// else{
+		// 	click=false;
+		// 	t_init=0.0;
+		// }
+		// }
 
 	
-		if (basket_scene)
-		{
-			if(transition){
-				if (environment.fog_falloff>0.0001)
-				{
-					environment.fog_falloff-=0.0007*dt_init;
-				}
-				else{
-					transition=false;
-					t_init=0.0;
-				}
-			}
-			draw(bright_skybox,environment);
-		}
-		else{
-			draw(dark_skybox, environment); 
+		// if (basket_scene)
+		// {
+		// 	if(transition){
+		// 		if (main_environment.fog_falloff>0.0001)
+		// 		{
+		// 			main_environment.fog_falloff-=0.0007*dt_init;
+		// 		}
+		// 		else{
+		// 			transition=false;
+		// 			t_init=0.0;
+		// 		}
+		// 	}
+		// 	draw(bright_skybox,main_environment);
+		// }
+		// else{
+			draw(dark_skybox, main_environment); 
 			// Update the current time
 			dt=timer.update();
 			display_lights(); // displays each nexus and every light source
-			if(environment.colors_displayed==6){
-			
+			if(main_environment.colors_displayed==6){
 				t_init += dt_init;
-				environment.fog_falloff+=0.001*dt_init;
+				main_environment.fog_falloff+=0.001*dt_init;
 				if(t_init>2.4){
 					basket_scene=true;
 					transition=true;
-					environment.camera.center_of_rotation= vec3{80,0,20};
-					environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+					main_environment.camera.center_of_rotation= vec3{80,0,20};
+					main_environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
 				}
 			}
 			
@@ -257,38 +258,38 @@ void scene_structure::display_main_scene()
 			hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
 			hours.update_local_to_global_coordinates();
 	
-			draw(hours, environment);
+			draw(hours, main_environment);
 
 			minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
 			minutes.update_local_to_global_coordinates();
 
-			draw(minutes, environment);
+			draw(minutes, main_environment);
 
 			seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
 			seconds.update_local_to_global_coordinates();
 
-			draw(seconds, environment);
+			draw(seconds, main_environment);
 			
 			central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
 			pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
 			pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
 			pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
 
-			draw(central_cylinder,environment);
-			draw(pulsating_cylinder_1,environment);
-			draw(pulsating_cylinder_2,environment);
-			draw(pulsating_cylinder_3,environment);
+			draw(central_cylinder,main_environment);
+			draw(pulsating_cylinder_1,main_environment);
+			draw(pulsating_cylinder_2,main_environment);
+			draw(pulsating_cylinder_3,main_environment);
 
 			pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
 			pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
 			pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
 
-			draw(pulsating_cylinder_1,environment);
-			draw(pulsating_cylinder_2,environment);
-			draw(pulsating_cylinder_3,environment);
+			draw(pulsating_cylinder_1,main_environment);
+			draw(pulsating_cylinder_2,main_environment);
+			draw(pulsating_cylinder_3,main_environment);
 			draw(number, environment_ortho);
 			
-			draw(maze, environment);
+			draw(maze, main_environment);
 
 			//! Boids
 			//* Appliquer les 3 regles
@@ -305,42 +306,33 @@ void scene_structure::display_main_scene()
 					//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
 					boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
 				}
-				draw(boid_drawable,environment);
+				draw(boid_drawable,main_environment);
 				if (gui.display.wireframe){
-					draw_wireframe(boid_drawable,environment);
+					draw_wireframe(boid_drawable,main_environment);
 				}
 			}
 			
 			if (gui.display.wireframe){
-				draw_wireframe(hours, environment);
-				draw_wireframe(minutes, environment);
-				draw_wireframe(seconds, environment);
-				draw_wireframe(gold_beam, environment);
-				draw_wireframe(blue_beam, environment);
-				draw_wireframe(maze, environment);
+				draw_wireframe(hours, main_environment);
+				draw_wireframe(minutes, main_environment);
+				draw_wireframe(seconds, main_environment);
+				draw_wireframe(gold_beam, main_environment);
+				draw_wireframe(blue_beam, main_environment);
+				draw_wireframe(maze, main_environment);
 			}
-			if (environment.spotlight_bool[0])
+			if (main_environment.spotlight_bool[0])
 				display_semiTransparent();
-		}
-	}
+		// }
+	// }
 }		
 
-
-void scene_structure::display_gui()
-{
-	ImGui::Checkbox("Wireframe", &gui.display.wireframe);
-	ImGui::SliderFloat("Time scale", &timer.scale, 0.0f, 10.0f);
-	ImGui::SliderFloat("Flight time scale", &flight_timer.scale, 0.0f, 10.0f);
-	display_gui_falloff(environment);
-}
-
-void scene_structure::display_lights()
+void main_scene_structure::display_lights()
 {
 	// Update the position and color of the lights
-	compute_light_position(timer.t, environment);
+	compute_light_position(timer.t, main_environment);
 
-	environment.spotlight_timer[0].update();
-	float t0 = environment.spotlight_timer[0].t;
+	main_environment.spotlight_timer[0].update();
+	float t0 = main_environment.spotlight_timer[0].t;
 	nexus_core["Outer ring"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,1 }, 0.6743f * t0);
 	nexus_core["Inner ring 1"].transform.rotation = rotation_transform::from_axis_angle({ 0,1,0 }, M_PI * t0);
 	nexus_core["Inner ring 2"].transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, 1.4142f * t0);
@@ -348,15 +340,15 @@ void scene_structure::display_lights()
 
 	nexus_core.update_local_to_global_coordinates();
 
-	draw(nexus_core, environment);
+	draw(nexus_core, main_environment);
 	display_core();
 	if (gui.display.wireframe)
-	    draw_wireframe(nexus_core, environment);
+	    draw_wireframe(nexus_core, main_environment);
 
 	for(int i = 1; i<n_lights; i++){
-		environment.spotlight_timer[i].update();
-		float t = environment.spotlight_timer[i].t;
-		nexus["Core"].transform.translation = environment.spotlight_position[i];
+		main_environment.spotlight_timer[i].update();
+		float t = main_environment.spotlight_timer[i].t;
+		nexus["Core"].transform.translation = main_environment.spotlight_position[i];
 		float dilatation = (2.5 + 0.5 * pow(cos(2 * t), 10)) / 3.0f;
 		nexus["Core"].transform.scaling = dilatation;
 		nexus["Outer ring"].transform.scaling = 1 / dilatation;
@@ -366,14 +358,14 @@ void scene_structure::display_lights()
 		nexus["Inner ring 3"].transform.rotation = rotation_transform::from_axis_angle({ 1,1,0 }, - t);
 
 		nexus.update_local_to_global_coordinates();
-		draw(nexus, environment);
+		draw(nexus, main_environment);
 		if (gui.display.wireframe)
-			draw_wireframe(nexus, environment);
+			draw_wireframe(nexus, main_environment);
 	}
 
 }
 
-void scene_structure::display_core()
+void main_scene_structure::display_core()
 {
 	field_function.pa = {  2 * cos(3 * timer.t),
 						sin(3 * timer.t),
@@ -387,13 +379,13 @@ void scene_structure::display_core()
 	field_function.noise_offset = 1000 * timer.t;
 	implicit_surface.update_field(field_function, gui.isovalue);
 	
-	draw(implicit_surface.drawable_param.shape, environment);
+	draw(implicit_surface.drawable_param.shape, main_environment);
 
 	if (gui.display.wireframe)  // Display the wireframe of the implicit surface (*)
-		draw_wireframe(implicit_surface.drawable_param.shape, environment, { 0,0,0 });
+		draw_wireframe(implicit_surface.drawable_param.shape, main_environment, { 0,0,0 });
 }
 
-void scene_structure::display_semiTransparent()
+void main_scene_structure::display_semiTransparent()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -405,20 +397,20 @@ void scene_structure::display_semiTransparent()
 
 	// Draw the billboards two times
 		gold_beam.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },0);
-		draw(gold_beam,environment);
+		draw(gold_beam,main_environment);
 		gold_beam.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2);
-		draw(gold_beam,environment);
+		draw(gold_beam,main_environment);
 		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },0 );
-		draw(halo, environment);
+		draw(halo, main_environment);
 		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2 );
-		draw(halo, environment);
-		if (display_text){
-			text.transform.translation = environment.camera.position() + 20 * environment.camera.front();
-			text.transform.rotation = environment.camera.orientation();
-			draw(text, environment);
-			if (timer.t - time_text_appeared > 1.0)
-				display_text = false;
-		}
+		draw(halo, main_environment);
+		// if (display_text){
+		// 	text.transform.translation = main_environment.camera.position() + 20 * main_environment.camera.front();
+		// 	text.transform.rotation = main_environment.camera.orientation();
+		// 	draw(text, main_environment);
+		// 	if (timer.t - time_text_appeared > 1.0)
+		// 		display_text = false;
+		// }
 	// Re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);

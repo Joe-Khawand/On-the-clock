@@ -10,7 +10,7 @@
 #include "boids.hpp"
 
 // The structure of the custom scene
-struct scene_structure {
+struct main_scene_structure {
 	
 	// ****************************** //
 	// Elements and shapes of the scene
@@ -30,7 +30,7 @@ struct scene_structure {
 	bool transition;
 
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
-	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
+	scene_environment_with_multiple_lights main_environment; // The specific scene environment with multiple lights (*)
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                       // Standard GUI element storage
 
@@ -79,30 +79,25 @@ struct scene_structure {
 
 	// text drawables
 	// bool display_too_far;
-	cgp::mesh_drawable text;
-	bool display_text;
-	float time_text_appeared;
-	int idx_text;
-	std::array<GLuint, 7> text_textures;
+	// cgp::mesh_drawable text;
+	// bool display_text;
+	// float time_text_appeared;
+	// int idx_text;
+	// std::array<GLuint, 7> text_textures;
 
 
 	// ****************************** //
 	// Functions
 	// ****************************** //
 
-	// Function to call in the animation loop in main (*)
-	// This function replace the standard trackball behavior that must also be removed in the main (from mouse_move_callback)
-	void update_camera(); 
-	void mouse_click(); // To activate nexus
 	void activate_nexus(float d, int i);
 
-	void initialize();  // Standard initialization to be called before the animation loop
+	void initialize_main_scene();  // Standard initialization to be called before the animation loop
 	// std::vector<std::pair<int, int> > neighboring_walls(int i, int j);
 	// void initialize_maze(int nl = 55, int nw = 55);
 
-	void display();     // The frame display to be called within the animation loop
+	void display_main_scene();     // The frame display to be called within the animation loop
 	void display_lights();
-	void display_gui(); // The display of the GUI, also called within the animation loop
 	void display_core();
 	void display_semiTransparent(); // Display function for semi-transparent shapes
 };

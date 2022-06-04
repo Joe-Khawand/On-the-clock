@@ -2,7 +2,7 @@
 
 #include "cgp/cgp.hpp"
 #include "field_function.hpp"
-#include "../gui_helper.hpp"
+#include "../../../gui_helper.hpp"
 
 
 // All the data used for the Implicit Surface 
