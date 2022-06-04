@@ -299,8 +299,8 @@ void scene_structure::display()
 			display_text_billboard(5);
 	}
 	else{
+		dt_init=timer_init.update(); //! fix that shit you son of a bitch
 		if(click){
-			dt_init=timer_init.update();
 			t_init += dt_init;
 			if (environment.fog_falloff>0.0001)
 			{
@@ -478,6 +478,7 @@ void scene_structure::display_semiTransparent()
 
 void scene_structure::display_text_billboard(float duration)
 {
+	//timer_init.update();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
