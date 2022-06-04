@@ -34,6 +34,10 @@ struct scene_structure {
 	cgp::skybox_drawable skybox;
 
 	cgp::mesh_drawable cylinder;
+	cgp::mesh_drawable central_cylinder;
+	cgp::mesh_drawable pulsating_cylinder_1;
+	cgp::mesh_drawable pulsating_cylinder_2;
+	cgp::mesh_drawable pulsating_cylinder_3;
 
 	cgp::hierarchy_mesh_drawable hours;
 	cgp::hierarchy_mesh_drawable minutes;

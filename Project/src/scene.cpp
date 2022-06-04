@@ -43,17 +43,20 @@ void scene_structure::update_camera()
 		if (keyboard.left){
 			environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
 		}
-		if (keyboard.shift)
+		if (keyboard.shift && !keyboard.ctrl)
 			if (flight_speed<3.0)
 			{
 				flight_speed+=1.0f;
 			}
 			
-		if (keyboard.ctrl)
+		if (keyboard.ctrl && !keyboard.shift)
 			if (flight_speed>-3.0)
 			{
 				flight_speed-=1.0f;
 			}
+
+		if (keyboard.shift && keyboard.ctrl)
+				flight_speed=0.0f;
 	}
 }
 
@@ -177,6 +180,15 @@ void scene_structure::initialize()
 	minutes = initialize_minutes();
 	seconds = initialize_seconds();
 
+	central_cylinder.initialize(cgp::mesh_primitive_cylinder(0.6,{0,0,0},{0,0,3.0},2,20,true),"central cylinder");
+	pulsating_cylinder_1.initialize(create_cylinder(2.0,1.5,0.5),"pulse1");
+	pulsating_cylinder_2.initialize(create_cylinder(3.0,2.5,0.5),"pulse1");
+	pulsating_cylinder_3.initialize(create_cylinder(2.0,1.5,0.5),"pulse1");
+	central_cylinder.transform.translation={0,0,-25};
+	pulsating_cylinder_1.transform.translation={0,0,-15.0};
+	pulsating_cylinder_2.transform.translation={0,0,-12.0};
+	pulsating_cylinder_3.transform.translation={0,0,-9.0};
+
 	// Nexus beam and other semi-transparent billboards
 	mesh quad_mesh_1 = mesh_primitive_quadrangle({ -30.0,0,-10 }, { 30.0,0,-10 }, { 30.0,0,10 }, { -30.0,0,10 });
 	mesh quad_mesh_2 = mesh_primitive_quadrangle({ -5,-5,0 }, { 5,-5,0 }, { 5,5,0 }, { -5,5,0 });
@@ -234,6 +246,7 @@ void scene_structure::initialize()
 	boid_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/UFO_Triangle.obj"));
     boid_drawable.transform.scaling=0.0009;
 
+	//scene initiale
 	scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
 	scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 	scene_drawable.transform.translation = vec3(0,0,-20);
@@ -294,6 +307,20 @@ void scene_structure::display()
 		seconds.update_local_to_global_coordinates();
 		draw(seconds, environment);
 		
+		central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
+		pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
+		pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
+		pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
+		draw(central_cylinder,environment);
+		draw(pulsating_cylinder_1,environment);
+		draw(pulsating_cylinder_2,environment);
+		draw(pulsating_cylinder_3,environment);
+		pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
+		pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
+		pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
+		draw(pulsating_cylinder_1,environment);
+		draw(pulsating_cylinder_2,environment);
+		draw(pulsating_cylinder_3,environment);
 
 		draw(number, environment_ortho);
 		

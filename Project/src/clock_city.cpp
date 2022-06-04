@@ -109,8 +109,6 @@ mesh create_cylinder(float r1,float r2,float height, float uv_ratio){
     {
         uint3 triangle_1 ={2 * size + i + size/2, 2 * size + (i+size) + size/2, 2 * size + (i+1)%(size/2) + size/2};
         uint3 triangle_2 ={2 * size + (i+size + size/2)%(2*size), 2 * size + ((i+1)%(size/2)+size + size/2)%(2*size), 2 * size + (i+1)%(size/2) + size/2};
-        //uint3 triangle_1 ={2 * size + i, 2 * size + (i+size)%(2*size), 2 * size + (i+1)%(2*size)};
-        //uint3 triangle_2 ={2 * size + (i+size)%(2*size), 2 * size + (i+1+size)%(2*size), 2 * size + (i+1)%(2*size)};
         m.connectivity.push_back(triangle_1);
         m.connectivity.push_back(triangle_2);
     }
