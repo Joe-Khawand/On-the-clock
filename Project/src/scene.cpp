@@ -32,28 +32,28 @@ void scene_structure::update_camera()
 	if(!init){
 		
 		if (keyboard.up){
-		environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt / scale);
-	}
-	if (keyboard.down){
-		environment.camera.manipulator_rotate_spherical_coordinates(0,-pitch*dt / scale);
-	}
-	if (keyboard.right){
-		environment.camera.manipulator_rotate_spherical_coordinates(yaw*dt / scale,0);
-	}
-	if (keyboard.left){
-		environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
-	}
-	if (keyboard.shift)
-		if (flight_speed<3.0)
-		{
-			flight_speed+=1.0f;
+			environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt / scale);
 		}
-		
-	if (keyboard.ctrl)
-		if (flight_speed>-3.0)
-		{
-			flight_speed-=1.0f;
+		if (keyboard.down){
+			environment.camera.manipulator_rotate_spherical_coordinates(0,-pitch*dt / scale);
 		}
+		if (keyboard.right){
+			environment.camera.manipulator_rotate_spherical_coordinates(yaw*dt / scale,0);
+		}
+		if (keyboard.left){
+			environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
+		}
+		if (keyboard.shift)
+			if (flight_speed<3.0)
+			{
+				flight_speed+=1.0f;
+			}
+			
+		if (keyboard.ctrl)
+			if (flight_speed>-3.0)
+			{
+				flight_speed-=1.0f;
+			}
 	}
 }
 
