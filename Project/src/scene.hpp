@@ -22,9 +22,12 @@ struct scene_structure {
 	float dt_init;
 	cgp::timer_basic timer_init;
 	bool click;
-
 	cgp::mesh_drawable scene_drawable;
 	cgp::mesh_drawable clock_drawable;
+
+	//elements scene basket
+	bool basket_scene;
+	bool transition;
 
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
