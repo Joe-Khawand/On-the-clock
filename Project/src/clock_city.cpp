@@ -211,7 +211,7 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
 	city_hierarchy.add(arrow, "Cylinder", {20, 0, 0.5});
     city_hierarchy.add(city, "Arrow", {2, -1.6, 1});
 
-    GLuint number_texture = opengl_load_texture_image("assets/silver2.jpg",
+    GLuint number_texture = opengl_load_texture_image("assets/marble.jpg",
         GL_MIRRORED_REPEAT,
         GL_MIRRORED_REPEAT);
 
