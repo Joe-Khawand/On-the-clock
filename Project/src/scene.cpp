@@ -70,6 +70,9 @@ void scene_structure::mouse_click()
 			if (cgp::norm(s * normalize(ray_direction) - cam_to_clock) < 2.0f){
 				//dt_init=timer_init.t;
 				click= true;
+				display_text = true;
+				time_text_appeared = timer_init.t;
+				text.texture = opengl_load_texture_image("assets/Text/02what_is_going_on.png");
 			}
 		}
 		else{
@@ -166,6 +169,7 @@ void scene_structure::initialize()
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
+
 	// Initialize the skybox (*)
 	// ***************************************** //
 	skybox.initialize("assets/dark_skybox_hd/");
@@ -243,13 +247,14 @@ void scene_structure::initialize()
 	clock_drawable.transform.scaling = 0.1;
 	clock_drawable.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
 	clock_drawable.transform.translation = {-13,0,-20};
+	timer_init.t = 0;
 }
 
 
 void scene_structure::display()
 {
+	dt_init=timer_init.update();
 	if(init){
-		dt_init=timer_init.update();
 		draw(scene_drawable,environment);
 		draw(clock_drawable, environment);
 		if(click){
@@ -260,8 +265,25 @@ void scene_structure::display()
 			init=false;
 			t_init=0.0;
 			environment.camera.center_of_rotation= vec3{80,0,20};
+			display_text = true;
+			time_text_appeared = timer_init.t + 6;
+			text.texture = opengl_load_texture_image("assets/Text/03click_central_nexus.png");
 			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
 		}
+		if (!display_text) {
+			if (timer_init.t < 3) {
+				display_text = true;
+				time_text_appeared = timer_init.t;
+				text.texture = opengl_load_texture_image("assets/Text/00something_feels_off.png");
+			}
+			if (7 < timer_init.t && timer_init.t < 9) {
+				display_text = true;
+				time_text_appeared = timer_init.t;
+				text.texture = opengl_load_texture_image("assets/Text/01try_clicking.png");
+			}
+		}
+		else
+			display_text_billboard(5);
 	}
 	else{
 		if(click){
@@ -331,6 +353,8 @@ void scene_structure::display()
 		}
 		if (environment.spotlight_bool[0])
 			display_semiTransparent();
+		if (display_text)
+			display_text_billboard();
 	}
 }
 
@@ -420,13 +444,26 @@ void scene_structure::display_semiTransparent()
 		draw(halo, environment);
 		halo.transform.rotation= rotation_transform::from_axis_angle({ 0,0,1 },M_PI_2 );
 		draw(halo, environment);
-		if (display_text){
-			text.transform.translation = environment.camera.position() + 20 * environment.camera.front();
-			text.transform.rotation = environment.camera.orientation();
-			draw(text, environment);
-			if (timer.t - time_text_appeared > 1.0)
-				display_text = false;
-		}
+	// Re-activate the depth-buffer write
+	glDepthMask(true);
+	glDisable(GL_BLEND);
+}
+
+void scene_structure::display_text_billboard(float duration)
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Disable depth buffer writing
+	//  - Transparent elements cannot use depth buffer
+	//  - They are supposed to be display from furest to nearest elements
+	glDepthMask(false);
+
+		text.transform.translation = environment.camera.position() + 20 * environment.camera.front();
+		text.transform.rotation = environment.camera.orientation();
+		draw(text, environment);
+		if (timer_init.t - time_text_appeared > duration)
+			display_text = false;
 	// Re-activate the depth-buffer write
 	glDepthMask(true);
 	glDisable(GL_BLEND);
