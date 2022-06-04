@@ -77,13 +77,16 @@ void scene_structure::mouse_click()
 				text.texture = opengl_load_texture_image("assets/Text/02what_is_going_on.png");
 			}
 		}
-		else{
+		if(clock){
 			for (int i=0; i<n_lights; i++) {
 			vec3 cam_to_light = environment.spotlight_position[i] - environment.camera.position();
 			float d = cgp::norm(cam_to_light);
 			if (cgp::norm(d * normalize(ray_direction) - cam_to_light) < 1.5f)
 				activate_nexus(d, i);
+			}
 		}
+		if(basket_scene){
+			click=true;
 		}
 	}
 }
@@ -145,7 +148,12 @@ void scene_structure::initialize()
 	basket_scene=false;
 	t_init = 0.0;
 	// Initialisation de la scene de basket
-	
+	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
+	terrain_drawable.transform.scaling= 10.0;
+	terrain_drawable.texture = opengl_load_texture_image("assets/basket_court.jpg");
+	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,{4,0,5}));
+	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
+
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
@@ -285,6 +293,8 @@ void scene_structure::display()
 		{
 			if(transition){
 				transition_in();
+				environment.camera.center_of_rotation= vec3{0,0,3};
+				environment.camera.manipulator_rotate_spherical_coordinates(0,0);
 			}
 			draw_scene_basket();
 		}
@@ -415,6 +425,7 @@ void scene_structure::draw_scene_init(){
 	if(t_init>2.4){
 		init=false;
 		clock=true;
+		//!basket_scene=true;
 		t_init=0.0;
 		environment.camera.center_of_rotation= vec3{80,0,20};
 		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
@@ -424,6 +435,8 @@ void scene_structure::draw_scene_init(){
 void scene_structure::draw_scene_basket(){
 	//TODO add basket ball court and win condition
 	draw(bright_skybox,environment);
+	draw(terrain_drawable,environment);
+	draw(ball_drawable,environment);
 }
 
 void scene_structure::transition_in(){

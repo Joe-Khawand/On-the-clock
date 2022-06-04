@@ -34,8 +34,9 @@ struct scene_structure {
 	cgp::mesh_drawable clock_drawable;
 
 	//elements scene basket
-	
+	cgp::mesh_drawable terrain_drawable;
 	cgp::skybox_drawable bright_skybox;
+	cgp::mesh_drawable ball_drawable;
 	
 
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
