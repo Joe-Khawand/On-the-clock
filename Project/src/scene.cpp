@@ -266,8 +266,9 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
+	dt_init=timer_init.update();
 	if(init){
-		dt_init=timer_init.update();
+		
 		draw(scene_drawable,environment);
 		draw(clock_drawable, environment);
 		if(click){
@@ -299,7 +300,6 @@ void scene_structure::display()
 			display_text_billboard(5);
 	}
 	else{
-		dt_init=timer_init.update(); //! fix that shit you son of a bitch
 		if(click){
 			t_init += dt_init;
 			if (environment.fog_falloff>0.0001)
