@@ -236,7 +236,6 @@ void scene_structure::initialize()
 	scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
 	scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
 	scene_drawable.transform.translation = vec3(0,0,-20);
-	spherre.initialize(mesh_primitive_sphere(1, vec3(0,0,0)).flip_connectivity());
 	scene_drawable.transform.scaling = 4.0;
 
 	clock_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Clock.obj"));
