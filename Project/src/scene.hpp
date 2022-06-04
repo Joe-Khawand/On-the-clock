@@ -31,7 +31,8 @@ struct scene_structure {
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
 	gui_parameters gui;                       // Standard GUI element storage
 
-	cgp::skybox_drawable skybox;
+	cgp::skybox_drawable dark_skybox;
+	cgp::skybox_drawable bright_skybox;
 
 	cgp::mesh_drawable cylinder;
 	cgp::mesh_drawable central_cylinder;

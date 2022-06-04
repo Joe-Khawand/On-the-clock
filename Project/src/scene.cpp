@@ -169,9 +169,10 @@ void scene_structure::initialize()
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
-	// Initialize the skybox (*)
+	// Initialize the skybox
 	// ***************************************** //
-	skybox.initialize("assets/dark_skybox_hd/");
+	dark_skybox.initialize("assets/dark_skybox_hd/");
+	bright_skybox.initialize("assets/bright_skybox_hd");
 
 	// Initialize city
 	// ***************************************** //
@@ -288,7 +289,7 @@ void scene_structure::display()
 				click=false;
 			}
 		}
-		draw(skybox, environment); 
+		draw(dark_skybox, environment); 
 		// Update the current time
 		dt=timer.update();
 		display_lights(); // displays each nexus and every light source
