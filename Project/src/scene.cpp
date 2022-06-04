@@ -478,7 +478,6 @@ void scene_structure::display_semiTransparent()
 
 void scene_structure::display_text_billboard(float duration)
 {
-	//timer_init.update();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
