@@ -282,79 +282,83 @@ void scene_structure::display()
 	}
 	else{
 		if(click){
-			t_init += dt_init;
-			if (environment.fog_falloff>0.0001)
-			{
-				environment.fog_falloff-=0.0007*dt_init;
-			}
-			else{
-				click=false;
-				t_init=0.0;
-			}
+		t_init += dt_init;
+		if (environment.fog_falloff>0.0001)
+		{
+			environment.fog_falloff-=0.0007*dt_init;
 		}
-		if(environment.colors_displayed==6 && !basket_scene){
-			if (basket_scene)
-			{
-				t_init += dt_init;
-				environment.fog_falloff+=0.001*dt_init;
-				if(t_init>2.4){
-				basket_scene=true;
-				transition=true;
-				t_init=0.0;
-					environment.camera.center_of_rotation= vec3{80,0,20};
-					environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		else{
+			click=false;
+			t_init=0.0;
+		}
+		}
+
+	
+		if (basket_scene)
+		{
+			if(transition){
+				if (environment.fog_falloff>0.0001)
+				{
+					environment.fog_falloff-=0.0007*dt_init;
+				}
+				else{
+					transition=false;
+					t_init=0.0;
 				}
 			}
-			else{
-				if(transition){
-					t_init += dt_init;
-					if (environment.fog_falloff>0.0001)
-					{
-						environment.fog_falloff-=0.0007*dt_init;
-					}
-					else{
-						transition=false;
-						t_init=0.0;
-					}
-				}
-				draw(bright_skybox,environment);
-			}
+			draw(bright_skybox,environment);
 		}
 		else{
 			draw(dark_skybox, environment); 
 			// Update the current time
 			dt=timer.update();
 			display_lights(); // displays each nexus and every light source
-
+			if(environment.colors_displayed==6){
+			
+				t_init += dt_init;
+				environment.fog_falloff+=0.001*dt_init;
+				if(t_init>2.4){
+					basket_scene=true;
+					transition=true;
+					environment.camera.center_of_rotation= vec3{80,0,20};
+					environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+				}
+			}
+			
 			// Elements of the scene
 		
 			hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
 			hours.update_local_to_global_coordinates();
+	
 			draw(hours, environment);
 
 			minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
 			minutes.update_local_to_global_coordinates();
+
 			draw(minutes, environment);
 
 			seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
 			seconds.update_local_to_global_coordinates();
+
 			draw(seconds, environment);
 			
 			central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
 			pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
 			pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
 			pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
+
 			draw(central_cylinder,environment);
 			draw(pulsating_cylinder_1,environment);
 			draw(pulsating_cylinder_2,environment);
 			draw(pulsating_cylinder_3,environment);
+
 			pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
 			pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
 			pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
+
 			draw(pulsating_cylinder_1,environment);
 			draw(pulsating_cylinder_2,environment);
 			draw(pulsating_cylinder_3,environment);
-
 			draw(number, environment_ortho);
 			
 			draw(maze, environment);
@@ -380,7 +384,6 @@ void scene_structure::display()
 				}
 			}
 			
-
 			if (gui.display.wireframe){
 				draw_wireframe(hours, environment);
 				draw_wireframe(minutes, environment);
@@ -391,9 +394,10 @@ void scene_structure::display()
 			}
 			if (environment.spotlight_bool[0])
 				display_semiTransparent();
-			}
+		}
 	}
-}
+}		
+
 
 void scene_structure::display_gui()
 {
