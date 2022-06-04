@@ -266,8 +266,8 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
-	dt_init=timer_init.update();
 	if(init){
+		dt_init=timer_init.update();
 		draw(scene_drawable,environment);
 		draw(clock_drawable, environment);
 		if(click){
