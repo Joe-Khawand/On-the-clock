@@ -11,79 +11,6 @@
 
 using namespace cgp;
 
-// The main function implementing the Flying Mode
-void scene_structure::update_camera()
-{
-	inputs_keyboard_parameters const& keyboard = inputs.keyboard;
-
-	// flight_speed modifiable avec shift et ctrl
-	float const dt = flight_timer.update();
-	vec3 const forward_displacement = flight_speed * 3.0f * dt * environment.camera.front();
-	environment.camera.center_of_rotation+= forward_displacement;
-	environment.camera.axis=camera_spherical_coordinates_axis::z;
-
-	// The camera rotates if we press on the arrow keys
-	// The rotation is only applied to the yaw and pitch degrees of freedom.
-	float const pitch = 0.5f; // speed of the pitch
-	float const yaw  = 0.7f; // speed of the yaw
-	float scale = std::max(flight_timer.scale, 0.01f);
-	if(!init){
-		
-		if (keyboard.up){
-			environment.camera.manipulator_rotate_spherical_coordinates(0,pitch*dt / scale);
-		}
-		if (keyboard.down){
-			environment.camera.manipulator_rotate_spherical_coordinates(0,-pitch*dt / scale);
-		}
-		if (keyboard.right){
-			environment.camera.manipulator_rotate_spherical_coordinates(yaw*dt / scale,0);
-		}
-		if (keyboard.left){
-			environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
-		}
-		if (keyboard.shift && !keyboard.ctrl)
-			if (flight_speed<3.0)
-			{
-				flight_speed+=1.0f;
-			}
-			
-		if (keyboard.ctrl && !keyboard.shift)
-			if (flight_speed>-3.0)
-			{
-				flight_speed-=1.0f;
-			}
-
-		if (keyboard.shift && keyboard.ctrl)
-				flight_speed=0.0f;
-	}
-}
-
-void scene_structure::mouse_click()
-{
-	if (inputs.mouse.click.last_action == last_mouse_cursor_action::click_left) 
-	{
-		vec3 ray_direction = camera_ray_direction(environment.camera.matrix_frame(), environment.projection.matrix_inverse(), inputs.mouse.position.current);
-
-		if (init)
-		{
-			vec3 cam_to_clock = cgp::vec3{-13,0,-7} - environment.camera.position();
-			float s = cgp::norm(cam_to_clock);
-			if (cgp::norm(s * normalize(ray_direction) - cam_to_clock) < 2.0f){
-				//dt_init=timer_init.t;
-				click= true;
-			}
-		}
-		else{
-			for (int i=0; i<n_lights; i++) {
-			vec3 cam_to_light = environment.spotlight_position[i] - environment.camera.position();
-			float d = cgp::norm(cam_to_light);
-			if (cgp::norm(d * normalize(ray_direction) - cam_to_light) < 1.5f)
-				activate_nexus(d, i);
-		}
-		}
-	}
-}
-
 void scene_structure::activate_nexus(float d, int i)
 {
 	if (d > 300.0f) {
@@ -131,16 +58,19 @@ void scene_structure::activate_nexus(float d, int i)
 	}
 }
 
-void scene_structure::initialize()
+void scene_structure::initialize_main_scene()
 {
-	// Initilisation dans la premiere scene
-	init=true;
-	click=false;
-	t_init = 0.0;
-	// Initialisation de la scene de basket
-	basket_scene=false;
-	transition=false;
+	// // Initilisation dans la premiere scene
+	// init=true;
+	// click=false;
+	// t_init = 0.0;
+	// // Initialisation de la scene de basket
+	// basket_scene=false;
+	// transition=false;
+
 	// Initial placement of the camera
+	// TODO do we need to move this so that it is done only when we begin displaying the scene?
+	// TODO actually since it's an independent scene moving the camera in another won't affect it so no probs (but we have to adapt update_camera function to implement this)
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
 
@@ -173,7 +103,6 @@ void scene_structure::initialize()
 	// Initialize the skybox
 	// ***************************************** //
 	dark_skybox.initialize("assets/dark_skybox_hd/");
-	bright_skybox.initialize("assets/bright_skybox_hd/");
 
 	// Initialize city
 	// ***************************************** //
@@ -248,20 +177,20 @@ void scene_structure::initialize()
 	boid_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/UFO_Triangle.obj"));
     boid_drawable.transform.scaling=0.0009;
 
-	//scene initiale
-	scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
-	scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
-	scene_drawable.transform.translation = vec3(0,0,-20);
-	scene_drawable.transform.scaling = 4.0;
+	// //scene initiale
+	// scene_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Room.obj"));
+	// scene_drawable.transform.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, M_PI_2);
+	// scene_drawable.transform.translation = vec3(0,0,-20);
+	// scene_drawable.transform.scaling = 4.0;
 
-	clock_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Clock.obj"));
-	clock_drawable.transform.scaling = 0.1;
-	clock_drawable.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
-	clock_drawable.transform.translation = {-13,0,-20};
+	// clock_drawable.initialize(cgp::mesh_load_file_obj("assets/Objects/Clock.obj"));
+	// clock_drawable.transform.scaling = 0.1;
+	// clock_drawable.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
+	// clock_drawable.transform.translation = {-13,0,-20};
 }
 
 
-void scene_structure::display()
+void scene_structure::display_main_scene()
 {
 	dt_init=timer_init.update();
 	if(init){
