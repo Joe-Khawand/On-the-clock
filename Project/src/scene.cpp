@@ -432,7 +432,7 @@ void scene_structure::draw_scene_clock(){
 		// Update the current time
 		dt=timer.update();
 		display_lights(); // displays each nexus and every light source
-		if(environment.colors_displayed==6){
+		if(environment.colors_displayed==7){
 		
 			t_init += dt_init;
 			environment.fog_falloff+=0.001*dt_init;
