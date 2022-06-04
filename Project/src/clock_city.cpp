@@ -77,7 +77,7 @@ mesh create_ring(float r){
     return mesh_primitive_torus(r,0.5,vec3{0,0,0},vec3{0,0,1});
 }
 
-mesh create_cylinder(float r1,float r2,float height){
+mesh create_cylinder(float r1,float r2,float height, float uv_ratio){
     //r1 big radius, r2 small
     int nu= 2;
     int nv=70;
@@ -178,10 +178,9 @@ cgp::hierarchy_mesh_drawable initialize_seconds()
     mesh_drawable city;
 
     cylinder.initialize(create_cylinder(22, 20.0, 2.0), "Cylinder");
-    // exterior_base.initialize(create_cylinder(154, 104.5, 2), "Base");
-    // exterior_base.texture = opengl_load_texture_image("assets/color2.jpg",
-    //     GL_REPEAT,
-    //     GL_REPEAT);
+    cylinder.texture = opengl_load_texture_image("assets/color2.jpg",
+        GL_MIRRORED_REPEAT,
+        GL_MIRRORED_REPEAT);
     mesh exterior_mesh = create_cylinder(140, 110, 2.0);
     for (int i = 0; i < 70; i++)
     {

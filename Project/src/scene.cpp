@@ -205,7 +205,7 @@ void scene_structure::initialize()
 	ortho_shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
 	number.shader = ortho_shader;
 
-	mesh maze_mesh = initialize_maze();
+	mesh maze_mesh = initialize_maze(71, 71, 15, 50);
 	maze.initialize(maze_mesh, "Maze");
 	maze.transform.translation = {-525, -525, -200};
 
