@@ -50,7 +50,7 @@ void main()
 			time_activated = activation_colors.g;
 		if (nb_colors==4)
 			time_activated = activation_colors.a; // textures
-		if ((time - 0.01 * dist_to_center) > time_activated)
+		if ((time - time_activated)*50 > dist_to_center)
 			not_reached = false;
 		else
 			nb_colors -= 1;
@@ -71,21 +71,21 @@ void main()
 
 	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
 	
-	if(nb_colors==0) {
-		color_object = (color_object.rrr + color_object.ggg + color_object.bbb) / 6.0;
-	}
-	if(nb_colors==1) {
-		float red = (4 * color_object.r + color_object.g + color_object.b) / 6.0;
-		float green = (color_object.r + color_object.g + color_object.b) / 6.0;
-		float blue = (color_object.r + color_object.g + color_object.b) / 6.0;
-		color_object = vec3(red, green, blue);
-	}
-	if(nb_colors==2) {
-		float red = (4 * color_object.r + color_object.g) / 5.0;
-		float green = (color_object.r + color_object.g + color_object.b) / 5.0;
-		float blue = (4 * color_object.b + color_object.g) / 5.0;
-		color_object = vec3(red, green, blue);
-	}
+	// if(nb_colors==0) {
+	// 	color_object = (color_object.rrr + color_object.ggg + color_object.bbb) / 6.0;
+	// }
+	// if(nb_colors==1) {
+	// 	float red = (4 * color_object.r + color_object.g + color_object.b) / 6.0;
+	// 	float green = (color_object.r + color_object.g + color_object.b) / 6.0;
+	// 	float blue = (color_object.r + color_object.g + color_object.b) / 6.0;
+	// 	color_object = vec3(red, green, blue);
+	// }
+	// if(nb_colors==2) {
+	// 	float red = (4 * color_object.r + color_object.g) / 5.0;
+	// 	float green = (color_object.r + color_object.g + color_object.b) / 5.0;
+	// 	float blue = (4 * color_object.b + color_object.g) / 5.0;
+	// 	color_object = vec3(red, green, blue);
+	// }
 
 
 	//float Ka = 0.1;
@@ -109,6 +109,22 @@ void main()
 		
 		// spotlight color
 		color_shading += (Kd*diffuse*color_object + Ks * specular)*spotlight_color[k_light]*exp(-spotlight_falloff*dist*dist);
+	}
+
+	if(nb_colors==0) {
+		color_shading = (color_shading.rrr + color_shading.ggg + color_shading.bbb) / 6.0;
+	}
+	if(nb_colors==1) {
+		float red = (4 * color_shading.r + color_shading.g + color_shading.b) / 6.0;
+		float green = (color_shading.r + color_shading.g + color_shading.b) / 6.0;
+		float blue = (color_shading.r + color_shading.g + color_shading.b) / 6.0;
+		color_shading = vec3(red, green, blue);
+	}
+	if(nb_colors==2) {
+		float red = (4 * color_shading.r + color_shading.g) / 5.0;
+		float green = (color_shading.r + color_shading.g + color_shading.b) / 5.0;
+		float blue = (4 * color_shading.b + color_shading.g) / 5.0;
+		color_shading = vec3(red, green, blue);
 	}
 
     //fog effect

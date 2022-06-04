@@ -88,24 +88,26 @@ void scene_structure::activate_nexus(float d, int i)
 	if (d > 300.0f) {
 		time_text_appeared = timer.t;
 		display_text = true;
-		text.texture = text_textures[0];
+		text.texture = opengl_load_texture_image("assets/Text/too_far.png");
 	}
 	else {
 		if (!environment.spotlight_bool[i]){
 			if (i > 0 && environment.spotlight_bool[0]) {
-				environment.spotlight_color[i] = { 1.0f, 0.9f, 0.5f };
+				environment.spotlight_color[i] = environment.spotlight_colors[i-1];
 				environment.spotlight_timer[i].start();
 				environment.spotlight_bool[i] = true;
 				environment.spotlight_timer[0].scale += 0.1f;
 				timer.scale += 0.1f;
 				environment.colors_displayed += 1;
 				number.clear();
-				number.initialize(number_mesh(12-environment.colors_displayed));
-				number.transform.translation = { 0.75f,0.8f,0.0f };
-				number.transform.scaling = 0.01;
-				number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
-				number.shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
-				if (environment.colors_displayed < 4) {
+				if (environment.colors_displayed < 12) {
+					number.initialize(number_mesh(12-environment.colors_displayed));
+					number.transform.translation = { 0.75f,0.8f,0.0f };
+					number.transform.scaling = 0.01;
+					number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
+					number.shader = ortho_shader;
+				}
+				if (environment.colors_displayed < 5) {
 					if (environment.colors_displayed == 1)
 						environment.red_activated = environment.spotlight_timer[0].t;
 					if (environment.colors_displayed == 2)
@@ -117,7 +119,7 @@ void scene_structure::activate_nexus(float d, int i)
 				}
 			}
 			if (i == 0) {
-				environment.spotlight_color[0] = {1, 1, 1}; //{ 1.0f, 0.9f, 0.5f };
+				environment.spotlight_color[0] = {1, 1, 1};
 				environment.spotlight_timer[0].start();
 				environment.spotlight_bool[0] = true;
 				environment.spotlight_timer[0].scale += 0.3f;
@@ -148,6 +150,19 @@ void scene_structure::initialize()
 	environment.spotlight_color[0] = {1, 0.9, 0.8};
 	environment.spotlight_timer[0].scale = 0;
 
+	environment.spotlight_colors[0] = {1,0,0.5};
+	environment.spotlight_colors[1] = {1,0,0};
+	environment.spotlight_colors[2] = {1,0.5,0};
+	environment.spotlight_colors[3] = {1,1,0};
+	environment.spotlight_colors[4] = {0.5,1,0};
+	environment.spotlight_colors[5] = {0,1,0};
+	environment.spotlight_colors[6] = {0,1,0.5};
+	environment.spotlight_colors[7] = {0,1,1};
+	environment.spotlight_colors[8] = {0,0.5,1};
+	environment.spotlight_colors[9] = {0,0,1};
+	environment.spotlight_colors[10] = {0.5,0,1};
+	environment.spotlight_colors[11] = {1,0,1};
+
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
 
 	// Initialize the skybox (*)
@@ -171,7 +186,6 @@ void scene_structure::initialize()
 
 	halo.texture = opengl_load_texture_image("assets/halo.png");
 	gold_beam.texture = opengl_load_texture_image("assets/beamduloveforever.png");
-	text_textures[0] = opengl_load_texture_image("assets/Text/too_far.png");
 	gold_beam.transform.scaling = 4;
 	gold_beam.transform.translation = vec3(0, 0, -3);
 	gold_beam.shader = shader_halo;
@@ -206,9 +220,10 @@ void scene_structure::initialize()
 	number.transform.translation = { 0.75f,0.8f,0.0f };
 	number.transform.scaling = 0.01;
 	number.transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, M_PI_2);
-	number.shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+	ortho_shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+	number.shader = ortho_shader;
 
-	mesh maze_mesh = initialize_maze();
+	mesh maze_mesh = initialize_maze(71, 71, 15, 50);
 	maze.initialize(maze_mesh, "Maze");
 	maze.transform.translation = {-525, -525, -200};
 

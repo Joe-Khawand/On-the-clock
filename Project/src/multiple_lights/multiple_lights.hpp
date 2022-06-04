@@ -10,7 +10,7 @@
 * 
 * Note: If you want a different number of lights, you will need to change the size of the array in the scene but also uniform parameters in the vertex shader.
 */
-const int n_lights = 14;
+const int n_lights = 13;
 
 struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 {
@@ -18,6 +18,7 @@ struct scene_environment_with_multiple_lights : cgp::scene_environment_basic
 	std::array<cgp::vec3, n_lights> spotlight_position;
 	// The (r,g,b) color of the lights
 	std::array<cgp::vec3, n_lights> spotlight_color;
+	std::array<cgp::vec3, n_lights-1> spotlight_colors;
 	// The timer associated to each nexus
 	std::array<cgp::timer_basic, n_lights> spotlight_timer;
 	// To check whether a nexus has been activated
