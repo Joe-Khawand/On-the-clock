@@ -277,7 +277,7 @@ void scene_structure::display()
 	else{
 		if(click){
 			transition_in();
-      display_text = true;
+      		display_text = true;
 			time_text_appeared = timer_init.t + 6;
 			text.texture = opengl_load_texture_image("assets/Text/03click_central_nexus.png");
 		}
@@ -483,7 +483,7 @@ void scene_structure::draw_scene_clock(){
 			
 		draw(maze, environment);
     
-    if (!display_text) {
+    	if (!display_text) {
 			  if (timer_init.t < 3) {
 				  display_text = true;
 				  time_text_appeared = timer_init.t;
@@ -497,7 +497,7 @@ void scene_structure::draw_scene_clock(){
 		}
 		else
 			display_text_billboard(5);
-	  }
+	
   
 		//! Boids
 		//* Appliquer les 3 regles
@@ -530,6 +530,8 @@ void scene_structure::draw_scene_clock(){
 		}
 		if (environment.spotlight_bool[0])
 			display_semiTransparent();
+
+}
 
 void scene_structure::display_text_billboard(float duration)
 {
