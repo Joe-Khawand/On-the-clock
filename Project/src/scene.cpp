@@ -172,7 +172,7 @@ void scene_structure::initialize()
 	// Initialize the skybox
 	// ***************************************** //
 	dark_skybox.initialize("assets/dark_skybox_hd/");
-	bright_skybox.initialize("assets/bright_skybox_hd");
+	bright_skybox.initialize("assets/bright_skybox_hd/");
 
 	// Initialize city
 	// ***************************************** //
