@@ -23,6 +23,7 @@ struct scene_structure {
 	bool basket_scene;
 	bool transition;
 	bool click;
+	bool click_basket;
 
 	//elements de la premiere scene
 	
@@ -34,6 +35,11 @@ struct scene_structure {
 	cgp::mesh_drawable clock_drawable;
 
 	//elements scene basket
+	float force;
+	float alpha;
+	const cgp::vec3 g= { 0.0f,0.0f,-9.81f };;
+	cgp::vec3 vit;
+	cgp::vec3 pos;
 	cgp::mesh_drawable terrain_drawable;
 	cgp::skybox_drawable bright_skybox;
 	cgp::mesh_drawable ball_drawable;

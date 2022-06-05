@@ -86,7 +86,7 @@ void scene_structure::mouse_click()
 			}
 		}
 		if(basket_scene){
-			click=true;
+			click_basket=true;
 		}
 	}
 }
@@ -148,10 +148,15 @@ void scene_structure::initialize()
 	basket_scene=false;
 	t_init = 0.0;
 	// Initialisation de la scene de basket
+	click_basket=false;
+	alpha=0.0;
+	vit = {0,0,0};
+	pos = {6,0,8};
+	force=25.0;
 	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
 	terrain_drawable.transform.scaling= 10.0;
-	terrain_drawable.texture = opengl_load_texture_image("assets/basket_court.jpg");
-	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,{4,0,5}));
+	terrain_drawable.texture = opengl_load_texture_image("assets/concrete.jpg",GL_MIRRORED_REPEAT);
+	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,pos));
 	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
 
 	// Initial placement of the camera
@@ -424,8 +429,8 @@ void scene_structure::draw_scene_init(){
 	}
 	if(t_init>2.4){
 		init=false;
-		clock=true;
-		//!basket_scene=true;
+		//!clock=true;
+		basket_scene=true;
 		t_init=0.0;
 		environment.camera.center_of_rotation= vec3{80,0,20};
 		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
@@ -437,6 +442,21 @@ void scene_structure::draw_scene_basket(){
 	draw(bright_skybox,environment);
 	draw(terrain_drawable,environment);
 	draw(ball_drawable,environment);
+	if(!click_basket){
+		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
+		alpha= environment.camera.theta;
+		vit=  35.0*cgp::vec3{-cos(alpha),0,-sin(alpha)};
+	}
+	else{
+		vit += dt_init * g ;
+		pos += dt_init * vit;
+		ball_drawable.transform.translation = pos ;
+		if(pos.z<0){
+			click_basket=false;
+			pos= {6.0,0,4.0};
+			ball_drawable.transform.translation = pos ;
+		}
+	}
 }
 
 void scene_structure::transition_in(){
