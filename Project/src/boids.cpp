@@ -62,7 +62,7 @@ void separation(std::vector<Boid *> boids){
             {
                 float d= boids[i]->distance_to(*(boids[j]));
                 if (d<10.0)
-                {//TODO ste
+                {
                     cgp::vec3 dir= boids[j]->position-boids[i]->position;
                     cgp::vec3 norm_dir = dir/ sqrt(dir.x*dir.x+dir.y*dir.y+dir.z*dir.z);
                     boids[i]->vitesse = cgp::normalize(boids[i]->vitesse)+(norm_dir)*(0.01/(d+0.00001) -1/(10.0*10.0));
