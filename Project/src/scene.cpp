@@ -461,16 +461,19 @@ void scene_structure::draw_scene_basket(){
 	if(!click_basket){
 		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
 		alpha= environment.camera.theta;
-		vit=  35.0*cgp::vec3{cos(alpha),0,-sin(alpha)};
+		vit=  75.0*cgp::vec3{cos(alpha),0,-2*sin(alpha)};
 	}
 	else{
-		vit += dt_init * g ;
+		vit += dt_init * 5.0 * g ;
 		pos += dt_init * vit;
 		ball_drawable.transform.translation = pos ;
-		if(pos.z<0){
+		if(pos.z<-8.0){
 			click_basket=false;
 			pos= {0,0,0};
 			ball_drawable.transform.translation = pos ;
+		}
+		if(39.5<pos.z && pos.z<67.0 && pos.x>144){
+			vit.x = -vit.x;
 		}
 	}
 	if(has_penetrated){
@@ -635,9 +638,9 @@ void scene_structure::display_net()
 void scene_structure::transition_in(){
 	t_init += dt_init;
 	if(has_penetrated){
-		if (environment.fog_falloff>0.0000080f)
+		if (environment.fog_falloff>=0.0000080f)
 		{
-			environment.fog_falloff-=0.0007*dt_init;
+			environment.fog_falloff-=0.0000010*dt_init;
 		}
 		else{
 			transition=false;
