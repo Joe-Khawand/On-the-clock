@@ -37,8 +37,19 @@ struct scene_structure {
 	cgp::mesh_drawable terrain_drawable;
 	cgp::skybox_drawable bright_skybox;
 	cgp::mesh_drawable ball_drawable;
-	
 
+	// Drawable structure to display the particles and the spring
+	cgp::mesh_drawable particle_sphere;
+	cgp::segments_drawable segment;
+	cgp::mesh_drawable hoop_structure;
+	cgp::mesh_drawable board;
+
+	int N_particles; // number of particles
+    std::vector<cgp::vec3> particles_p; // position of all moving particles
+    std::vector<cgp::vec3> particles_v; // velocity of all moving particles
+    float L0; // Rest-length of spring
+
+	
 	//cgp::scene_environment_basic_camera_spherical_coords environment; // Standard environment controler
 	scene_environment_with_multiple_lights environment; // The specific scene environment with multiple lights (*)
 	cgp::inputs_interaction_parameters inputs; // Storage for inputs status (mouse, keyboard, window dimension)
@@ -107,12 +118,16 @@ struct scene_structure {
 	void activate_nexus(float d, int i);
 
 	void initialize();  // Standard initialization to be called before the animation loop
-	// std::vector<std::pair<int, int> > neighboring_walls(int i, int j);
-	// void initialize_maze(int nl = 55, int nw = 55);
 
 	void draw_scene_init();
 	void draw_scene_clock();
 	void draw_scene_basket();
+	void draw_segment(cgp::vec3 const& a, cgp::vec3 const& b);
+	cgp::vec3 spring_force(cgp::vec3 const& p_i, cgp::vec3 const& p_j, float L0, float K);
+	void simulation_step(float dt);
+	void initialize_net();
+	void display_net();
+
 	void transition_in();
 	void transition_out();
 

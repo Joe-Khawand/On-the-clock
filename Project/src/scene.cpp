@@ -153,6 +153,7 @@ void scene_structure::initialize()
 	terrain_drawable.texture = opengl_load_texture_image("assets/basket_court.jpg");
 	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,{4,0,5}));
 	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
+	initialize_net();
 
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
@@ -432,12 +433,166 @@ void scene_structure::draw_scene_init(){
 	}
 }
 
+// ******************************
+// Functions used for Basket scene
+// ******************************
+
 void scene_structure::draw_scene_basket(){
 	//TODO add basket ball court and win condition
 	draw(bright_skybox,environment);
 	draw(terrain_drawable,environment);
 	draw(ball_drawable,environment);
+
+	display_net();
 }
+
+// Spring force applied on particle p_i with respect to position p_j.
+cgp::vec3 scene_structure::spring_force(vec3 const& p_i, vec3 const& p_j, float L0, float K)
+{
+    vec3 const p = p_i - p_j;
+    float const L = norm(p);
+    vec3 const u = p / L;
+
+    vec3 const F = -K * (L - L0) * u;
+    return F;
+}
+
+
+void scene_structure::simulation_step(float dt)
+{
+    // Simulation parameters
+    float m = 0.01f;       // particle mass
+    float K = 5.0f;        // spring stiffness
+    float mu = 0.01f;      // damping coefficient
+
+    vec3 g = { 0,0,-9.81f }; // gravity
+
+    // Forces
+    cgp::vec3 f_spring[N_particles];
+    vec3 f_weight = m * g;
+    cgp::vec3 f_damping[N_particles];
+    cgp::vec3 f[N_particles];
+    for (int i = 1; i < N_particles; i++) {
+        f_spring[i] = spring_force(particles_p[i], particles_p[i-1], L0, K);
+        if (i < N_particles-1) f_spring[i] += spring_force(particles_p[i], particles_p[i+1], L0, K);
+        if (i >= 2) f_spring[i] += spring_force(particles_p[i], particles_p[i-2], 2*L0, 0.3*K);
+        if (i < N_particles-2) f_spring[i] += spring_force(particles_p[i], particles_p[i+2], 2*L0, 0.3*K);
+        f_damping[i] = -mu * particles_v[i];
+        f[i] = f_spring[i] + f_weight + f_damping[i];
+    }
+
+    // Integration numerique
+    for (int i=1; i<N_particles; i++) {
+        particles_v[i] = particles_v[i] + dt * f[i] / m;
+        particles_p[i] = particles_p[i] + dt * particles_v[i];
+    }
+    particles_v[N_particles-1] = {0.f, 0.f, 0.f};
+    particles_p[N_particles-1] = {0.f, (N_particles-1) * 0.45f, 0.f};
+}
+
+
+void scene_structure::draw_segment(vec3 const& a, vec3 const& b)
+{
+    segment.update({ a, b });
+    draw(segment, environment);
+}
+
+void scene_structure::initialize_net()
+{
+	// Initialize basketball hoop frame
+	mesh hoop_structure_mesh;
+	hoop_structure_mesh.push_back(mesh_primitive_cubic_grid(vec3(-0.5,-0.5, 0),
+														vec3(0.5,-0.5, 0),
+														vec3(0.5,0.5, 0),
+														vec3(-0.5,0.5, 0),
+														vec3(-0.5,-0.5, 40),
+														vec3(0.5,-0.5, 40),
+														vec3(0.5,0.5, 40),
+														vec3(-0.5,0.5, 40),
+														2, 2, 2));
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(-0.5,-0.5, 40),
+														vec3(10,-0.5, 50.5),
+														vec3(10,-0.5, 49.5),
+														vec3(0.5,-0.5, 40)).flip_connectivity());
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(-0.5,0.5, 40),
+														vec3(10,0.5, 50.5),
+														vec3(10,0.5, 49.5),
+														vec3(0.5,0.5, 40)));
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(-0.5,-0.5, 40),
+														vec3(10,-0.5, 50.5),
+														vec3(10,0.5, 50.5),
+														vec3(-0.5,0.5, 40)));
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(0.5,-0.5, 40),
+														vec3(10,-0.5, 49.5),
+														vec3(10,0.5, 49.5),
+														vec3(0.5,0.5, 40)).flip_connectivity());
+	hoop_structure_mesh.push_back(mesh_primitive_cylinder(0.3, vec3(10, 0, 50), vec3(10.7, 0, 50), 5, 2));
+	hoop_structure_mesh.push_back(mesh_primitive_torus(8, 0.3, vec3(18.7, 0, 50), vec3(0,0,1), 50, 4));
+	hoop_structure_mesh.color.fill(vec3(0.05,0,0.25));
+	hoop_structure.initialize(hoop_structure_mesh);
+	board.initialize(mesh_primitive_quadrangle(vec3(10,-25, 47.5),
+												vec3(10,25, 47.5),
+												vec3(10,25, 75),
+												vec3(10,-25, 75)).flip_connectivity());
+	board.texture = opengl_load_texture_image("assets/board.png");
+	hoop_structure.transform.translation = vec3(-160, 0, 0);
+	board.transform.translation = vec3(-160, 0, 0);
+
+    // Initial position and speed of particles
+    // ******************************************* //
+    N_particles = 10;
+
+    particles_p.resize(N_particles);
+    particles_v.resize(N_particles);
+
+    for (int i=0; i<N_particles; i++) {
+        particles_p[i] = {0.f, i*0.45f, 0.f};
+        particles_v[i] = {0.f, 0.f, 0.f};
+    }
+
+    L0 = 0.4f;
+
+    particle_sphere.initialize(mesh_primitive_sphere(0.05f));
+    segments_drawable::default_shader = curve_drawable::default_shader;
+    segment.initialize({ {0,0,0},{1,0,0} });
+}
+
+void scene_structure::display_net()
+{
+    draw(hoop_structure, environment);
+	draw(board, environment);
+	if(gui.display.wireframe) {
+		draw_wireframe(hoop_structure, environment);
+		draw_wireframe(board, environment);
+	}
+
+    // Update the current time
+    timer.update();
+
+    simulation_step(timer.scale * 0.01f);
+
+    particle_sphere.transform.translation = particles_p[0];
+    particle_sphere.shading.color = { 0,0,0 };
+    draw(particle_sphere, environment);
+
+    for (int i=1; i<N_particles; i++) {
+        particle_sphere.transform.translation = particles_p[i];
+        particle_sphere.shading.color = { 1,0,0 };
+        draw(particle_sphere, environment);
+        draw_segment(particles_p[i-1], particles_p[i]);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 void scene_structure::transition_in(){
 	t_init += dt_init;
