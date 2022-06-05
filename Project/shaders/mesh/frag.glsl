@@ -96,6 +96,6 @@ void main()
 	vec3 color_with_fog = w_depth*color_shading+(1-w_depth)*vec3(0,0,0); //w_depth*color_shading+(1-w_depth)*vec3(0.7,0.7,0.7);
 
 	// Output color, with the alpha component
-	FragColor = vec4(color_shading, alpha * color_image_texture.a);
+	FragColor = vec4(color_with_fog, alpha * color_image_texture.a);
 
 }

@@ -592,15 +592,22 @@ void scene_structure::initialize_net()
 
     // Initial position and speed of particles
     // ******************************************* //
-    N_particles = 150;
+    N_particles = 250;
 
     particles_p.resize(N_particles);
     particles_v.resize(N_particles);
 
     for (int i=0; i<N_particles; i++) {
-        particles_p[i] = {0.f, i*0.45f, 0.f};
         particles_v[i] = {0.f, 0.f, 0.f};
     }
+
+	for (int i=0; i<5; i++) {
+		for (int j=0; j<50; j++) {
+			particles_p[50*i + j] = vec3(141.3, j + 50 * i, 50);
+		}
+	}
+
+	vec3 ball_pos = pos - vec3(6,0,8);
 
     L0 = 0.4f;
 
