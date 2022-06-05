@@ -473,7 +473,7 @@ void scene_structure::draw_scene_basket(){
 			ball_drawable.transform.translation = pos ;
 		}
 		if(39.5<pos.z && pos.z<67.0 && pos.x>144){
-			vit.x = -vit.x;
+			vit.x = -0.8*vit.x;
 		}
 	}
 	if(has_penetrated){
