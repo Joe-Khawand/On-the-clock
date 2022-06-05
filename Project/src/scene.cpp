@@ -146,26 +146,6 @@ void scene_structure::activate_nexus(float d, int i)
 
 void scene_structure::initialize()
 {
-	transition=false;
-	click= false;
-	// Initilisation dans la premiere scene
-	init=true;
-	clock=false;
-	basket_scene=false;
-	t_init = 0.0;
-	// Initialisation de la scene de basket
-	has_penetrated = false;
-	click_basket=false;
-	alpha=0.0;
-	vit = {0,0,0};
-	pos = {6,0,8};
-	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
-	terrain_drawable.transform.scaling= 10.0;
-	terrain_drawable.texture = opengl_load_texture_image("assets/concrete.jpg",GL_MIRRORED_REPEAT);
-	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,pos));
-	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
-	initialize_net();
-
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
@@ -195,6 +175,26 @@ void scene_structure::initialize()
 	environment.spotlight_colors[11] = {1,0,1};
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
+
+	transition=false;
+	click= false;
+	// Initilisation dans la premiere scene
+	init=true;
+	clock=false;
+	basket_scene=false;
+	t_init = 0.0;
+	// Initialisation de la scene de basket
+	has_penetrated = false;
+	click_basket=false;
+	alpha=0.0;
+	vit = {0,0,0};
+	pos = {6,0,8};
+	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
+	terrain_drawable.transform.scaling= 10.0;
+	terrain_drawable.texture = opengl_load_texture_image("assets/concrete.jpg",GL_MIRRORED_REPEAT);
+	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,pos));
+	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
+	initialize_net();
 
 	// Initialize the skybox
 	// ***************************************** //
@@ -539,6 +539,8 @@ void scene_structure::draw_segment(vec3 const& a, vec3 const& b)
 
 void scene_structure::initialize_net()
 {
+	GLuint const basic_shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+
 	// Initialize basketball hoop frame
 	mesh hoop_structure_mesh;
 	hoop_structure_mesh.push_back(mesh_primitive_cubic_grid(vec3(-0.5,-0.5, 0),
@@ -579,10 +581,15 @@ void scene_structure::initialize_net()
 	board.transform.translation = vec3(160, 0, 0);
 	hoop_structure.transform.rotation = rotation_transform::from_axis_angle(vec3(0,0,1), M_PI);
 	board.transform.rotation = rotation_transform::from_axis_angle(vec3(0,0,1), M_PI);
+	board.shader = basic_shader;
+	hoop_structure.shader = basic_shader;
+	terrain_drawable.shader = basic_shader;
+	ball_drawable.shader = basic_shader;
+
 
     // Initial position and speed of particles
     // ******************************************* //
-    N_particles = 10;
+    N_particles = 150;
 
     particles_p.resize(N_particles);
     particles_v.resize(N_particles);

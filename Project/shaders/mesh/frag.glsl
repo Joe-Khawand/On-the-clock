@@ -9,6 +9,8 @@ in struct fragment_data
     vec3 normal;   // normal in the world space
     vec3 color;    // current color on the fragment
     vec2 uv;       // current uv-texture on the fragment
+
+	vec3 eye;
 } fragment;
 
 // Output of the fragment shader - output color
@@ -29,6 +31,7 @@ uniform float Ka;     // Ambient coefficient
 uniform float Kd;     // Diffuse coefficient
 uniform float Ks;     // Specular coefficient
 uniform float specular_exp; // Specular exponent
+uniform float fog_falloff;
 
 uniform mat4 view;       // View matrix (rigid transform) of the camera - to compute the camera position
 
@@ -53,7 +56,8 @@ void main()
 	// ************************* //
 
 	// Unit direction toward the light
-	vec3 L = normalize(light-fragment.position);
+	// vec3 L = normalize(light-fragment.position);
+	vec3 L = normalize(vec3(-5, -5, 40)-fragment.position);
 
 	// Diffuse coefficient
 	float diffuse = max(dot(N,L),0.0);
@@ -85,9 +89,13 @@ void main()
 
 	// Compute the final shaded color using Phong model
 	vec3 color_shading = (Ka + Kd * diffuse) * color_object + Ks * specular * vec3(1.0, 1.0, 1.0);
-	
+
+	    //fog effect
+	float depth = length(fragment.eye-fragment.position);
+	float w_depth = exp(-fog_falloff*depth*depth);
+	vec3 color_with_fog = w_depth*color_shading+(1-w_depth)*vec3(0,0,0); //w_depth*color_shading+(1-w_depth)*vec3(0.7,0.7,0.7);
+
 	// Output color, with the alpha component
 	FragColor = vec4(color_shading, alpha * color_image_texture.a);
-
 
 }
