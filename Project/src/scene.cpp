@@ -457,9 +457,33 @@ void scene_structure::draw_scene_basket(){
 	draw(bright_skybox,environment);
 	draw(terrain_drawable,environment);
 	draw(ball_drawable,environment);
-<<<<<<< HEAD
-
 	display_net();
+	if(!click_basket){
+		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
+		alpha= environment.camera.theta;
+		vit=  35.0*cgp::vec3{cos(alpha),0,-sin(alpha)};
+	}
+	else{
+		vit += dt_init * g ;
+		pos += dt_init * vit;
+		ball_drawable.transform.translation = pos ;
+		if(pos.z<0){
+			click_basket=false;
+			pos= {0,0,0};
+			ball_drawable.transform.translation = pos ;
+		}
+	}
+	if(has_penetrated){
+		t_init += dt_init;
+		environment.fog_falloff+=0.001*dt_init;
+		if(t_init>2.4){
+			basket_scene=false;
+			clock=true;
+			transition=true;
+			environment.camera.center_of_rotation= vec3{80,0,20};
+			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		}
+	}
 }
 
 // Spring force applied on particle p_i with respect to position p_j.
@@ -597,46 +621,7 @@ void scene_structure::display_net()
         draw(particle_sphere, environment);
         draw_segment(particles_p[i-1], particles_p[i]);
     }
-=======
-	if(!click_basket){
-		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
-		alpha= environment.camera.theta;
-		vit=  35.0*cgp::vec3{cos(alpha),0,-sin(alpha)};
-	}
-	else{
-		vit += dt_init * g ;
-		pos += dt_init * vit;
-		ball_drawable.transform.translation = pos ;
-		if(pos.z<0){
-			click_basket=false;
-			pos= {0,0,0};
-			ball_drawable.transform.translation = pos ;
-		}
-	}
-	if(has_penetrated){
-		t_init += dt_init;
-		environment.fog_falloff+=0.001*dt_init;
-		if(t_init>2.4){
-			basket_scene=false;
-			clock=true;
-			transition=true;
-			environment.camera.center_of_rotation= vec3{80,0,20};
-			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
-		}
-	}
->>>>>>> basket-V2
 }
-
-
-
-
-
-
-
-
-
-
-
 
 void scene_structure::transition_in(){
 	t_init += dt_init;
