@@ -43,20 +43,26 @@ void scene_structure::update_camera()
 		if (keyboard.left){
 			environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
 		}
-		if (keyboard.shift && !keyboard.ctrl)
-			if (flight_speed<3.0)
-			{
-				flight_speed+=1.0f;
-			}
+		if(!basket_scene){
+			if (keyboard.shift && !keyboard.ctrl)
+				if (flight_speed<3.0)
+				{
+					flight_speed+=1.0f;
+				}
 			
-		if (keyboard.ctrl && !keyboard.shift)
-			if (flight_speed>-3.0)
-			{
-				flight_speed-=1.0f;
-			}
+			if (keyboard.ctrl && !keyboard.shift)
+				if (flight_speed>-3.0)
+				{
+					flight_speed-=1.0f;
+				}
 
-		if (keyboard.shift && keyboard.ctrl)
-				flight_speed=0.0f;
+			if (keyboard.shift && keyboard.ctrl)
+					flight_speed=0.0f;
+		}
+		if(basket_scene){
+			if (keyboard.shift && keyboard.ctrl)
+				has_penetrated=true;
+		}
 	}
 }
 
@@ -148,11 +154,11 @@ void scene_structure::initialize()
 	basket_scene=false;
 	t_init = 0.0;
 	// Initialisation de la scene de basket
+	has_penetrated = false;
 	click_basket=false;
 	alpha=0.0;
 	vit = {0,0,0};
 	pos = {6,0,8};
-	force=25.0;
 	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
 	terrain_drawable.transform.scaling= 10.0;
 	terrain_drawable.texture = opengl_load_texture_image("assets/concrete.jpg",GL_MIRRORED_REPEAT);
@@ -298,12 +304,16 @@ void scene_structure::display()
 		{
 			if(transition){
 				transition_in();
-				environment.camera.center_of_rotation= vec3{0,0,3};
-				environment.camera.manipulator_rotate_spherical_coordinates(0,0);
+				environment.camera.center_of_rotation= vec3{0,0,5.0};
+				environment.camera.theta=0;
+				environment.camera.phi=M_PI_2;
 			}
 			draw_scene_basket();
 		}
 		if(clock){
+			if(transition){
+				transition_in();
+			}
 			draw_scene_clock();
 		}
 
@@ -429,8 +439,8 @@ void scene_structure::draw_scene_init(){
 	}
 	if(t_init>2.4){
 		init=false;
-		//!clock=true;
-		basket_scene=true;
+		clock=true;
+		//!basket_scene=true;
 		t_init=0.0;
 		environment.camera.center_of_rotation= vec3{80,0,20};
 		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
@@ -445,7 +455,7 @@ void scene_structure::draw_scene_basket(){
 	if(!click_basket){
 		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
 		alpha= environment.camera.theta;
-		vit=  35.0*cgp::vec3{-cos(alpha),0,-sin(alpha)};
+		vit=  35.0*cgp::vec3{cos(alpha),0,-sin(alpha)};
 	}
 	else{
 		vit += dt_init * g ;
@@ -453,23 +463,48 @@ void scene_structure::draw_scene_basket(){
 		ball_drawable.transform.translation = pos ;
 		if(pos.z<0){
 			click_basket=false;
-			pos= {6.0,0,4.0};
+			pos= {0,0,0};
 			ball_drawable.transform.translation = pos ;
+		}
+	}
+	if(has_penetrated){
+		t_init += dt_init;
+		environment.fog_falloff+=0.001*dt_init;
+		if(t_init>2.4){
+			basket_scene=false;
+			clock=true;
+			transition=true;
+			environment.camera.center_of_rotation= vec3{80,0,20};
+			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
 		}
 	}
 }
 
 void scene_structure::transition_in(){
 	t_init += dt_init;
-	if (environment.fog_falloff>0.0001)
-	{
-		environment.fog_falloff-=0.0007*dt_init;
+	if(has_penetrated){
+		if (environment.fog_falloff>0.0000080f)
+		{
+			environment.fog_falloff-=0.0007*dt_init;
+		}
+		else{
+			transition=false;
+			click=false;
+			t_init=0.0;
+		}
 	}
 	else{
-		transition=false;
-		click=false;
-		t_init=0.0;
+		if (environment.fog_falloff>0.0001)
+		{
+			environment.fog_falloff-=0.0007*dt_init;
+		}
+		else{
+			transition=false;
+			click=false;
+			t_init=0.0;
+		}
 	}
+	
 }
 
 
@@ -478,7 +513,7 @@ void scene_structure::draw_scene_clock(){
 	// Update the current time
 	dt=timer.update();
 	display_lights(); // displays each nexus and every light source
-	if(environment.colors_displayed==6){
+	if(environment.colors_displayed==6 && !has_penetrated){
 	
 		t_init += dt_init;
 		environment.fog_falloff+=0.001*dt_init;

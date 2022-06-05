@@ -35,7 +35,7 @@ struct scene_structure {
 	cgp::mesh_drawable clock_drawable;
 
 	//elements scene basket
-	float force;
+	bool has_penetrated;
 	float alpha;
 	const cgp::vec3 g= { 0.0f,0.0f,-9.81f };;
 	cgp::vec3 vit;
