@@ -575,8 +575,10 @@ void scene_structure::initialize_net()
 												vec3(10,25, 75),
 												vec3(10,-25, 75)).flip_connectivity());
 	board.texture = opengl_load_texture_image("assets/board.png");
-	hoop_structure.transform.translation = vec3(-160, 0, 0);
-	board.transform.translation = vec3(-160, 0, 0);
+	hoop_structure.transform.translation = vec3(160, 0, 0);
+	board.transform.translation = vec3(160, 0, 0);
+	hoop_structure.transform.rotation = rotation_transform::from_axis_angle(vec3(0,0,1), M_PI);
+	board.transform.rotation = rotation_transform::from_axis_angle(vec3(0,0,1), M_PI);
 
     // Initial position and speed of particles
     // ******************************************* //
