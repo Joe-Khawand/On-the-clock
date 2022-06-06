@@ -21,7 +21,7 @@ void scene_structure::update_camera()
 
 	// flight_speed modifiable avec shift et ctrl
 	float const dt = flight_timer.update();
-	vec3 const forward_displacement = flight_speed * 3.0f * dt * environment.camera.front();
+	vec3 const forward_displacement = flight_speed * 10.0f * dt * environment.camera.front();
 	environment.camera.center_of_rotation+= forward_displacement;
 	environment.camera.axis=camera_spherical_coordinates_axis::z;
 
