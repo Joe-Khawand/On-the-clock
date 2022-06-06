@@ -42,6 +42,7 @@ struct scene_structure {
 	cgp::vec3 pos;
 	cgp::mesh_drawable terrain_drawable;
 	cgp::skybox_drawable bright_skybox;
+	float ball_radius = 4.0;
 	cgp::mesh_drawable ball_drawable;
 
 	// Drawable structure to display the particles and the spring

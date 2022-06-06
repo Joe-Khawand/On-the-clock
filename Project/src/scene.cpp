@@ -188,11 +188,12 @@ void scene_structure::initialize()
 	click_basket=false;
 	alpha=0.0;
 	vit = {0,0,0};
+	//!
 	pos = {6,0,8};
 	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
 	terrain_drawable.transform.scaling= 10.0;
 	terrain_drawable.texture = opengl_load_texture_image("assets/concrete.jpg",GL_MIRRORED_REPEAT);
-	ball_drawable.initialize(cgp::mesh_primitive_sphere(2.0,pos));
+	ball_drawable.initialize(cgp::mesh_primitive_sphere(ball_radius));
 	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
 	initialize_net();
 
@@ -461,7 +462,8 @@ void scene_structure::draw_scene_basket(){
 		draw(ball_drawable,environment);
 	display_net();
 	if(!click_basket){
-		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
+		ball_drawable.transform.translation = vec3(12,0,10 - 10 * std::sin(environment.camera.theta));
+		//ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
 		alpha= environment.camera.theta;
 		vit=  75.0*cgp::vec3{cos(alpha),0,-2*sin(alpha)};
 	}
@@ -469,13 +471,28 @@ void scene_structure::draw_scene_basket(){
 		vit += dt_init * 5.0 * g ;
 		pos += dt_init * vit;
 		ball_drawable.transform.translation = pos ;
-		if(pos.z<-8.0){
+		if(pos.z<ball_radius){
 			click_basket=false;
-			pos= {0,0,0};
+			pos= {12,0,10};
 			ball_drawable.transform.translation = pos ;
 		}
-		if(39.5<pos.z && pos.z<67.0 && pos.x>144){
+		// collision with board
+		if(47.5<pos.z && pos.z<75.0 && pos.x>150 - ball_radius  && pos.x<150 + 2 * ball_radius){
 			vit.x = -0.8*vit.x;
+		}
+		vec3 hoop_front = vec3(160 - 18.7, 0, 50) + vec3(-8,0,0);
+		vec3 hoop_back = vec3(160 - 18.7, 0, 50) + vec3(8,0,0);
+		vec3 ball_to_front = hoop_front - pos;
+		vec3 ball_to_back = hoop_back - pos;
+		if (norm(ball_to_front) < ball_radius && dot(vit, normalize(ball_to_front)) > 0) {
+			vit = vit - 2*dot(vit, normalize(ball_to_front))*normalize(ball_to_front);
+			vit = 0.8 * vit;
+			pos = hoop_front - ball_radius * normalize(ball_to_front);
+		}
+		if (norm(ball_to_back) < ball_radius && dot(vit, normalize(ball_to_back)) > 0) {
+			vit = vit - 2*dot(vit, normalize(ball_to_back))*normalize(ball_to_back);
+			vit = 0.8 * vit;
+			pos = hoop_back - ball_radius * normalize(ball_to_back);
 		}
 	}
 	if(has_penetrated){
@@ -542,12 +559,11 @@ void scene_structure::simulation_step(float dt)
         particles_p[i] = particles_p[i] + 70 * dt * particles_v[i];
     }
 
-	vec3 ball_pos = pos + vec3(6,0,8);
 	for (int i=1; i<N_particles; i++) {
-		vec3 particle_to_ball = ball_pos - particles_p[i];
-		if (norm(particle_to_ball) < 2) {
-			vec3 new_pos = ball_pos - 2 * normalize(particle_to_ball);
-			particles_v[i] = {0,0,0};
+		vec3 particle_to_ball = pos - particles_p[i];
+		if (norm(particle_to_ball) < ball_radius) {
+			vec3 new_pos = pos - ball_radius * normalize(particle_to_ball);
+			particles_v[i] = 0.01 * vit;
 			particles_p[i] = new_pos;
 		}
     }
