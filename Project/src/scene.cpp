@@ -649,16 +649,7 @@ void scene_structure::display_net()
 		draw_wireframe(board, environment);
 	}
 
-    // Update the current time
-    //timer.update();
-
     simulation_step(0.1 * 0.01f);
-
-    // for (int i=0; i<N_particles; i++) {
-    //     particle_sphere.transform.translation = particles_p[i];
-    //     particle_sphere.shading.color = { 1,0,0 };
-    //     draw(particle_sphere, environment);
-    // }
 
 	for (int i = 0; i < 4; i ++) {
 		for (int j = 0; j<24; j++) {
@@ -674,7 +665,7 @@ void scene_structure::display_net()
 
 void scene_structure::transition_in(){
 	t_init += dt_init;
-	if(environment.colors_displayed >= 5){
+	if(has_penetrated){
 		if (environment.fog_falloff>=0.0000080f)
 		{
 			if (environment.fog_falloff>0.0001)
