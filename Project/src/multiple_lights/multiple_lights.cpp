@@ -17,8 +17,8 @@ void opengl_uniform(GLuint shader, scene_environment_with_multiple_lights const&
 	vec4 activation_colors = vec4(environment.red_activated, environment.green_activated, environment.blue_activated, environment.textures_activated);
 		
 	// Send the falloff values as uniforms
-	opengl_uniform(shader, "spotlight_falloff", environment.spotlight_falloff);
-	opengl_uniform(shader, "fog_falloff", environment.fog_falloff);
+	opengl_uniform(shader, "spotlight_falloff", environment.spotlight_falloff, false);
+	opengl_uniform(shader, "fog_falloff", environment.fog_falloff, false);
 	opengl_uniform(shader, "projection", environment.projection.matrix());
 	opengl_uniform(shader, "view", environment.camera.matrix_view());
 	opengl_uniform(shader, "colors_displayed", environment.colors_displayed, false);

@@ -43,20 +43,26 @@ void scene_structure::update_camera()
 		if (keyboard.left){
 			environment.camera.manipulator_rotate_spherical_coordinates(-yaw*dt / scale,0);
 		}
-		if (keyboard.shift && !keyboard.ctrl)
-			if (flight_speed<3.0)
-			{
-				flight_speed+=1.0f;
-			}
+		if(!basket_scene){
+			if (keyboard.shift && !keyboard.ctrl)
+				if (flight_speed<3.0)
+				{
+					flight_speed+=1.0f;
+				}
 			
-		if (keyboard.ctrl && !keyboard.shift)
-			if (flight_speed>-3.0)
-			{
-				flight_speed-=1.0f;
-			}
+			if (keyboard.ctrl && !keyboard.shift)
+				if (flight_speed>-3.0)
+				{
+					flight_speed-=1.0f;
+				}
 
-		if (keyboard.shift && keyboard.ctrl)
-				flight_speed=0.0f;
+			if (keyboard.shift && keyboard.ctrl)
+					flight_speed=0.0f;
+		}
+		if(basket_scene){
+			if (keyboard.shift && keyboard.ctrl)
+				has_penetrated=true;
+		}
 	}
 }
 
@@ -77,13 +83,16 @@ void scene_structure::mouse_click()
 				text.texture = opengl_load_texture_image("assets/Text/02what_is_going_on.png");
 			}
 		}
-		else{
+		if(clock){
 			for (int i=0; i<n_lights; i++) {
 			vec3 cam_to_light = environment.spotlight_position[i] - environment.camera.position();
 			float d = cgp::norm(cam_to_light);
 			if (cgp::norm(d * normalize(ray_direction) - cam_to_light) < 1.5f)
 				activate_nexus(d, i);
+			}
 		}
+		if(basket_scene){
+			click_basket=true;
 		}
 	}
 }
@@ -137,15 +146,6 @@ void scene_structure::activate_nexus(float d, int i)
 
 void scene_structure::initialize()
 {
-	transition=false;
-	click= false;
-	// Initilisation dans la premiere scene
-	init=true;
-	clock=false;
-	basket_scene=false;
-	t_init = 0.0;
-	// Initialisation de la scene de basket
-	
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
@@ -175,6 +175,27 @@ void scene_structure::initialize()
 	environment.spotlight_colors[11] = {1,0,1};
 
 	GLuint const shader_halo = opengl_load_shader("shaders/halos/vert.glsl", "shaders/halos/frag.glsl");
+
+	transition=false;
+	click= false;
+	// Initilisation dans la premiere scene
+	init=true;
+	clock=false;
+	basket_scene=false;
+	t_init = 0.0;
+	// Initialisation de la scene de basket
+	has_penetrated = false;
+	click_basket=false;
+	alpha=0.0;
+	vit = {0,0,0};
+	//!
+	pos = {6,0,8};
+	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
+	terrain_drawable.transform.scaling= 10.0;
+	terrain_drawable.texture = opengl_load_texture_image("assets/concrete.jpg",GL_MIRRORED_REPEAT);
+	ball_drawable.initialize(cgp::mesh_primitive_sphere(ball_radius));
+	ball_drawable.texture = opengl_load_texture_image("assets/ball_texture.png",GL_CLAMP_TO_BORDER);
+	initialize_net();
 
 	// Initialize the skybox
 	// ***************************************** //
@@ -285,10 +306,17 @@ void scene_structure::display()
 		{
 			if(transition){
 				transition_in();
+				environment.camera.center_of_rotation= vec3{0,0,5.0};
+				environment.camera.theta=0;
+				flight_speed= 0.0f;
+				environment.camera.phi=M_PI_2;
 			}
 			draw_scene_basket();
 		}
 		if(clock){
+			if(transition){
+				transition_in();
+			}
 			draw_scene_clock();
 		}
 
@@ -415,119 +443,376 @@ void scene_structure::draw_scene_init(){
 	if(t_init>2.4){
 		init=false;
 		clock=true;
+		//!basket_scene=true;
 		t_init=0.0;
 		environment.camera.center_of_rotation= vec3{80,0,20};
 		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
 	}
 }
 
+// ******************************
+// Functions used for Basket scene
+// ******************************
+
 void scene_structure::draw_scene_basket(){
 	//TODO add basket ball court and win condition
 	draw(bright_skybox,environment);
+	draw(terrain_drawable,environment);
+	if (!transition)
+		draw(ball_drawable,environment);
+	display_net();
+	if(!click_basket){
+		ball_drawable.transform.translation = vec3(12,0,10 - 10 * std::sin(environment.camera.theta));
+		//ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
+		alpha= environment.camera.theta;
+		vit=  75.0*cgp::vec3{cos(alpha),0,-2*sin(alpha)};
+	}
+	else{
+		vit += dt_init * 5.0 * g ;
+		pos += dt_init * vit;
+		ball_drawable.transform.translation = pos ;
+		if(pos.z<ball_radius){
+			click_basket=false;
+			pos= {12,0,10};
+			ball_drawable.transform.translation = pos ;
+		}
+		// collision with board
+		if(47.5<pos.z && pos.z<75.0 && pos.x>150 - ball_radius  && pos.x<150 + 2 * ball_radius){
+			vit.x = -0.8*vit.x;
+		}
+		vec3 hoop_front = vec3(160 - 18.7, 0, 50) + vec3(-8,0,0);
+		vec3 hoop_back = vec3(160 - 18.7, 0, 50) + vec3(8,0,0);
+		vec3 ball_to_front = hoop_front - pos;
+		vec3 ball_to_back = hoop_back - pos;
+		if (norm(ball_to_front) < ball_radius && dot(vit, normalize(ball_to_front)) > 0) {
+			vit = vit - 2*dot(vit, normalize(ball_to_front))*normalize(ball_to_front);
+			vit = 0.8 * vit;
+			pos = hoop_front - ball_radius * normalize(ball_to_front);
+		}
+		if (norm(ball_to_back) < ball_radius && dot(vit, normalize(ball_to_back)) > 0) {
+			vit = vit - 2*dot(vit, normalize(ball_to_back))*normalize(ball_to_back);
+			vit = 0.8 * vit;
+			pos = hoop_back - ball_radius * normalize(ball_to_back);
+		}
+	}
+	if(has_penetrated){
+		t_init += dt_init;
+		environment.fog_falloff+=0.001*dt_init;
+		if(t_init>2.4){
+			basket_scene=false;
+			clock=true;
+			transition=true;
+			environment.camera.center_of_rotation= vec3{80,0,20};
+			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		}
+	}
+}
+
+// Spring force applied on particle p_i with respect to position p_j.
+cgp::vec3 scene_structure::spring_force(vec3 const& p_i, vec3 const& p_j, float L0, float K)
+{
+    vec3 const p = p_i - p_j;
+    float const L = norm(p);
+    vec3 const u = p / L;
+
+    vec3 const F = -K * (L - L0) * u;
+    return F;
+}
+
+void scene_structure::simulation_step(float dt)
+{
+    // Simulation parameters
+    float m = 0.05f;       // particle mass
+    float K = 3.0f;        // spring stiffness
+    float mu = 0.5f;      // damping coefficient
+
+    vec3 g = { 0,0,-9.81f }; // gravity
+
+    // Forces
+    cgp::vec3 f_spring[N_particles];
+    vec3 f_weight = m * g;
+    cgp::vec3 f_damping[N_particles];
+    cgp::vec3 f[N_particles];
+
+	for (int i = 0; i < 4; i ++) {
+		for (int j = 0; j<24; j++) {
+			f_spring[24*i + j] = spring_force(particles_p[24*i + j], particles_p[24*i + ((24+j-1)%24)], L0, K);
+			f_spring[24*i + j] += spring_force(particles_p[24*i + j], particles_p[24*i + ((j+1)%24)], L0, K);
+			f_damping[24*i + j] = -mu * particles_v[24*i + j];
+        	f[24*i + j] = f_spring[24*i + j] + f_weight + f_damping[24*i + j];
+		}
+	}
+	for (int i = 0; i<6; i++) {
+		f[4*i + 2] += spring_force(particles_p[4*i + 2], particles_p[4*i + 2 + 24], 0, K);
+		f[4*i + 2 + 24] += spring_force(particles_p[4*i + 2 + 24], particles_p[4*i + 2], 0, K);
+
+		f[24 + 4*i] += spring_force(particles_p[4*i + 24], particles_p[4*i + 48], 0, K);
+		f[4*i + 48] += spring_force(particles_p[4*i + 48], particles_p[4*i + 24], 0, K);
+
+		f[48 + 4*i + 2] += spring_force(particles_p[48 + 4*i + 2], particles_p[48 + 4*i + 2 + 24], 0, K);
+		f[48 + 4*i + 2 + 24] += spring_force(particles_p[48 + 4*i + 2 + 24], particles_p[48 + 4*i + 2], 0, K);
+	}
+
+    // Integration numerique
+    for (int i=1; i<N_particles; i++) {
+        particles_v[i] = particles_v[i] + 2 * dt * f[i] / m;
+        particles_p[i] = particles_p[i] + 70 * dt * particles_v[i];
+    }
+
+	for (int i=1; i<N_particles; i++) {
+		vec3 particle_to_ball = pos - particles_p[i];
+		if (norm(particle_to_ball) < ball_radius) {
+			vec3 new_pos = pos - ball_radius * normalize(particle_to_ball);
+			particles_v[i] = 0.01 * vit;
+			particles_p[i] = new_pos;
+		}
+    }
+
+	for (int i = 0; i<6; i++) {
+		particles_v[4*i] = {0,0,0};
+		particles_p[4*i] = vec3(141.3, 0, 50) + 8 * vec3(std::cos(2*M_PI*4*i/24), std::sin(2*M_PI*4*i/24), 0.0f);
+	}
+}
+
+
+void scene_structure::draw_segment(vec3 const& a, vec3 const& b)
+{
+    segment.update({ a, b });
+    draw(segment, environment);
+}
+
+void scene_structure::initialize_net()
+{
+	GLuint const basic_shader = opengl_load_shader("shaders/mesh/vert.glsl", "shaders/mesh/frag.glsl");
+
+	// Initialize basketball hoop frame
+	mesh hoop_structure_mesh;
+	hoop_structure_mesh.push_back(mesh_primitive_cubic_grid(vec3(-0.5,-0.5, 0),
+														vec3(0.5,-0.5, 0),
+														vec3(0.5,0.5, 0),
+														vec3(-0.5,0.5, 0),
+														vec3(-0.5,-0.5, 40),
+														vec3(0.5,-0.5, 40),
+														vec3(0.5,0.5, 40),
+														vec3(-0.5,0.5, 40),
+														2, 2, 2));
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(-0.5,-0.5, 40),
+														vec3(10,-0.5, 50.5),
+														vec3(10,-0.5, 49.5),
+														vec3(0.5,-0.5, 40)).flip_connectivity());
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(-0.5,0.5, 40),
+														vec3(10,0.5, 50.5),
+														vec3(10,0.5, 49.5),
+														vec3(0.5,0.5, 40)));
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(-0.5,-0.5, 40),
+														vec3(10,-0.5, 50.5),
+														vec3(10,0.5, 50.5),
+														vec3(-0.5,0.5, 40)));
+	hoop_structure_mesh.push_back(mesh_primitive_quadrangle(vec3(0.5,-0.5, 40),
+														vec3(10,-0.5, 49.5),
+														vec3(10,0.5, 49.5),
+														vec3(0.5,0.5, 40)).flip_connectivity());
+	hoop_structure_mesh.push_back(mesh_primitive_cylinder(0.3, vec3(10, 0, 50), vec3(10.7, 0, 50), 5, 2));
+	hoop_structure_mesh.push_back(mesh_primitive_torus(8, 0.3, vec3(18.7, 0, 50), vec3(0,0,1), 50, 4));
+	hoop_structure_mesh.color.fill(vec3(0.05,0,0.25));
+	hoop_structure.initialize(hoop_structure_mesh);
+	board.initialize(mesh_primitive_quadrangle(vec3(10,-25, 47.5),
+												vec3(10,25, 47.5),
+												vec3(10,25, 75),
+												vec3(10,-25, 75)).flip_connectivity());
+	board.texture = opengl_load_texture_image("assets/board.png");
+	hoop_structure.transform.translation = vec3(160, 0, 0);
+	board.transform.translation = vec3(160, 0, 0);
+	hoop_structure.transform.rotation = rotation_transform::from_axis_angle(vec3(0,0,1), M_PI);
+	board.transform.rotation = rotation_transform::from_axis_angle(vec3(0,0,1), M_PI);
+	board.shader = basic_shader;
+	hoop_structure.shader = basic_shader;
+	terrain_drawable.shader = basic_shader;
+	ball_drawable.shader = basic_shader;
+
+
+    // Initial position and speed of particles
+    // ******************************************* //
+    N_particles = 96;
+
+    particles_p.resize(N_particles);
+    particles_v.resize(N_particles);
+
+    for (int i=0; i<N_particles; i++) {
+        particles_v[i] = {0.f, 0.f, 0.f};
+    }
+
+	for (int i=0; i<4; i++) {
+		for (int j=0; j<24; j++) {
+			particles_p[24*i + j] = vec3(141.3, 0, 50) + 8 * vec3(std::cos(2*M_PI*j/24), std::sin(2*M_PI*j/24), 0.0f - i);
+		}
+	}
+
+	//TODO choose length
+    L0 = 0.4f;
+
+    particle_sphere.initialize(mesh_primitive_sphere(0.5f));
+    segments_drawable::default_shader = curve_drawable::default_shader;
+    segment.initialize({ {0,0,0},{1,0,0} });
+}
+
+void scene_structure::display_net()
+{
+    draw(hoop_structure, environment);
+	draw(board, environment);
+	if(gui.display.wireframe) {
+		draw_wireframe(hoop_structure, environment);
+		draw_wireframe(board, environment);
+	}
+
+    simulation_step(0.1 * 0.01f);
+
+	for (int i = 0; i < 4; i ++) {
+		for (int j = 0; j<24; j++) {
+			draw_segment(particles_p[24*i + j], particles_p[24*i + ((j+1)%24)]);
+		}
+	}
+	for (int i = 0; i<6; i++) {
+		draw_segment(particles_p[4*i + 2], particles_p[4*i + 2 + 24]);
+		draw_segment(particles_p[24 + 4*i], particles_p[4*i + 48]);
+		draw_segment(particles_p[48 + 4*i + 2], particles_p[48 + 4*i + 2 + 24]);
+	}
 }
 
 void scene_structure::transition_in(){
 	t_init += dt_init;
-		if (environment.fog_falloff>0.0001)
+	if(has_penetrated){
+		if (environment.fog_falloff>=0.0000080f)
 		{
-			environment.fog_falloff-=0.0007*dt_init;
+			if (environment.fog_falloff>0.0001)
+				environment.fog_falloff-=0.0008*dt_init;
+			if (environment.fog_falloff>0.00005)
+				environment.fog_falloff-=0.0004*dt_init;
+			if (environment.fog_falloff>0.00001)
+				environment.fog_falloff-=0.0001*dt_init;
+			environment.fog_falloff-=0.0000010*dt_init;
 		}
 		else{
 			transition=false;
 			click=false;
 			t_init=0.0;
 		}
+	}
+	else{
+		if(!basket_scene){
+			if (environment.fog_falloff>0.0001)
+			{
+				environment.fog_falloff-=0.0007*dt_init;
+			}
+			else{
+				transition=false;
+				click=false;
+				t_init=0.0;
+			}
+		}
+		else{
+			if (environment.fog_falloff>0.0)
+			{
+				environment.fog_falloff-=0.0007*dt_init;
+			}
+			else{
+				transition=false;
+				click=false;
+				t_init=0.0;
+			}
+		}
+	}
+	
 }
 
 
 void scene_structure::draw_scene_clock(){
-		draw(dark_skybox, environment); 
-		// Update the current time
-		dt=timer.update();
-		display_lights(); // displays each nexus and every light source
-		if(environment.colors_displayed==6){
+	draw(dark_skybox, environment); 
+	// Update the current time
+	dt=timer.update();
+	display_lights(); // displays each nexus and every light source
+	if(environment.colors_displayed==6 && !has_penetrated){
+	
+		t_init += dt_init;
+		environment.fog_falloff+=0.001*dt_init;
+		if(t_init>2.4){
+			basket_scene=true;
+			clock=false;
+			transition=true;
+			environment.camera.center_of_rotation= vec3{80,0,20};
+			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		}
+	}
 		
-			t_init += dt_init;
-			environment.fog_falloff+=0.001*dt_init;
-			if(t_init>2.4){
-				basket_scene=true;
-				clock=false;
-				transition=true;
-				environment.camera.center_of_rotation= vec3{80,0,20};
-				environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
-				}
-			}
-			
-		// Elements of the scene
-	
-		hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
-		hours.update_local_to_global_coordinates();
-	
-		draw(hours, environment);
+	// Elements of the scene
 
-		minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
-		minutes.update_local_to_global_coordinates();
+	hours["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 36.0);
+	hours.update_local_to_global_coordinates();
 
-		draw(minutes, environment);
+	draw(hours, environment);
 
-		seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
-		seconds.update_local_to_global_coordinates();
+	minutes["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - timer.t / 12.0);
+	minutes.update_local_to_global_coordinates();
 
-		draw(seconds, environment);
-			
-		central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
-		pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
-		pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
-		pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
+	draw(minutes, environment);
 
-		draw(central_cylinder,environment);
-		draw(pulsating_cylinder_1,environment);
-		draw(pulsating_cylinder_2,environment);
-		draw(pulsating_cylinder_3,environment);
+	seconds["Cylinder"].transform.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, - angle_increment(timer.t));
+	seconds.update_local_to_global_coordinates();
 
-		pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
-		pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
-		pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
+	draw(seconds, environment);
+		
+	central_cylinder.transform.translation={0,0,-25+15*sin(timer.t)};
+	pulsating_cylinder_1.transform.translation={0,0,-15-sin(timer.t+10)};
+	pulsating_cylinder_2.transform.translation={0,0,-12+sin(timer.t+2)};
+	pulsating_cylinder_3.transform.translation={0,0,-9+sin(timer.t+10)};
 
-		draw(pulsating_cylinder_1,environment);
-		draw(pulsating_cylinder_2,environment);
-		draw(pulsating_cylinder_3,environment);
-		draw(number, environment_ortho);
-			
-		draw(maze, environment);
-	
-		//! Boids
-		//* Appliquer les 3 regles
-		separation(b);
-		alignment(b);
-		cohesion(b);
-		//dessiner les boids
-		for (int i = 0; i < number_boids; i++)
-		{	
-			b[i]->draw_boid(dt);
-			boid_drawable.transform.translation= b[i]->position;
-			
-			if(cgp::norm(b[i]->vitesse)>0.000001){
-				//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
-				boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
-			}
-			draw(boid_drawable,environment);
-			if (gui.display.wireframe){
-				draw_wireframe(boid_drawable,environment);
-			}
+	draw(central_cylinder,environment);
+	draw(pulsating_cylinder_1,environment);
+	draw(pulsating_cylinder_2,environment);
+	draw(pulsating_cylinder_3,environment);
+
+	pulsating_cylinder_1.transform.translation={0,0,-37-sin(timer.t+10)};
+	pulsating_cylinder_2.transform.translation={0,0,-34+sin(timer.t+2)};
+	pulsating_cylinder_3.transform.translation={0,0,-31+sin(timer.t+10)};
+
+	draw(pulsating_cylinder_1,environment);
+	draw(pulsating_cylinder_2,environment);
+	draw(pulsating_cylinder_3,environment);
+	draw(number, environment_ortho);
+		
+	draw(maze, environment);
+
+	//! Boids
+	//* Appliquer les 3 regles
+	separation(b);
+	alignment(b);
+	cohesion(b);
+	//dessiner les boids
+	for (int i = 0; i < number_boids; i++)
+	{	
+		b[i]->draw_boid(dt);
+		boid_drawable.transform.translation= b[i]->position;
+		
+		if(cgp::norm(b[i]->vitesse)>0.000001){
+			//! changed start vector from vec{0,0,1} to vec3{-1,0,0} when we switched to the obj plane model
+			boid_drawable.transform.rotation=cgp::rotation_transform::between_vector(cgp::vec3{-1.0,0,0}, cgp::normalize(b[i]->vitesse));
 		}
-			
+		draw(boid_drawable,environment);
 		if (gui.display.wireframe){
-			draw_wireframe(hours, environment);
-			draw_wireframe(minutes, environment);
-			draw_wireframe(seconds, environment);
-			draw_wireframe(gold_beam, environment);
-			draw_wireframe(blue_beam, environment);
-			draw_wireframe(maze, environment);
+			draw_wireframe(boid_drawable,environment);
 		}
-		if (environment.spotlight_bool[0])
-			display_semiTransparent();
-
+	}
+		
+	if (gui.display.wireframe){
+		draw_wireframe(hours, environment);
+		draw_wireframe(minutes, environment);
+		draw_wireframe(seconds, environment);
+		draw_wireframe(gold_beam, environment);
+		draw_wireframe(blue_beam, environment);
+		draw_wireframe(maze, environment);
+	}
+	if (environment.spotlight_bool[0])
+		display_semiTransparent();
 }
 
 void scene_structure::display_text_billboard(float duration)

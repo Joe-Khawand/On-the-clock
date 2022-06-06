@@ -15,6 +15,7 @@ out struct fragment_data
     vec3 normal;   // normal position in world space
     vec3 color;    // vertex color
     vec2 uv;       // vertex uv
+	vec3 eye;
 } fragment;
 
 // Uniform variables expected to receive from the C++ program
@@ -41,6 +42,7 @@ void main()
 	fragment.normal   = n.xyz;
 	fragment.color = color;
 	fragment.uv = uv;
+	fragment.eye = vec3(inverse(view)*vec4(0,0,0,1.0));
 
 	// gl_Position is a built-in variable which is the expected output of the vertex shader
 	gl_Position = p_proj; // gl_Position is the projected vertex position (in normalized device coordinates)
