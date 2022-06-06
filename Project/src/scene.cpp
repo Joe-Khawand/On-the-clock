@@ -9,6 +9,7 @@
 #include "nexus.hpp"
 
 #include "boids.hpp"
+#include "fbo_screen_effect/fbo_screen_effect.hpp"
 
 
 using namespace cgp;
@@ -20,7 +21,7 @@ void scene_structure::update_camera()
 
 	// flight_speed modifiable avec shift et ctrl
 	float const dt = flight_timer.update();
-	vec3 const forward_displacement = flight_speed * 3.0f * dt * environment.camera.front();
+	vec3 const forward_displacement = flight_speed * 10.0f * dt * environment.camera.front();
 	environment.camera.center_of_rotation+= forward_displacement;
 	environment.camera.axis=camera_spherical_coordinates_axis::z;
 
@@ -99,8 +100,10 @@ void scene_structure::mouse_click()
 
 void scene_structure::activate_nexus(float d, int i)
 {
+	if (i == 0) 
+		fbo_activated = !fbo_activated;
 	if (d > 300.0f) {
-		time_text_appeared = timer.t;
+		time_text_appeared = timer_init.t;
 		display_text = true;
 		text.texture = opengl_load_texture_image("assets/Text/too_far.png");
 	}
@@ -131,6 +134,16 @@ void scene_structure::activate_nexus(float d, int i)
 					if (environment.colors_displayed == 4)
 						environment.textures_activated = environment.spotlight_timer[0].t;
 				}
+				if (environment.colors_displayed == 10) {
+					display_text = true;
+					time_text_appeared = timer_init.t + 1.0f;
+					text.texture = opengl_load_texture_image("assets/Text/09almost.png");
+				}
+				if (environment.colors_displayed == 12) {
+					display_text = true;
+					time_text_appeared = timer_init.t + 1.5f;
+					text.texture = opengl_load_texture_image("assets/Text/10finish.png");
+				}
 			}
 			if (i == 0) {
 				environment.spotlight_color[0] = {1, 1, 1};
@@ -139,6 +152,9 @@ void scene_structure::activate_nexus(float d, int i)
 				environment.spotlight_timer[0].scale += 0.3f;
 				environment.fog_falloff = 0.0000080f;
 				timer.scale += 0.3f;
+				display_text = true;
+				time_text_appeared = timer_init.t + 1.5f;
+				text.texture = opengl_load_texture_image("assets/Text/04activate_others.png");
 			}
 		}
 	}
@@ -149,6 +165,13 @@ void scene_structure::initialize()
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
+
+
+	// Initialize the structure computing the fbo effect (*)
+	// ********************************************* //
+	GLuint const shader_screen_effect = opengl_load_shader("shaders/screen_effect_convolution/vert.glsl","shaders/screen_effect_convolution/frag.glsl");
+	screen_effect.initialize(shader_screen_effect, inputs.window.width, inputs.window.height); 
+
 
 	// Multiple lights
 	// ***************************************** //
@@ -188,7 +211,6 @@ void scene_structure::initialize()
 	click_basket=false;
 	alpha=0.0;
 	vit = {0,0,0};
-	//!
 	pos = {6,0,8};
 	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
 	terrain_drawable.transform.scaling= 10.0;
@@ -291,6 +313,12 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
+	// Update the texture size of the FBO
+	if (fbo_activated) {
+		screen_effect.update_screen_resize(inputs.window.width, inputs.window.height);
+		screen_effect.prepare_render_pass_into_fbo();
+	}
+
 	dt_init=timer_init.update();
 	if(init){
 		draw_scene_init();
@@ -323,7 +351,13 @@ void scene_structure::display()
 		if (display_text)
 			display_text_billboard();
 	}
-}		
+	
+	if (fbo_activated)
+		draw_effect(screen_effect);
+
+	// Display the quad using the FBO texture, and use the shader applying the filter
+	// draw_effect(screen_effect);
+}
 
 
 void scene_structure::display_gui()
@@ -443,10 +477,11 @@ void scene_structure::draw_scene_init(){
 	if(t_init>2.4){
 		init=false;
 		clock=true;
-		//!basket_scene=true;
 		t_init=0.0;
-		environment.camera.center_of_rotation= vec3{80,0,20};
-		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		environment.camera.center_of_rotation= vec3{-30,0,20};
+		environment.camera.theta = M_PI_4;
+		environment.camera.phi = M_PI_2;
+		//environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
 	}
 }
 
@@ -471,7 +506,7 @@ void scene_structure::draw_scene_basket(){
 		vit += dt_init * 5.0 * g ;
 		pos += dt_init * vit;
 		ball_drawable.transform.translation = pos ;
-		if(pos.z<ball_radius){
+		if(pos.z<ball_radius && !has_penetrated){
 			click_basket=false;
 			pos= {12,0,10};
 			ball_drawable.transform.translation = pos ;
@@ -494,6 +529,12 @@ void scene_structure::draw_scene_basket(){
 			vit = 0.8 * vit;
 			pos = hoop_back - ball_radius * normalize(ball_to_back);
 		}
+		if (pos.z < 50 && pos.z > 50 - ball_radius/2 && norm(vec3(160 - 18.7, 0, 50) - pos) < ball_radius) {
+			has_penetrated = true;
+			display_text = true;
+			time_text_appeared = timer_init.t;
+			text.texture = opengl_load_texture_image("assets/Text/08basketball_congrats.png");
+		}
 	}
 	if(has_penetrated){
 		t_init += dt_init;
@@ -502,8 +543,9 @@ void scene_structure::draw_scene_basket(){
 			basket_scene=false;
 			clock=true;
 			transition=true;
-			environment.camera.center_of_rotation= vec3{80,0,20};
-			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+			environment.camera.center_of_rotation= vec3{-30,0,20};
+			environment.camera.theta = M_PI_4;
+			environment.camera.phi = M_PI_2;
 		}
 	}
 }
@@ -735,12 +777,18 @@ void scene_structure::draw_scene_clock(){
 	
 		t_init += dt_init;
 		environment.fog_falloff+=0.001*dt_init;
+		display_text = true;
+		time_text_appeared = timer_init.t;
+		text.texture = opengl_load_texture_image("assets/Text/06wtf_basketball.png");
 		if(t_init>2.4){
 			basket_scene=true;
 			clock=false;
 			transition=true;
 			environment.camera.center_of_rotation= vec3{80,0,20};
 			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+			display_text = true;
+			time_text_appeared = timer_init.t + 1.0f;
+			text.texture = opengl_load_texture_image("assets/Text/07basketball_tutorial.png");
 		}
 	}
 		
@@ -784,13 +832,16 @@ void scene_structure::draw_scene_clock(){
 
 	//! Boids
 	//* Appliquer les 3 regles
-	separation(b);
-	alignment(b);
-	cohesion(b);
+	if (environment.colors_displayed >= 5) {
+		separation(b);
+		alignment(b);
+		cohesion(b);
+	}
 	//dessiner les boids
 	for (int i = 0; i < number_boids; i++)
 	{	
-		b[i]->draw_boid(dt);
+		if (environment.colors_displayed >= 5)
+			b[i]->draw_boid(dt);
 		boid_drawable.transform.translation= b[i]->position;
 		
 		if(cgp::norm(b[i]->vitesse)>0.000001){

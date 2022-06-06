@@ -71,24 +71,6 @@ void main()
 
 	vec3 color_object  = fragment.color * color * color_image_texture.rgb;
 	
-	// if(nb_colors==0) {
-	// 	color_object = (color_object.rrr + color_object.ggg + color_object.bbb) / 6.0;
-	// }
-	// if(nb_colors==1) {
-	// 	float red = (4 * color_object.r + color_object.g + color_object.b) / 6.0;
-	// 	float green = (color_object.r + color_object.g + color_object.b) / 6.0;
-	// 	float blue = (color_object.r + color_object.g + color_object.b) / 6.0;
-	// 	color_object = vec3(red, green, blue);
-	// }
-	// if(nb_colors==2) {
-	// 	float red = (4 * color_object.r + color_object.g) / 5.0;
-	// 	float green = (color_object.r + color_object.g + color_object.b) / 5.0;
-	// 	float blue = (4 * color_object.b + color_object.g) / 5.0;
-	// 	color_object = vec3(red, green, blue);
-	// }
-
-
-	//float Ka = 0.1;
 	vec3 color_shading = 0 * color_object;
 
 	color_shading += 0.3 * max(dot(N, normalize(vec3(10.0, 5.0, 3.0))), 0.) * vec3(1, 0.8, 0.8);
@@ -134,5 +116,8 @@ void main()
 	if (fragment.position.z < -150)
 		color_with_fog = color_with_fog * (fragment.position.z + 200) / 50;
 
-	FragColor = vec4( color_with_fog, alpha * color_image_texture.a);
+	if (colors_displayed == 10)
+		FragColor = vec4(1,1,1,1) - vec4( color_with_fog, alpha * color_image_texture.a);
+	else
+		FragColor = vec4( color_with_fog, alpha * color_image_texture.a);
 }
