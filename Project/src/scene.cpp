@@ -494,6 +494,8 @@ void scene_structure::draw_scene_basket(){
 			vit = 0.8 * vit;
 			pos = hoop_back - ball_radius * normalize(ball_to_back);
 		}
+		if (pos.z < 50 && pos.z > 50 - ball_radius/2 && norm(vec3(160 - 18.7, 0, 50) - pos) < ball_radius)
+			has_penetrated = true;
 	}
 	if(has_penetrated){
 		t_init += dt_init;
