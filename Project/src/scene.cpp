@@ -211,7 +211,6 @@ void scene_structure::initialize()
 	click_basket=false;
 	alpha=0.0;
 	vit = {0,0,0};
-	//!
 	pos = {6,0,8};
 	terrain_drawable.initialize(cgp::mesh_primitive_quadrangle({-20,-10,0},{-20,10,0},{20,10,0},{20,-10,0}));
 	terrain_drawable.transform.scaling= 10.0;
@@ -314,8 +313,7 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
-	// Update the texture size of the FBO // //if needed
-	//if (inputs.window.is_resized) 
+	// Update the texture size of the FBO
 	if (fbo_activated) {
 		screen_effect.update_screen_resize(inputs.window.width, inputs.window.height);
 		screen_effect.prepare_render_pass_into_fbo();
@@ -479,10 +477,11 @@ void scene_structure::draw_scene_init(){
 	if(t_init>2.4){
 		init=false;
 		clock=true;
-		//!basket_scene=true;
 		t_init=0.0;
-		environment.camera.center_of_rotation= vec3{80,0,20};
-		environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+		environment.camera.center_of_rotation= vec3{-30,0,20};
+		environment.camera.theta = M_PI_4;
+		environment.camera.phi = M_PI_2;
+		//environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
 	}
 }
 
@@ -544,8 +543,9 @@ void scene_structure::draw_scene_basket(){
 			basket_scene=false;
 			clock=true;
 			transition=true;
-			environment.camera.center_of_rotation= vec3{80,0,20};
-			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
+			environment.camera.center_of_rotation= vec3{-30,0,20};
+			environment.camera.theta = M_PI_4;
+			environment.camera.phi = M_PI_2;
 		}
 	}
 }
