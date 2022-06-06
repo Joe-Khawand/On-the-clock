@@ -307,6 +307,7 @@ void scene_structure::display()
 				transition_in();
 				environment.camera.center_of_rotation= vec3{0,0,5.0};
 				environment.camera.theta=0;
+				flight_speed= 0.0f;
 				environment.camera.phi=M_PI_2;
 			}
 			draw_scene_basket();
@@ -691,14 +692,27 @@ void scene_structure::transition_in(){
 		}
 	}
 	else{
-		if (environment.fog_falloff>0.0001)
-		{
-			environment.fog_falloff-=0.0007*dt_init;
+		if(!basket_scene){
+			if (environment.fog_falloff>0.0001)
+			{
+				environment.fog_falloff-=0.0007*dt_init;
+			}
+			else{
+				transition=false;
+				click=false;
+				t_init=0.0;
+			}
 		}
 		else{
-			transition=false;
-			click=false;
-			t_init=0.0;
+			if (environment.fog_falloff>0.0)
+			{
+				environment.fog_falloff-=0.0007*dt_init;
+			}
+			else{
+				transition=false;
+				click=false;
+				t_init=0.0;
+			}
 		}
 	}
 	
