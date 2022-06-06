@@ -456,7 +456,8 @@ void scene_structure::draw_scene_basket(){
 	//TODO add basket ball court and win condition
 	draw(bright_skybox,environment);
 	draw(terrain_drawable,environment);
-	draw(ball_drawable,environment);
+	if (!transition)
+		draw(ball_drawable,environment);
 	display_net();
 	if(!click_basket){
 		ball_drawable.transform.rotation= rotation_transform::from_axis_angle({0,1,0},environment.camera.theta);
@@ -500,13 +501,12 @@ cgp::vec3 scene_structure::spring_force(vec3 const& p_i, vec3 const& p_j, float 
     return F;
 }
 
-
 void scene_structure::simulation_step(float dt)
 {
     // Simulation parameters
-    float m = 0.01f;       // particle mass
-    float K = 5.0f;        // spring stiffness
-    float mu = 0.01f;      // damping coefficient
+    float m = 0.05f;       // particle mass
+    float K = 3.0f;        // spring stiffness
+    float mu = 0.5f;      // damping coefficient
 
     vec3 g = { 0,0,-9.81f }; // gravity
 
@@ -515,22 +515,46 @@ void scene_structure::simulation_step(float dt)
     vec3 f_weight = m * g;
     cgp::vec3 f_damping[N_particles];
     cgp::vec3 f[N_particles];
-    for (int i = 1; i < N_particles; i++) {
-        f_spring[i] = spring_force(particles_p[i], particles_p[i-1], L0, K);
-        if (i < N_particles-1) f_spring[i] += spring_force(particles_p[i], particles_p[i+1], L0, K);
-        if (i >= 2) f_spring[i] += spring_force(particles_p[i], particles_p[i-2], 2*L0, 0.3*K);
-        if (i < N_particles-2) f_spring[i] += spring_force(particles_p[i], particles_p[i+2], 2*L0, 0.3*K);
-        f_damping[i] = -mu * particles_v[i];
-        f[i] = f_spring[i] + f_weight + f_damping[i];
-    }
+
+	for (int i = 0; i < 4; i ++) {
+		for (int j = 0; j<24; j++) {
+			f_spring[24*i + j] = spring_force(particles_p[24*i + j], particles_p[24*i + ((24+j-1)%24)], L0, K);
+			f_spring[24*i + j] += spring_force(particles_p[24*i + j], particles_p[24*i + ((j+1)%24)], L0, K);
+			f_damping[24*i + j] = -mu * particles_v[24*i + j];
+        	f[24*i + j] = f_spring[24*i + j] + f_weight + f_damping[24*i + j];
+		}
+	}
+	for (int i = 0; i<6; i++) {
+		f[4*i + 2] += spring_force(particles_p[4*i + 2], particles_p[4*i + 2 + 24], 0, K);
+		f[4*i + 2 + 24] += spring_force(particles_p[4*i + 2 + 24], particles_p[4*i + 2], 0, K);
+
+		f[24 + 4*i] += spring_force(particles_p[4*i + 24], particles_p[4*i + 48], 0, K);
+		f[4*i + 48] += spring_force(particles_p[4*i + 48], particles_p[4*i + 24], 0, K);
+
+		f[48 + 4*i + 2] += spring_force(particles_p[48 + 4*i + 2], particles_p[48 + 4*i + 2 + 24], 0, K);
+		f[48 + 4*i + 2 + 24] += spring_force(particles_p[48 + 4*i + 2 + 24], particles_p[48 + 4*i + 2], 0, K);
+	}
 
     // Integration numerique
     for (int i=1; i<N_particles; i++) {
-        particles_v[i] = particles_v[i] + dt * f[i] / m;
-        particles_p[i] = particles_p[i] + dt * particles_v[i];
+        particles_v[i] = particles_v[i] + 2 * dt * f[i] / m;
+        particles_p[i] = particles_p[i] + 70 * dt * particles_v[i];
     }
-    particles_v[N_particles-1] = {0.f, 0.f, 0.f};
-    particles_p[N_particles-1] = {0.f, (N_particles-1) * 0.45f, 0.f};
+
+	vec3 ball_pos = pos + vec3(6,0,8);
+	for (int i=1; i<N_particles; i++) {
+		vec3 particle_to_ball = ball_pos - particles_p[i];
+		if (norm(particle_to_ball) < 2) {
+			vec3 new_pos = ball_pos - 2 * normalize(particle_to_ball);
+			particles_v[i] = {0,0,0};
+			particles_p[i] = new_pos;
+		}
+    }
+
+	for (int i = 0; i<6; i++) {
+		particles_v[4*i] = {0,0,0};
+		particles_p[4*i] = vec3(141.3, 0, 50) + 8 * vec3(std::cos(2*M_PI*4*i/24), std::sin(2*M_PI*4*i/24), 0.0f);
+	}
 }
 
 
@@ -592,7 +616,7 @@ void scene_structure::initialize_net()
 
     // Initial position and speed of particles
     // ******************************************* //
-    N_particles = 250;
+    N_particles = 96;
 
     particles_p.resize(N_particles);
     particles_v.resize(N_particles);
@@ -601,17 +625,16 @@ void scene_structure::initialize_net()
         particles_v[i] = {0.f, 0.f, 0.f};
     }
 
-	for (int i=0; i<5; i++) {
-		for (int j=0; j<50; j++) {
-			particles_p[50*i + j] = vec3(141.3, j + 50 * i, 50);
+	for (int i=0; i<4; i++) {
+		for (int j=0; j<24; j++) {
+			particles_p[24*i + j] = vec3(141.3, 0, 50) + 8 * vec3(std::cos(2*M_PI*j/24), std::sin(2*M_PI*j/24), 0.0f - i);
 		}
 	}
 
-	vec3 ball_pos = pos - vec3(6,0,8);
-
+	//TODO choose length
     L0 = 0.4f;
 
-    particle_sphere.initialize(mesh_primitive_sphere(0.05f));
+    particle_sphere.initialize(mesh_primitive_sphere(0.5f));
     segments_drawable::default_shader = curve_drawable::default_shader;
     segment.initialize({ {0,0,0},{1,0,0} });
 }
@@ -626,27 +649,39 @@ void scene_structure::display_net()
 	}
 
     // Update the current time
-    timer.update();
+    //timer.update();
 
-    simulation_step(timer.scale * 0.01f);
+    simulation_step(0.1 * 0.01f);
 
-    particle_sphere.transform.translation = particles_p[0];
-    particle_sphere.shading.color = { 0,0,0 };
-    draw(particle_sphere, environment);
+    // for (int i=0; i<N_particles; i++) {
+    //     particle_sphere.transform.translation = particles_p[i];
+    //     particle_sphere.shading.color = { 1,0,0 };
+    //     draw(particle_sphere, environment);
+    // }
 
-    for (int i=1; i<N_particles; i++) {
-        particle_sphere.transform.translation = particles_p[i];
-        particle_sphere.shading.color = { 1,0,0 };
-        draw(particle_sphere, environment);
-        draw_segment(particles_p[i-1], particles_p[i]);
-    }
+	for (int i = 0; i < 4; i ++) {
+		for (int j = 0; j<24; j++) {
+			draw_segment(particles_p[24*i + j], particles_p[24*i + ((j+1)%24)]);
+		}
+	}
+	for (int i = 0; i<6; i++) {
+		draw_segment(particles_p[4*i + 2], particles_p[4*i + 2 + 24]);
+		draw_segment(particles_p[24 + 4*i], particles_p[4*i + 48]);
+		draw_segment(particles_p[48 + 4*i + 2], particles_p[48 + 4*i + 2 + 24]);
+	}
 }
 
 void scene_structure::transition_in(){
 	t_init += dt_init;
-	if(has_penetrated){
+	if(environment.colors_displayed >= 5){
 		if (environment.fog_falloff>=0.0000080f)
 		{
+			if (environment.fog_falloff>0.0001)
+				environment.fog_falloff-=0.0008*dt_init;
+			if (environment.fog_falloff>0.00005)
+				environment.fog_falloff-=0.0004*dt_init;
+			if (environment.fog_falloff>0.00001)
+				environment.fog_falloff-=0.0001*dt_init;
 			environment.fog_falloff-=0.0000010*dt_init;
 		}
 		else{
@@ -685,8 +720,8 @@ void scene_structure::draw_scene_clock(){
 			transition=true;
 			environment.camera.center_of_rotation= vec3{80,0,20};
 			environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,0);
-			}
 		}
+	}
 		
 	// Elements of the scene
 
