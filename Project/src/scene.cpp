@@ -9,6 +9,7 @@
 #include "nexus.hpp"
 
 #include "boids.hpp"
+#include "fbo_screen_effect/fbo_screen_effect.hpp"
 
 
 using namespace cgp;
@@ -99,8 +100,10 @@ void scene_structure::mouse_click()
 
 void scene_structure::activate_nexus(float d, int i)
 {
+	if (i == 0) 
+		fbo_activated = !fbo_activated;
 	if (d > 300.0f) {
-		time_text_appeared = timer.t;
+		time_text_appeared = timer_init.t;
 		display_text = true;
 		text.texture = opengl_load_texture_image("assets/Text/too_far.png");
 	}
@@ -162,6 +165,13 @@ void scene_structure::initialize()
 	// Initial placement of the camera
 	environment.camera.center_of_rotation= vec3{22,-22,0};
 	environment.camera.manipulator_rotate_spherical_coordinates(-M_PI_4,M_PI_4/2.0);
+
+
+	// Initialize the structure computing the fbo effect (*)
+	// ********************************************* //
+	GLuint const shader_screen_effect = opengl_load_shader("shaders/screen_effect_convolution/vert.glsl","shaders/screen_effect_convolution/frag.glsl");
+	screen_effect.initialize(shader_screen_effect, inputs.window.width, inputs.window.height); 
+
 
 	// Multiple lights
 	// ***************************************** //
@@ -304,6 +314,13 @@ void scene_structure::initialize()
 
 void scene_structure::display()
 {
+	// Update the texture size of the FBO // //if needed
+	//if (inputs.window.is_resized) 
+	if (fbo_activated) {
+		screen_effect.update_screen_resize(inputs.window.width, inputs.window.height);
+		screen_effect.prepare_render_pass_into_fbo();
+	}
+
 	dt_init=timer_init.update();
 	if(init){
 		draw_scene_init();
@@ -336,7 +353,13 @@ void scene_structure::display()
 		if (display_text)
 			display_text_billboard();
 	}
-}		
+	
+	if (fbo_activated)
+		draw_effect(screen_effect);
+
+	// Display the quad using the FBO texture, and use the shader applying the filter
+	// draw_effect(screen_effect);
+}
 
 
 void scene_structure::display_gui()

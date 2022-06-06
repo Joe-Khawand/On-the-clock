@@ -8,6 +8,7 @@
 #include "clock_city.hpp"
 #include "maze.hpp"
 #include "boids.hpp"
+#include "fbo_screen_effect/fbo_screen_effect.hpp"
 
 // The structure of the custom scene
 struct scene_structure {
@@ -105,14 +106,15 @@ struct scene_structure {
 	std::vector<Boid *> b; //tableau de pointeurs vers des boids
 	cgp::mesh_drawable boid_drawable;
 
-	// text drawables
-	// bool display_too_far;
 	cgp::mesh_drawable text;
 	bool display_text = false;
 	float time_text_appeared = 0;
 	int idx_text;
 	std::array<GLuint, 7> text_textures;
 
+	// For the multipass framebuffer effect
+	fbo_screen_effect screen_effect;
+	bool fbo_activated = false;
 
 	// ****************************** //
 	// Functions
@@ -145,4 +147,3 @@ struct scene_structure {
 	void display_semiTransparent(); // Display function for semi-transparent shapes
 	void display_text_billboard(float duration = 2.5f);
 };
-
