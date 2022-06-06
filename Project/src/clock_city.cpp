@@ -77,7 +77,7 @@ mesh create_ring(float r){
     return mesh_primitive_torus(r,0.5,vec3{0,0,0},vec3{0,0,1});
 }
 
-mesh create_cylinder(float r1,float r2,float height, float uv_ratio){
+mesh create_cylinder(float r1,float r2,float height){
     //r1 big radius, r2 small
     int nu= 2;
     int nv=70;
@@ -432,7 +432,7 @@ cgp::mesh create_city(float l, float w, float s, int nl, int nw, float hmax)
     mesh city;
     for (int i=0; i<nl; i++) {
         for (int j=0; j<nw; j++) {
-            float local_max_height = (1 - (float) i / (float) nl) * (1 - (float) i / (float) nl) * hmax;
+            float local_max_height = ((1 - (float) i / (float) nl) * (1 - (float) i / (float) nl) + 0.01) * hmax;
             float h = rand_interval(local_max_height * 0.25, local_max_height);
             mesh block;
             //south face

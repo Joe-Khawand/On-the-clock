@@ -10,7 +10,7 @@
 
 cgp::mesh create_arrow_mesh(float h, float l, float w);
 cgp::mesh create_ring(float r);
-cgp::mesh create_cylinder(float radius_1,float radius_2,float height, float uv_ratio = 15);
+cgp::mesh create_cylinder(float radius_1,float radius_2,float height);
 cgp::mesh brick(float l, float w, float h, cgp::vec3 offset = {0, 0, 0});
 cgp::mesh v(float l, float w, float h, cgp::vec3 offset = {0, 0, 0});
 cgp::mesh x(float l, float w, float h, cgp::vec3 offset = {0, 0, 0});
