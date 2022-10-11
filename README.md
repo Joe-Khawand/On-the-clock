@@ -39,7 +39,7 @@ l’implémenter dans les délais imposés, serait de lancer un mini-jeu par nex
 (ce qui aurait également donné plus de cohérence à l’ensemble, la scène de basket pouvant
 sembler détoner dans le projet tel qu’il est actuellement).
 
-![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.001.png) ![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.002.png) ![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.003.png)
+![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.001.png) ![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.002.png) ![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.003.png)
 
 *Scène initiale, scène de l’horloge, et scène du basket* 
 
