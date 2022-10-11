@@ -146,7 +146,7 @@ bien si l’on déplace la caméra en dessous du labyrinthe, comme ci-dessous.
 
 *Labyrinthe vu de dessous avec le gradient de noir* 
 
-![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.004.jpeg) ![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.005.jpeg)
+![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.004.jpeg) ![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.005.jpeg)
 
 *A gauche : forte atténuation de la lumière, à droite : aucune atténuation* 
 
@@ -166,9 +166,9 @@ active les boids et le sixième transporte le joueur dans la scène de basket). 
 déclenche une inversion globale des couleurs.
 
 
-![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.006.jpeg) ![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.007.jpeg)
+![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.006.jpeg) ![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.007.jpeg)
 
-![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.008.jpeg) ![](Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.009.jpeg)
+![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.008.jpeg) ![](docs/Aspose.Words.38289d3f-4ed3-4925-af9b-76131b0c8005.009.jpeg)
 
 *En haut à gauche le monde en noir et blanc, en haut à droite les couleurs normales, en bas à gauche les couleurs inversées, et en bas à droite le résultat du frame buffer en passages multiples* 
 
